@@ -127,11 +127,10 @@ function Get-Targers ($TargetsURI, $RunningLite) {
         }
         if ($RunningLite) {
             $TargetList = $Targets | Select-Object -Unique | Sort-Object { Get-Random }
-    
         }
         else {
             $TargetList = $Targets | Select-Object -Unique | Sort-Object;
         }
-    }
+    } while ($TargetList.Length -eq 0)
     return $TargetList;
 }
