@@ -29,8 +29,8 @@ Add-Type -AssemblyName System.Net.Http;
 
 #TODO: Somehow move that into better place
 $SettingsLink = "https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/settings.xml";
-Get-File $SettingsLink "settings.xml";
-[xml]$XMLConfig = Get-Content -Path ("settings.xml");
+Get-File $SettingsLink "$PSScriptRoot\\settings.xml";
+[xml]$XMLConfig = Get-Content -Path ("$PSScriptRoot\\settings.xml");
 
 $ActionPreference = $XMLConfig.config.erroraction.'#text';
 $ErrorActionPreference = $ActionPreference;
@@ -100,7 +100,7 @@ if (!(Test-Path "$RootDir\\$GitPath")) {
         Remove-Item "$RootDir\\gitinst.exe" -Force;
     }
     $Message = $XMLConfig.config.messages.unpacking.'#text'
-    Get-File $GitStandalone32 "$RootDir\gitinst.exe";
+    Get-File $GitStandalone32 "$RootDir\\gitinst.exe";
     Clear-Line $("$Message git...");
     Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle 'Hidden' -Wait;
 }
