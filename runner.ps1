@@ -1,4 +1,10 @@
 #Requires -Version 7
+[console]::TreatControlCAsInput = $true
+$host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
+$host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
+$ErrorActionPreference = "SilentlyContinue";
+$ProgressPreference = "SilentlyContinue";
+$WarningPreference = "SilentlyContinue";
 
 .\functions.ps1
 
@@ -15,10 +21,6 @@ $LiteBlockSize = 50;
 $BlockSize = $LiteBlockSize * 4;
 $MinutesPerBlock = 60;
 
-$ErrorActionPreference = "SilentlyContinue";
-$ProgressPreference = "SilentlyContinue";
-$WarningPreference = "SilentlyContinue";
-
 $RunnerVersion = "1.0.0 Alpha / Winged ratel";
 if ($args -like "*-lite*") {
     $RunningLite = $true;
@@ -27,8 +29,7 @@ else {
     $RunningLite = $false;
 }
 
-$host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
-$host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
+
 Clear-Host;
 $Banner = Get-Banner;
 Write-Host $Banner;
@@ -57,10 +58,9 @@ if (Test-Path $MhddosPath) {
                 Select-Object -ExpandProperty ProcessId
         }
     }
-    Remove-Item $MhddosPath -Recurse -Force
 }
 Clear-Line "Отримуємо найновішу версію mhddos_proxy...";
-$GitArgs = "clone $mhddos_proxy_URL $PSScriptRoot";
+$GitArgs = "update $mhddos_proxy_URL $PSScriptRoot";
 Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
 Set-Location $MhddosPath;
 Clear-Line "Встановлюемо необхідні модулі...";

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config>
+    <name>AIO Ukrainian reaper.</name>
+    <links>
+        <git>https://raw.githubusercontent.com/git-for-windows/git-for-windows.github.io/main/latest-32-bit-portable-git.url</git>
+        <py32>https://www.python.org/ftp/python/3.10.4/python-3.10.4-embed-win32.zip</py32>
+        <py64>https://www.python.org/ftp/python/3.10.4/python-3.10.4-embed-amd64.zip</py64>
+        <posh32>https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/PowerShell-7.2.4-win-x86.zip</posh32>
+        <posh64>https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/PowerShell-7.2.4-win-x64.zip</posh64>
+        <funclib>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/functions.ps1</funclib>
+        <load>https://github.com/porthole-ascend-cinnamon/mhddos_proxy.git</load>
+        <targets></targets>
+    </links>
+    <folders>
+        <install>AIOReaper</install>
+        <git>Git</git>
+        <python>Python</python>
+        <load>mhddos_proxy</load>
+    </folders>
+    <limits>
+        <diskspace>3</diskspace>
+        <lowdisk>10</lowdisk>
+    </limits>
+    <messages>
+        <lowdiskspace>У вас мало вільного місця на системному диску. Із роботою скрипту можуть виникнути різноманітні неочікуванності. Будте ласкаві, вивільніть щонайменше 10 Гб. </lowdiskspace>
+        <insufficientspace>Скрипт потребує для роботи не менше трьох гігабайт місця на системному диску</insufficientspace>
+        <downloading>Завантажуємо</downloading>
+        <unpacking>Розпаковуємо</unpacking>
+        <pythonmodule>Встановлюємо модуль Python</pythonmodule>
+        <installcomplete>Завершено завантаження і розпаковку навантаження.</installcomplete>
+    </messages>
+</config>
