@@ -163,6 +163,7 @@ Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidden;
 
+Set-Location $PSScriptRoot
 Get-File $FunctionsURL "functions.ps1";
 $Message = $XMLConfig.config.messages.installcomplete.'#text'
 Clear-Line $Message
