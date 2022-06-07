@@ -45,7 +45,7 @@ $host.ui.RawUI.WindowTitle = "Installing $SoftwareName.";
 $host.ui.RawUI.BackgroundColor = 'Black';
 $host.ui.RawUI.ForegroundColor = 'Green';
 # Locations
-$GitStandalone32 = Get-URLContent $($XMLConfig.config.links.git.'#text');
+$GitStandalone32 = $XMLConfig.config.links.git.'#text';
 $PythonStandalone32 = $XMLConfig.config.links.py32.'#text'
 $PythonStandalone64 = $XMLConfig.config.links.py64.'#text'
 $PwshStandalone32 = $XMLConfig.config.links.posh32.'#text'
