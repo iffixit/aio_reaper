@@ -92,6 +92,8 @@ if (!(Test-Path $RootDir)) {
 if (Test-Path $RootDir){
     Set-Location $RootDir;
 } # TODO Error checking here
+
+
 $GitPath = $XMLConfig.config.folders.git;
 if (!(Test-Path "$RootDir\\$GitPath")) {
     $Message = $XMLConfig.config.messages.downloading;
@@ -104,8 +106,9 @@ if (!(Test-Path "$RootDir\\$GitPath")) {
     Clear-Line $("$Message git...");
     Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle 'Hidden' -Wait;
 }
-$GitPath = $RootDir + "\\" + $GitPath + "\\";
-$GitExe = $GitPath + "git.exe";
+$GitExe = $RootDir + "\\" + $GitPath + "\\" + "git.exe";
+
+
 $PyPath = $XMLConfig.config.folders.python;
 if (!(Test-Path "$RootDir\$PyPath")) {
     $Message = $XMLConfig.config.messages.downloading;
@@ -123,8 +126,9 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     Clear-Line "$Message Python...";
     Expand-Archive -Path "python.zip" -DestinationPath "$RootDir\\$PyPath";
 }
-$PyPath = $RootDir + "\\" + $PyPath + "\\";
-$PythonExe = $PyPath + "python.exe";
+$PythonExe = $RootDir + "\\" + $PyPath + "\\" + "python.exe";
+
+
 $PoshPath = $XMLConfig.config.folders.posh;
 if (!(Test-Path "$RootDir\\$PoshPath")) {
     $Message = $XMLConfig.config.messages.downloading;
@@ -142,8 +146,6 @@ if (!(Test-Path "$RootDir\\$PoshPath")) {
     Clear-Line $("$Message PowerShell Core...");
     Expand-Archive -Path "pwsh.zip" -DestinationPath "$RootDir\\$PoshPath";
 }
-
-
 
 Set-Location $RootDir;
 $Message = $XMLConfig.config.messages.unpacking;

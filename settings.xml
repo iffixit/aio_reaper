@@ -15,7 +15,8 @@
         <install>AIOReaper</install>
         <git>Git</git>
         <python>Python</python>
-        <load>mhddos_proxy</load>
+        <posh>Powershell</posh>
+        <load>Mhddos_proxy</load>
     </folders>
     <limits>
         <diskspace>3</diskspace>
