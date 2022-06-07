@@ -2,7 +2,7 @@
 <config>
     <name>AIO Ukrainian reaper.</name>
     <links>
-        <git>https://raw.githubusercontent.com/git-for-windows/git-for-windows.github.io/main/latest-32-bit-portable-git.url</git>
+        <git>https://github.com/git-for-windows/git/releases/download/v2.36.1.windows.1/PortableGit-2.36.1-32-bit.7z.exe</git>
         <py32>https://www.python.org/ftp/python/3.10.4/python-3.10.4-embed-win32.zip</py32>
         <py64>https://www.python.org/ftp/python/3.10.4/python-3.10.4-embed-amd64.zip</py64>
         <posh32>https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/PowerShell-7.2.4-win-x86.zip</posh32>
