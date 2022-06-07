@@ -37,8 +37,8 @@ $ErrorActionPreference = $ActionPreference;
 $ProgressPreference = $ActionPreference;
 $WarningPreference = $ActionPreference;
 
-$InstallFolder = $XMLConfig.config.name;
-$SoftwareName = $XMLConfig.config.folders.install;
+$InstallFolder = $XMLConfig.config.folders.install;
+$SoftwareName = $XMLConfig.config.name;
 
 # Setting up UI
 $host.ui.RawUI.WindowTitle = "Installing $SoftwareName.";
