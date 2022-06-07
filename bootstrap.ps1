@@ -29,8 +29,8 @@ Add-Type -AssemblyName System.Net.Http;
 
 #TODO: Somehow move that into better place
 $SettingsLink = "https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/settings.xml";
-Get-File $SettingsLink "$PSScriptRoot\\settings.xml";
-[xml]$XMLConfig = Get-Content -Path ("$PSScriptRoot\\settings.xml");
+Get-File $SettingsLink ".\\settings.xml";
+[xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 
 $ActionPreference = $XMLConfig.config.erroraction;
 $ErrorActionPreference = $ActionPreference;
@@ -65,7 +65,7 @@ $SystemDrive = $SystemDrive.Substring(0, 2);
 $FreeSpace = [Int64] ((Get-CimInstance win32_logicaldisk | Where-Object "Caption" -eq "$SystemDrive" | Select-Object -ExpandProperty FreeSpace) / 1Gb);
 $Message = "[Placeholder]"
 [Int]$Lowdisk = $XMLConfig.config.limits.lowdisk;
-if ($FreeSpace -lt 10) {
+if ($FreeSpace -lt $Lowdisk) {
     $Message = $XMLConfig.config.messages.lowdiskspace;
     Write-Host $Message -ForegroundColor 'Red';
     [Console]::Beep();
@@ -89,7 +89,7 @@ $RootDir = $RootDir = $SystemDrive + "\" + $InstallFolder;
 if (!(Test-Path $RootDir)) {
     New-Item -ItemType Directory -Path $RootDir | Out-Null;
 }
-if (Test-Path $RootDir){
+if (Test-Path $RootDir) {
     Set-Location $RootDir;
 } # TODO Error checking here
 
@@ -104,9 +104,9 @@ if (!(Test-Path "$RootDir\\$GitPath")) {
     $Message = $XMLConfig.config.messages.unpacking
     Get-File $GitStandalone32 "$RootDir\\gitinst.exe";
     Clear-Line $("$Message git...");
-    Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle 'Hidden' -Wait;
+    Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle Hidden -Wait;
 }
-$GitExe = $RootDir + "\\" + $GitPath + "\\" + "git.exe";
+$GitExe = $RootDir + "\\" + $GitPath + "\\" + "bin\\git.exe";
 
 
 $PyPath = $XMLConfig.config.folders.python;
@@ -150,22 +150,35 @@ if (!(Test-Path "$RootDir\\$PoshPath")) {
 Set-Location $RootDir;
 $Message = $XMLConfig.config.messages.unpacking;
 $mhddos_proxy_URL = $XMLConfig.config.links.load;
+$MhddosPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
 Clear-Line $("$Message mhddos_proxy")
-$GitArgs = "clone $mhddos_proxy_URL $PSScriptRoot";
+$GitArgs = "clone $mhddos_proxy_URL $MhddosPath";
 Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
+Read-Host "Debug script stop."
 
-Set-Location $PyPath;
+Set-Location $("$RootDir\\$PyPath");
 $Message = $XMLConfig.config.messages.pythonmodule;
 Clear-Line "$Message pip...";
-Start-Process -FilePath $PythonExe -ArgumentList "-m ensurepip --upgrade";
+@'
+python310.zip
+.
 
-$MhddosPath =$PSScriptRoot + "\\" + $XMLConfig.config.folders.load + "\\";
+# Uncomment to run site.main() automatically
+import site
+'@ | Set-Content -Path ".\python310._pth";
+$PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
+Get-File $PipInstaller ".\get-pip.py";
+Start-Process -FilePath $PythonExe -ArgumentList ".\get-pip.py" -Wait -NoNewWindow;
+Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -Wait -NoNewWindow;
+Read-Host "Debug script stop."
+
 Set-Location $MhddosPath;
 Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
-Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidden;
+Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -NoNewWindow;
+Read-Host "Debug script stop."
 
-Set-Location $PSScriptRoot
+Set-Location $RootDir
 Get-File $FunctionsURL "functions.ps1";
 $Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
