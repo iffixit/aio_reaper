@@ -32,27 +32,27 @@ $SettingsLink = "https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/sett
 Get-File $SettingsLink "$PSScriptRoot\\settings.xml";
 [xml]$XMLConfig = Get-Content -Path ("$PSScriptRoot\\settings.xml");
 
-$ActionPreference = $XMLConfig.config.erroraction.'#text';
+$ActionPreference = $XMLConfig.config.erroraction;
 $ErrorActionPreference = $ActionPreference;
 $ProgressPreference = $ActionPreference;
 $WarningPreference = $ActionPreference;
 
-$InstallFolder = $XMLConfig.config.name.'#text';
-$SoftwareName = $XMLConfig.config.folders.install.'#text';
+$InstallFolder = $XMLConfig.config.name;
+$SoftwareName = $XMLConfig.config.folders.install;
 
 # Setting up UI
 $host.ui.RawUI.WindowTitle = "Installing $SoftwareName.";
 $host.ui.RawUI.BackgroundColor = 'Black';
 $host.ui.RawUI.ForegroundColor = 'Green';
 # Locations
-$GitStandalone32 = $XMLConfig.config.links.git.'#text';
-$PythonStandalone32 = $XMLConfig.config.links.py32.'#text'
-$PythonStandalone64 = $XMLConfig.config.links.py64.'#text'
-$PwshStandalone32 = $XMLConfig.config.links.posh32.'#text'
-$PwshStandalone64 = $XMLConfig.config.links.posh64.'#text'
+$GitStandalone32 = $XMLConfig.config.links.git;
+$PythonStandalone32 = $XMLConfig.config.links.py32
+$PythonStandalone64 = $XMLConfig.config.links.py64
+$PwshStandalone32 = $XMLConfig.config.links.posh32
+$PwshStandalone64 = $XMLConfig.config.links.posh64
 $Is64bit = $false;
 
-$FunctionsURL = $XMLConfig.config.links.funclib.'#text';
+$FunctionsURL = $XMLConfig.config.links.funclib;
 
 ################################################################################
 # Script logic
@@ -64,18 +64,18 @@ $FunctionsURL = $XMLConfig.config.links.funclib.'#text';
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $FreeSpace = [Int64] ((Get-CimInstance win32_logicaldisk | Where-Object "Caption" -eq "$SystemDrive" | Select-Object -ExpandProperty FreeSpace) / 1Gb);
 $Message = "[Placeholder]"
-[Int]$Lowdisk = $XMLConfig.config.limits.lowdisk.'#text';
+[Int]$Lowdisk = $XMLConfig.config.limits.lowdisk;
 if ($FreeSpace -lt 10) {
-    $Message = $XMLConfig.config.messages.lowdiskspace.'#text';
+    $Message = $XMLConfig.config.messages.lowdiskspace;
     Write-Host $Message -ForegroundColor 'Red';
     [Console]::Beep();
     #TODO: Add article launch about risks of using low system drive space.
     #TODO: Add article launch about how to free up space.
 }
-[Int]$DiskLimit = $XMLConfig.config.limits.disk.'#text'
+[Int]$DiskLimit = $XMLConfig.config.limits.disk
 if ($FreeSpace -lt $DiskLimit) {
     [System.Console]::Beep();
-    $Message = $XMLConfig.config.messages.insufficientspace.'#text';
+    $Message = $XMLConfig.config.messages.insufficientspace;
     Write-Host $Message;
     Read-Host -Prompt "Press Enter to exit";
     exit;
@@ -92,23 +92,23 @@ if (!(Test-Path $RootDir)) {
 if (Test-Path $RootDir){
     Set-Location $RootDir;
 } # TODO Error checking here
-$GitPath = $XMLConfig.config.folders.git.'#text';
+$GitPath = $XMLConfig.config.folders.git;
 if (!(Test-Path "$RootDir\\$GitPath")) {
-    $Message = $XMLConfig.config.messages.downloading.'#text';
+    $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message git...");
     if (Test-Path "$RootDir\\gitinst.exe") {
         Remove-Item "$RootDir\\gitinst.exe" -Force;
     }
-    $Message = $XMLConfig.config.messages.unpacking.'#text'
+    $Message = $XMLConfig.config.messages.unpacking
     Get-File $GitStandalone32 "$RootDir\\gitinst.exe";
     Clear-Line $("$Message git...");
     Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle 'Hidden' -Wait;
 }
 $GitPath = $RootDir + "\\" + $GitPath + "\\";
 $GitExe = $GitPath + "git.exe";
-$PyPath = $XMLConfig.config.folders.python.'#text';
+$PyPath = $XMLConfig.config.folders.python;
 if (!(Test-Path "$RootDir\$PyPath")) {
-    $Message = $XMLConfig.config.messages.downloading.'#text';
+    $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message Python...");
     if (Test-Path "$RootDir\\python.zip") {
         Remove-Item "$RootDir\\python.zip" -Force;
@@ -119,15 +119,15 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     else {
         Get-File $PythonStandalone32 "$RootDir\\python.zip";
     }
-    $Message = $XMLConfig.config.messages.unpacking.'#text';
+    $Message = $XMLConfig.config.messages.unpacking;
     Clear-Line "$Message Python...";
     Expand-Archive -Path "python.zip" -DestinationPath "$RootDir\\$PyPath";
 }
 $PyPath = $RootDir + "\\" + $PyPath + "\\";
 $PythonExe = $PyPath + "python.exe";
-$PoshPath = $XMLConfig.config.folders.posh.'#text';
+$PoshPath = $XMLConfig.config.folders.posh;
 if (!(Test-Path "$RootDir\\$PoshPath")) {
-    $Message = $XMLConfig.config.messages.downloading.'#text';
+    $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message PowerShell Core...");
     if (Test-Path "$RootDir\\pwsh.zip") {
         Remove-Item "$RootDir\\pwsh.zip" -Force;
@@ -138,7 +138,7 @@ if (!(Test-Path "$RootDir\\$PoshPath")) {
     else {
         Get-File $PwshStandalone32 "$RootDir\\pwsh.zip";
     }
-    $Message = $XMLConfig.config.messages.unpacking.'#text';
+    $Message = $XMLConfig.config.messages.unpacking;
     Clear-Line $("$Message PowerShell Core...");
     Expand-Archive -Path "pwsh.zip" -DestinationPath "$RootDir\\$PoshPath";
 }
@@ -146,18 +146,18 @@ if (!(Test-Path "$RootDir\\$PoshPath")) {
 
 
 Set-Location $RootDir;
-$Message = $XMLConfig.config.messages.unpacking.'#text';
-$mhddos_proxy_URL = $XMLConfig.config.links.load.'#text';
+$Message = $XMLConfig.config.messages.unpacking;
+$mhddos_proxy_URL = $XMLConfig.config.links.load;
 Clear-Line $("$Message mhddos_proxy")
 $GitArgs = "update $mhddos_proxy_URL $PSScriptRoot";
 Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
 
 Set-Location $PyPath;
-$Message = $XMLConfig.config.messages.pythonmodule.'#text';
+$Message = $XMLConfig.config.messages.pythonmodule;
 Clear-Line "$Message pip...";
 Start-Process -FilePath "python.exe" -ArgumentList "-m ensurepip --upgrade";
 
-$MhddosPath =$PSScriptRoot + "\\" + $XMLConfig.config.folders.load.'#text' + "\\";
+$MhddosPath =$PSScriptRoot + "\\" + $XMLConfig.config.folders.load + "\\";
 Set-Location $MhddosPath;
 Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
@@ -165,6 +165,6 @@ Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidd
 
 Set-Location $PSScriptRoot
 Get-File $FunctionsURL "functions.ps1";
-$Message = $XMLConfig.config.messages.installcomplete.'#text'
+$Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
 Read-Host "Debug script stop."
