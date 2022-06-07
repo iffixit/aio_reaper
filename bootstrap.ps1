@@ -23,21 +23,22 @@ function Get-File ($URL, [String] $FileName) {
 
 # We need this because default PoSH network protocol is outdated.
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
-[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8")
+[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8");
 # WebClient is outdated. Use HttpClient instead.
-Add-Type -AssemblyName System.Net.Http
-
-$ErrorActionPreference = "SilentlyContinue";
-$ProgressPreference = "SilentlyContinue";
-$WarningPreference = "SilentlyContinue";
+Add-Type -AssemblyName System.Net.Http;
 
 #TODO: Somehow move that into better place
 $SettingsLink = "https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/settings.xml";
 Get-File $SettingsLink "settings.xml";
 [xml]$XMLConfig = Get-Content -Path ("settings.xml");
 
+$ActionPreference = $XMLConfig.config.erroraction.'#text';
+$ErrorActionPreference = $ActionPreference;
+$ProgressPreference = $ActionPreference;
+$WarningPreference = $ActionPreference;
+
 $InstallFolder = $XMLConfig.config.name.'#text';
-$SoftwareName = $XMLConfig.config.folders.install.'#text'
+$SoftwareName = $XMLConfig.config.folders.install.'#text';
 
 # Setting up UI
 $host.ui.RawUI.WindowTitle = "Installing $SoftwareName.";
@@ -63,9 +64,9 @@ $FunctionsURL = $XMLConfig.config.links.funclib.'#text';
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $FreeSpace = [Int64] ((Get-CimInstance win32_logicaldisk | Where-Object "Caption" -eq "$SystemDrive" | Select-Object -ExpandProperty FreeSpace) / 1Gb);
 $Message = "[Placeholder]"
-$Lowdisk = $XMLConfig.config.limits.lowdisk.'#text'
+$Lowdisk = $XMLConfig.config.limits.lowdisk.'#text';
 if ($FreeSpace -lt 10) {
-    $Message = $XMLConfig.config.messages.lowdiskspace.'#text'
+    $Message = $XMLConfig.config.messages.lowdiskspace.'#text';
     Write-Host $Message -ForegroundColor 'Red';
     [Console]::Beep();
     #TODO: Add article launch about risks of using low system drive space.
@@ -75,7 +76,7 @@ if ($FreeSpace -lt 10) {
 if ($FreeSpace -lt ) {
     [System.Console]::Beep();
     $Message = $XMLConfig.config.messages.insufficientspace.'#text';
-    Write-Host $Message
+    Write-Host $Message;
     Read-Host -Prompt "Press Enter to exit";
     exit;
 }
@@ -103,9 +104,9 @@ if (!(Test-Path "$RootDir\\$GitPath")) {
     Clear-Line $("$Message git...");
     Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle 'Hidden' -Wait;
 }
-$GitPath = $RootDir + "\\" + $GitPath + "\\"
-$GitExe = $GitPath + "git.exe"
-$PyPath = $XMLConfig.config.folders.python.'#text'
+$GitPath = $RootDir + "\\" + $GitPath + "\\";
+$GitExe = $GitPath + "git.exe";
+$PyPath = $XMLConfig.config.folders.python.'#text';
 if (!(Test-Path "$RootDir\$PyPath")) {
     $Message = $XMLConfig.config.messages.downloading.'#text';
     Clear-Line $("$Message Python...");
@@ -118,13 +119,13 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     else {
         Get-File $PythonStandalone32 "$RootDir\\python.zip";
     }
-    $Message = $XMLConfig.config.messages.unpacking.'#text'
+    $Message = $XMLConfig.config.messages.unpacking.'#text';
     Clear-Line "$Message Python...";
     Expand-Archive -Path "python.zip" -DestinationPath "$RootDir\\$PyPath";
 }
-$PyPath = $RootDir + "\\" + $PyPath + "\\"
-$PythonExe = $PyPath + "python.exe"
-$PoshPath = $XMLConfig.config.folders.posh.'#text'
+$PyPath = $RootDir + "\\" + $PyPath + "\\";
+$PythonExe = $PyPath + "python.exe";
+$PoshPath = $XMLConfig.config.folders.posh.'#text';
 if (!(Test-Path "$RootDir\\$PoshPath")) {
     $Message = $XMLConfig.config.messages.downloading.'#text';
     Clear-Line $("$Message PowerShell Core...");
@@ -137,25 +138,28 @@ if (!(Test-Path "$RootDir\\$PoshPath")) {
     else {
         Get-File $PwshStandalone32 "$RootDir\\pwsh.zip";
     }
-    $Message = $XMLConfig.config.messages.unpacking.'#text'
+    $Message = $XMLConfig.config.messages.unpacking.'#text';
     Clear-Line $("$Message PowerShell Core...");
     Expand-Archive -Path "pwsh.zip" -DestinationPath "$RootDir\\$PoshPath";
 }
 
 
 
-Set-Location $RootDir
-$mhddos_proxy_URL = $XMLConfig.config.links.load.'#text'
+Set-Location $RootDir;
+$Message = $XMLConfig.config.messages.unpacking.'#text';
+$mhddos_proxy_URL = $XMLConfig.config.links.load.'#text';
+Clear-Line $("$Message mhddos_proxy")
 $GitArgs = "update $mhddos_proxy_URL $PSScriptRoot";
 Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
 
 Set-Location $PyPath;
-$Message = $XMLConfig.config.messages.pythonmodule.'#text'
+$Message = $XMLConfig.config.messages.pythonmodule.'#text';
 Clear-Line "$Message pip...";
-Start-Process -FilePath "python.exe" -ArgumentList "-m ensurepip --upgrade"
+Start-Process -FilePath "python.exe" -ArgumentList "-m ensurepip --upgrade";
 
-$MhddosPath =$PSScriptRoot + "\\" + $XMLConfig.config.folders.load.'#text' + "\\"
+$MhddosPath =$PSScriptRoot + "\\" + $XMLConfig.config.folders.load.'#text' + "\\";
 Set-Location $MhddosPath;
+Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidden;
 

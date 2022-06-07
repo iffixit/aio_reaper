@@ -29,4 +29,5 @@
         <pythonmodule>Встановлюємо модуль Python</pythonmodule>
         <installcomplete>Завершено завантаження і розпаковку навантаження.</installcomplete>
     </messages>
+    <erroraction>SilentlyContinue</erroraction>
 </config>

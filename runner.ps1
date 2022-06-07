@@ -6,10 +6,10 @@ $ErrorActionPreference = "SilentlyContinue";
 $ProgressPreference = "SilentlyContinue";
 $WarningPreference = "SilentlyContinue";
 
+[xml]$XMLConfig = Get-Content -Path ("settings.xml");
+
 .\functions.ps1
 
-$GitPath = $PSScriptRoot + "\\Git\\bin\\";
-$GitExe = $GitPath + "git.exe";
 $PythonPath = $PSScriptRoot + "\\Python\\";
 $PythonExe = $PythonPath + "python.exe";
 $MhddosPath = $PSScriptRoot + "\\Mhddos_proxy\\";
