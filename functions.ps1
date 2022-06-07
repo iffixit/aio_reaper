@@ -134,3 +134,17 @@ function Get-Targers ($TargetsURI, $RunningLite) {
     } while ($TargetList.Length -eq 0)
     return $TargetList;
 }
+
+function Get-ProcByCmdline ($Cmdline) {
+    $Ret = Get-CimInstance win32_process | `
+        Where-Object { $_.CommandLine -like "*$Cmdline*" } | `
+        Select-Object -ExpandProperty ProcessId
+    return $Ret
+}
+
+function Get-ProcByPath ($Path) {
+    $Ret = Get-CimInstance win32_process | `
+        Where-Object { $_.Path -like "*$Path*" } | `
+        Select-Object -ExpandProperty ProcessId
+    return $Ret
+}

