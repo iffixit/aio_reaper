@@ -64,7 +64,7 @@ $FunctionsURL = $XMLConfig.config.links.funclib.'#text';
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $FreeSpace = [Int64] ((Get-CimInstance win32_logicaldisk | Where-Object "Caption" -eq "$SystemDrive" | Select-Object -ExpandProperty FreeSpace) / 1Gb);
 $Message = "[Placeholder]"
-$Lowdisk = $XMLConfig.config.limits.lowdisk.'#text';
+[Int]$Lowdisk = $XMLConfig.config.limits.lowdisk.'#text';
 if ($FreeSpace -lt 10) {
     $Message = $XMLConfig.config.messages.lowdiskspace.'#text';
     Write-Host $Message -ForegroundColor 'Red';
@@ -73,7 +73,7 @@ if ($FreeSpace -lt 10) {
     #TODO: Add article launch about how to free up space.
 }
 [Int]$DiskLimit = $XMLConfig.config.limits.disk.'#text'
-if ($FreeSpace -lt ) {
+if ($FreeSpace -lt $DiskLimit) {
     [System.Console]::Beep();
     $Message = $XMLConfig.config.messages.insufficientspace.'#text';
     Write-Host $Message;
