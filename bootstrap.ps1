@@ -151,13 +151,13 @@ Set-Location $RootDir;
 $Message = $XMLConfig.config.messages.unpacking;
 $mhddos_proxy_URL = $XMLConfig.config.links.load;
 Clear-Line $("$Message mhddos_proxy")
-$GitArgs = "update $mhddos_proxy_URL $PSScriptRoot";
+$GitArgs = "clone $mhddos_proxy_URL $PSScriptRoot";
 Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
 
 Set-Location $PyPath;
 $Message = $XMLConfig.config.messages.pythonmodule;
 Clear-Line "$Message pip...";
-Start-Process -FilePath "python.exe" -ArgumentList "-m ensurepip --upgrade";
+Start-Process -FilePath $PythonExe -ArgumentList "-m ensurepip --upgrade";
 
 $MhddosPath =$PSScriptRoot + "\\" + $XMLConfig.config.folders.load + "\\";
 Set-Location $MhddosPath;
