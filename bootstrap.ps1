@@ -166,18 +166,18 @@ import site
 '@ | Set-Content -Path "$PythonFolder\\python310._pth";
 $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
 Get-File $PipInstaller "$PythonFolder\\get-pip.py";
-Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -Wait -NoNewWindow;
-Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -Wait -NoNewWindow;
-Read-Host "Debug script stop."
+Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
+Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -WindowStyle Hidden -Wait;
 
 Set-Location $MhddosPath;
 Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
-Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -NoNewWindow;
-Read-Host "Debug script stop."
+Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
 
 Set-Location $RootDir
-Get-File $FunctionsURL "functions.ps1";
+Get-File $FunctionsURL "$RootDir\\functions.ps1";
 $Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
-Read-Host "Debug script stop."
+Remove-Item "$RootDir\\pwsh.zip" -Force;
+Remove-Item "$RootDir\\python.zip" -Force;
+Remove-Item "$RootDir\\gitinst.exe" -Force;
