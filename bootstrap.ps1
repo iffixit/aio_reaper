@@ -67,7 +67,7 @@ $Message = "[Placeholder]"
 [Int]$Lowdisk = $XMLConfig.config.limits.lowdisk;
 if ($FreeSpace -lt $Lowdisk) {
     $Message = $XMLConfig.config.messages.lowdiskspace;
-    Write-Host $Message -ForegroundColor 'Red';
+    Write-Host $Message;
     [Console]::Beep();
     #TODO: Add article launch about risks of using low system drive space.
     #TODO: Add article launch about how to free up space.
@@ -80,6 +80,16 @@ if ($FreeSpace -lt $DiskLimit) {
     Read-Host -Prompt "Press Enter to exit";
     exit;
 }
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());
+$IsAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator);
+if ($IsAdmin) {
+    [Console]::Beep();
+    $Message = $XMLConfig.config.messages.runningadmin;
+    Write-Host $Message;
+    Read-Host "Press enter to exit";
+    exit
+}
+
 if ((Get-CimInstance Win32_OperatingSystem | Select-Object OSArchitecture).OSArchitecture -eq "64-bit") {
     $Is64bit = $true;
 }
