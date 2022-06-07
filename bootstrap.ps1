@@ -106,8 +106,7 @@ if (!(Test-Path "$RootDir\\$GitPath")) {
     Clear-Line $("$Message git...");
     Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle Hidden -Wait;
 }
-$GitExe = $RootDir + "\\" + $GitPath + "\\" + "bin\\git.exe";
-
+$GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
 
 $PyPath = $XMLConfig.config.folders.python;
 if (!(Test-Path "$RootDir\$PyPath")) {
@@ -126,8 +125,8 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     Clear-Line "$Message Python...";
     Expand-Archive -Path "python.zip" -DestinationPath "$RootDir\\$PyPath";
 }
-$PythonExe = $RootDir + "\\" + $PyPath + "\\" + "python.exe";
-
+$PythonFolder = $("$RootDir\\$PyPath")
+$PythonExe = $PythonFolder + "\\" + "python.exe";
 
 $PoshPath = $XMLConfig.config.folders.posh;
 if (!(Test-Path "$RootDir\\$PoshPath")) {
@@ -154,9 +153,8 @@ $MhddosPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
 Clear-Line $("$Message mhddos_proxy")
 $GitArgs = "clone $mhddos_proxy_URL $MhddosPath";
 Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
-Read-Host "Debug script stop."
 
-Set-Location $("$RootDir\\$PyPath");
+Set-Location $PythonFolder;
 $Message = $XMLConfig.config.messages.pythonmodule;
 Clear-Line "$Message pip...";
 @'
@@ -165,10 +163,10 @@ python310.zip
 
 # Uncomment to run site.main() automatically
 import site
-'@ | Set-Content -Path ".\python310._pth";
+'@ | Set-Content -Path "$PythonFolder\\python310._pth";
 $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
-Get-File $PipInstaller ".\get-pip.py";
-Start-Process -FilePath $PythonExe -ArgumentList ".\get-pip.py" -Wait -NoNewWindow;
+Get-File $PipInstaller "$PythonFolder\\get-pip.py";
+Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -Wait -NoNewWindow;
 Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -Wait -NoNewWindow;
 Read-Host "Debug script stop."
 
