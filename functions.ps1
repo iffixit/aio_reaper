@@ -25,8 +25,7 @@ function Get-URLContent ($URL) {
     return $Response;
 }
 
-function Get-Banner {
-    $BannerURL = "https://raw.githubusercontent.com/ahovdryk/mhddos_powershell/master/banner";
+function Get-Banner ([String] $BannerURL) {
     $Response = "";
     while ($Response -eq "") {
         try {

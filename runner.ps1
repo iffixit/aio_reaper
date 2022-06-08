@@ -8,9 +8,14 @@ $ErrorActionPreference = $ActionPreference;
 $ProgressPreference = $ActionPreference;
 $WarningPreference = $ActionPreference;
 .\functions.ps1
-$PythonPath = $("$PSScriptRoot\\$($XMLConfig.config.folders.python)\\");
+[string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
+$SystemDrive = $SystemDrive.Substring(0, 2);
+$InstallFolder = $XMLConfig.config.folders.install;
+$RootDir = $SystemDrive + "\\" + $InstallFolder;
+
+$PythonPath = $("$RootDir\\$($XMLConfig.config.folders.python)\\");
 $PythonExe = $PythonPath + "python.exe";
-$LoadPath = $("$PSScriptRoot\\$($XMLConfig.config.folders.load)\\");
+$LoadPath = $("$RootDir\\$($XMLConfig.config.folders.load)\\");
 $TargetsURI = $XMLConfig.config.links.targets
 $LiteBlockSize = 50;
 $BlockSize = $LiteBlockSize * 4;
@@ -34,7 +39,7 @@ if ($RunningLite) {
     $StartupMessage = $StartupMessage + " Lite"
 }
 Clear-Line $StartupMessage;
-Set-Location $PSScriptRoot;
+Set-Location $RootDir;
 
 $Runners = Get-ProcByCmdline "$LoadPath"
 $Runners += Get-ProcByPath "$PythonExe"
@@ -86,7 +91,7 @@ while (-not $StopRequested) {
         $Now = [System.DateTime]::Now;
         $StopCycle = $Now.AddMinutes($MinutesPerBlock);
         while ($([System.DateTime]::Now) -lt $StopCycle) {
-            
+
         }
     }
 }
