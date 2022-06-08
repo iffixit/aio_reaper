@@ -16,7 +16,8 @@ $RootDir = $SystemDrive + "\\" + $InstallFolder;
 $PythonPath = $("$RootDir\\$($XMLConfig.config.folders.python)\\");
 $PythonExe = $PythonPath + "python.exe";
 $LoadPath = $("$RootDir\\$($XMLConfig.config.folders.load)\\");
-$TargetsURI = $XMLConfig.config.links.targets
+$LoadFileName = $XMLConfig.config.mainloadfile;
+$TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = 50;
 $BlockSize = $LiteBlockSize * 4;
 $MinutesPerBlock = 60;
@@ -60,7 +61,7 @@ while (-not $StopRequested) {
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
-                $RunnerArgs = $('runner.py ' + $TargetString);
+                $RunnerArgs = $("$LoadFileName $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $WorkDir -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
@@ -72,23 +73,25 @@ while (-not $StopRequested) {
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
-                $Runner_args = $('runner.py ' + $TargetString);
-                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $WorkDir -ArgumentList $Runner_args -WindowStyle Hidden -PassThru;
-                # We REALLY do not want our system to hang.
+                $RunnerArgs = $("$LoadFileName $TargetString");
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $WorkDir`
+                    -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
+                $Message = 
                 while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt [System.DateTime]::Now)) {
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
-                    Clear-Line "$BlockJobLeft хвилин братерства на $($Target.Count) цілей";
+                    Clear-Line $("$($Target.Count) $Message $BlockJobLeft");
                     Start-Sleep -Seconds 5;
                 }
                 Stop-Tree $PyProcess.Id;
-                Clear-Line "Відпрацювали $($Target.Count) цілей. Беремо наступний блок";
+                $Message = $XMLConfig.config.messages.litedone;
+                Clear-Line $("$($Target.Count) $Message");
             }
         }
     }
-    if (!$RunningLite) {
+    if (-not $RunningLite) {
         $Now = [System.DateTime]::Now;
         $StopCycle = $Now.AddMinutes($MinutesPerBlock);
         while ($([System.DateTime]::Now) -lt $StopCycle) {

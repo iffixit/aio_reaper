@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <config>
     <name>AIO Ukrainian reaper.</name>
+    <mainloadfile>runner.py</mainloadfile>
+    <baseloadargs></baseloadargs>
     <links>
         <git>https://github.com/git-for-windows/git/releases/download/v2.36.1.windows.1/PortableGit-2.36.1-32-bit.7z.exe</git>
         <py32>https://www.python.org/ftp/python/3.10.4/python-3.10.4-embed-win32.zip</py32>
@@ -20,8 +22,10 @@
         <load>Mhddos_proxy</load>
     </folders>
     <limits>
+        <description>В цій секції в гігабайтах задаються пороги спрацювання попереджень і зупинок роботи</description>
         <diskspace>3</diskspace>
         <lowdisk>10</lowdisk>
+        <RAM>4</RAM>
     </limits>
     <messages>
         <lowdiskspace>У вас мало вільного місця на системному диску. Із роботою скрипту можуть виникнути різноманітні неочікуванності. Будте ласкаві, вивільніть щонайменше 10 Гб. </lowdiskspace>

@@ -156,3 +156,7 @@ Get-FreeRamPercent {
 Get-FreeRamGB {
     return [System.Math]::Round($(Get-CIMInstance Win32_OperatingSystem | Select-Object -Expandproperty FreePhysicalMemory) / 1Mb)
 }
+
+Get-CpuLoad {
+    return $(Get-CimInstance -ClassName win32_processor | Measure-Object -Property LoadPercentage -Average | Select-Object -ExpandProperty Average)
+}
