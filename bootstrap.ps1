@@ -95,7 +95,7 @@ if ((Get-CimInstance Win32_OperatingSystem | Select-Object OSArchitecture).OSArc
 }
 
 # Creating software root folder
-$RootDir = $RootDir = $SystemDrive + "\" + $InstallFolder;
+$RootDir = $SystemDrive + "\" + $InstallFolder;
 if (!(Test-Path $RootDir)) {
     New-Item -ItemType Directory -Path $RootDir | Out-Null;
 }
@@ -158,10 +158,10 @@ if (!(Test-Path "$RootDir\\$PoshPath")) {
 
 Set-Location $RootDir;
 $Message = $XMLConfig.config.messages.unpacking;
-$mhddos_proxy_URL = $XMLConfig.config.links.load;
-$MhddosPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
-Clear-Line $("$Message mhddos_proxy")
-$GitArgs = "clone $mhddos_proxy_URL $MhddosPath";
+$LoadURL = $XMLConfig.config.links.load;
+$LoadPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
+Clear-Line $("$Message load")
+$GitArgs = "clone $LoadURL $LoadPath";
 Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
 
 Set-Location $PythonFolder;
@@ -179,7 +179,7 @@ Get-File $PipInstaller "$PythonFolder\\get-pip.py";
 Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
 Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -WindowStyle Hidden -Wait;
 
-Set-Location $MhddosPath;
+Set-Location $LoadPath;
 Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;

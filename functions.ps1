@@ -104,7 +104,7 @@ function Split-Array {
     }
 }
 
-function Get-Targers ($TargetsURI, $RunningLite) {
+function Get-Targets ($TargetsURI, $RunningLite) {
     do {
         $DirtyTargets = Get-URLContent $TargetsURI;
         $DirtyTargets = $DirtyTargets -join ' ';

@@ -10,6 +10,7 @@
         <funclib>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/functions.ps1</funclib>
         <load>https://github.com/porthole-ascend-cinnamon/mhddos_proxy.git</load>
         <targets>https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets</targets>
+        <banner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/banner</banner>
     </links>
     <folders>
         <install>AIOReaper</install>

