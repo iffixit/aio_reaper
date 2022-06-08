@@ -1,0 +1,1 @@
+[int]($(Get-CIMInstance Win32_OperatingSystem | Select-Object -Expandproperty FreePhysicalMemory) / 1Mb)

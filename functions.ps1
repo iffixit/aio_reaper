@@ -147,3 +147,12 @@ function Get-ProcByPath ($Path) {
         Select-Object -ExpandProperty ProcessId
     return $Ret
 }
+Get-FreeRamPercent {
+    $FreeRAM = ($(Get-CIMInstance Win32_OperatingSystem | Select-Object -Expandproperty FreePhysicalMemory) / 1Mb);
+    $TotalRAM = ($(Get-CIMInstance Win32_OperatingSystem | Select-Object -Expandproperty TotalVisibleMemorySize) / 1Mb);
+    return [System.Math]::Round($FreeRAM / $TotalRAM * 100);
+}
+
+Get-FreeRamGB {
+    return [System.Math]::Round($(Get-CIMInstance Win32_OperatingSystem | Select-Object -Expandproperty FreePhysicalMemory) / 1Mb)
+}

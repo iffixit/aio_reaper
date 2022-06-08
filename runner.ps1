@@ -34,17 +34,18 @@ Clear-Host;
 $BannerURL = $XMLConfig.config.links.banner;
 $Banner = Get-Banner $BannerURL;
 Write-Host $Banner;
-$StartupMessage = "Бігунець версії $RunnerVersion"
+$StartupMessage = "Бігунець версії $RunnerVersion";
 if ($RunningLite) {
-    $StartupMessage = $StartupMessage + " Lite"
+    $StartupMessage = $StartupMessage + " Lite";
 }
 Clear-Line $StartupMessage;
 Set-Location $RootDir;
 
-$Runners = Get-ProcByCmdline "$LoadPath"
-$Runners += Get-ProcByPath "$PythonExe"
+$Runners = Get-ProcByCmdline "$LoadPath";
+$Runners += Get-ProcByPath "$PythonExe";
+$Runners = $Runners | Sort-Object -Unique;;
 foreach ($ProcessID in $Runners) {
-    Stop-Tree $ProcessID
+    Stop-Tree $ProcessID | Out-Null;
 }
 
 Clear-Line "Отримуємо список цілей...";

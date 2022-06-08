@@ -31,8 +31,10 @@
         <pythonmodule>Встановлюємо модуль Python</pythonmodule>
         <installcomplete>Завершено завантаження і розпаковку навантаження.</installcomplete>
         <runningadmin>Скрипт запущено із правами адміністратора. Це - неправильно, такий режим роботи не підтримується. Будьте ласкаві, запустіть програму за інструкцією.</runningadmin>
-        <liteworking> цілей отримують трохи братерства. Хвилин до наступного блоку:</liteworking>
-        <litedone>цілей обробили. Беремо наступний блок.</litedone>
+        <Memory>Пам'яті</Memory>
+        <Targets>Цілей</Targets>
+        <minutes>хвилин</minutes>
+        <tillupdate>До оновлення</tillupdate>
     </messages>
     <erroraction>SilentlyContinue</erroraction>
 </config>
