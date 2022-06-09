@@ -116,6 +116,7 @@ function Split-Array {
 }
 
 function Get-Targets ($TargetsURI, $RunningLite) {
+    $TargetList = @()
     do {
         $DirtyTargets = (Get-URLContent $TargetsURI | Select-String -AllMatches -Pattern '(?m)^[^#\s].*$').Matches;
         $DirtyTargets = $DirtyTargets -join ' ';
