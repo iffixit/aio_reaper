@@ -42,4 +42,10 @@
         <tillupdate>До оновлення</tillupdate>
     </messages>
     <erroraction>SilentlyContinue</erroraction>
+    <liteblocksize>50</liteblocksize>
+    <timers>
+        <main></main>
+        <minutesperblock></minutesperblock>
+
+    </timers>
 </config>
