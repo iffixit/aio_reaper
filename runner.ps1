@@ -69,7 +69,7 @@ while (-not $StopRequested) {
                 Write-Host $LoadFileName
                 Write-Host $TargetString
                 Read-Host "a"
-                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -NoNewWindows -PassThru;
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -NoNewWindow -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
                 Read-Host "b"
