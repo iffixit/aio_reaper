@@ -40,7 +40,7 @@ $StartupMessage = "Бігунець версії $RunnerVersion";
 if ($RunningLite) {
     $StartupMessage = $StartupMessage + " Lite";
 }
-Clear-Line $StartupMessage;
+Write-Host $StartupMessage;
 Set-Location $RootDir;
 
 $Runners = Get-ProcByCmdline "$LoadPath";
@@ -63,7 +63,7 @@ while (-not $StopRequested) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
-
+                Write-Host $Target
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName  $TargetString");
                 Write-Host $LoadFileName
