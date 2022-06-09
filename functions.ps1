@@ -117,7 +117,7 @@ function Split-Array {
 
 function Get-Targets ($TargetsURI, $RunningLite) {
     do {
-        $DirtyTargets = Get-URLContent $TargetsURI | Select-String -AllMatches -Pattern '(?m)^[^#\s].*$').Matches;;
+        $DirtyTargets = Get-URLContent $TargetsURI | Select-String -AllMatches -Pattern '(?m)^[^#\s].*$'.Matches;
         $DirtyTargets = $DirtyTargets -join ' ';
         $DirtyTargets = $DirtyTargets -replace '`n', ' ';
         $DirtyTargets = $DirtyTargets -replace '`r', ' ';
