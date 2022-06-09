@@ -59,6 +59,7 @@ $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
 $Targets = @()
 $Targets = Get-SlicedArray $TargetList $BlockSize;
+Write-Host $Targets;
 foreach ($Target in $Targets) {
     Write-Host $Target.Count;
     Write-Host $Target;
