@@ -10,6 +10,7 @@ $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\\" + $InstallFolder;
 Set-Location $RootDir;
 . $("$RootDir\\functions.ps1");
+Clear-Line "Functions loaded!"
 $PwshDir = $("$RootDir\\$($XMLConfig.config.folders.posh)\\");
 $PwshExe = $("$PwshDir\\pwsh.exe");
 $UpdateCheckTime = $XMLConfig.config.timers.main;
