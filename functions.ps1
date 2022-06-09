@@ -117,7 +117,7 @@ function Split-Array {
 
 function Get-Targets ($TargetsURI, $RunningLite) {
     do {
-        $DirtyTargets = Get-URLContent $TargetsURI;
+        $DirtyTargets = Get-URLContent $TargetsURI | Select-String -AllMatches -Pattern '(?m)^[^#\s].*$').Matches;;
         $DirtyTargets = $DirtyTargets -join ' ';
         $DirtyTargets = $DirtyTargets -replace '`n', ' ';
         $DirtyTargets = $DirtyTargets -replace '`r', ' ';
@@ -171,4 +171,37 @@ function Get-FreeRamGB {
 
 function Get-CpuLoad {
     return $(Get-CimInstance -ClassName win32_processor | Measure-Object -Property LoadPercentage -Average | Select-Object -ExpandProperty Average)
+}
+
+function Measure-Bandwith {
+    $startTime = get-date
+    $endTime = $startTime.AddSeconds(5)
+    $timeSpan = new-timespan $startTime $endTime
+    $count = 0
+    $totalBandwidth = 0
+    while ($timeSpan -gt 0) {
+        # Get an object for the network interfaces, excluding any that are currently disabled.
+        $colInterfaces = Get-CimInstance -class Win32_PerfFormattedData_Tcpip_NetworkInterface -ErrorAction SilentlyContinue | Select-Object BytesTotalPersec, CurrentBandwidth, PacketsPersec | Where-Object { $_.PacketsPersec -gt 0 }
+        foreach ($interface in $colInterfaces) {
+            $bitsPerSec = $interface.BytesTotalPersec * 8
+            $totalBits = $interface.CurrentBandwidth
+            # Exclude Nulls (any WMI failures)
+            if ($totalBits -gt 0) {
+                $result = (( $bitsPerSec / $totalBits) * 100)
+                $totalBandwidth = $totalBandwidth + $result
+                $count++
+            }
+        }
+        Start-Sleep -milliseconds 100
+        # recalculate the remaining time
+        $timeSpan = new-timespan $(Get-Date) $endTime
+    }
+    if ($count -eq 0) {
+        $averageBandwidth = 0
+    }
+    else {
+        $averageBandwidth = $totalBandwidth / $count
+    }
+    $value = "{0:N2}" -f $averageBandwidth
+    return "Задіяно $value `% мережі."
 }
