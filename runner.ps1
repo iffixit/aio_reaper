@@ -102,7 +102,16 @@ while (-not $StopRequested) {
         $Now = [System.DateTime]::Now;
         $StopCycle = $Now.AddMinutes($MinutesPerBlock);
         while ($([System.DateTime]::Now) -lt $StopCycle) {
-
+            $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
+            $Message = $XMLConfig.config.messages.targets + `
+                    ": $($TargetList.Count) " + `
+                    $XMLConfig.config.messages.cpu + `
+                    ": $(Get-CpuLoad)`% " + `
+                    $XMLConfig.config.messages.memory + `
+                    ": $(Get-FreeRamPercent)`% " + `
+                    $XMLConfig.config.messages.tillupdate + `
+                    ": $BlockJobLeft";
+            Clear-Line $Message;
         }
     }
 }
