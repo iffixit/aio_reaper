@@ -91,10 +91,23 @@ function Stop-Tree {
 }
 
 function Get-SlicedArray ($Array, $SliceSize) {
+    [int]$i = 1;
     $SlicedArray = @();
-   for ($i=0; $i -lt $Array.Count; $i += $SliceSize){
-       $SlicedArray += , ($Array | select -Skip $i -First $SliceSize)
-   }
+    $EndReached = $false;
+    [int]$Bingo = 0;
+    foreach ($Item in $Array) {
+        if ($i -eq $Array.Count) {
+            $EndReached = $true;
+        }
+        if ($i % $SliceSize -eq 0) {
+            $SlicedArray += , ($Array[$Bingo..($i - 1)]);
+            $Bingo = $i;
+        }
+        if ($EndReached) {
+            $SlicedArray += , ($Array[$Bingo..$i]);
+        }
+        $i++;
+    }
     return $SlicedArray;
 }
 
