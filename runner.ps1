@@ -58,6 +58,7 @@ $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
+Set-Location $LoadPath;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
