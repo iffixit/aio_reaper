@@ -61,6 +61,7 @@ $Targets = @()
 $Targets = Get-SlicedArray $TargetList $BlockSize;
 foreach ($Target in $Targets) {
     Write-Host $Target.Count;
+    Write-Host $Target;
 }
 Read-Host "A"
 
