@@ -19,7 +19,9 @@ $PythonExe = $PythonPath + "python.exe";
 $LoadPath = $("$RootDir\$($XMLConfig.config.folders.load)\");
 $LoadFileName = $LoadPath + $($XMLConfig.config.mainloadfile);
 $BogusInitPyPath = $LoadPath + "src\__init__.py";
-Remove-Item $BogusInitPyPath -Force | Out-Null;
+if (Test-Path $BogusInitPyPath) {
+    Remove-Item $BogusInitPyPath -Force | Out-Null;
+}
 $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $BlockSize = [Int] $LiteBlockSize * 4;
