@@ -44,8 +44,16 @@
     <erroraction>SilentlyContinue</erroraction>
     <liteblocksize>50</liteblocksize>
     <timers>
-        <main></main>
-        <minutesperblock></minutesperblock>
-
+        <main>360</main>
+        <minutesperblock>60</minutesperblock>
     </timers>
+    <titles>
+        <ok>[OK]</ok>
+        <started>[Запуск]</started>
+        <restart>[Перезапуск]</restart>
+        <died>[Виходимо]</died>
+        <error>[Помилка]</error>
+        <exiting>[Виходимо]</exiting>
+        <completed>[Закінчено]</completed>
+    </titles>
 </config>
