@@ -65,7 +65,7 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 Write-Host $Target
                 $TargetString = $Target -join ' ';
-                $RunnerArgs = $("$LoadFileName  $TargetString");
+                $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
                 Write-Host $LoadFileName
                 Write-Host $TargetString
                 Read-Host "a"
@@ -81,7 +81,7 @@ while (-not $StopRequested) {
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
-                $RunnerArgs = $("$LoadFileName $TargetString");
+                $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath`
                 -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
