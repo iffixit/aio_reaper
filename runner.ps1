@@ -52,6 +52,8 @@ foreach ($ProcessID in $Runners) {
 
 Clear-Line "Отримуємо список цілей...";
 $TargetList = Get-Targets $TargetsURI $RunningLite;
+Write-Host "$TargetList"
+Read-Host
 $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
@@ -63,7 +65,7 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $TargetString");
-                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $WorkDir -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
             }
@@ -75,7 +77,7 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $TargetString");
-                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $WorkDir`
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath`
                 -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
@@ -89,7 +91,8 @@ while (-not $StopRequested) {
                         $XMLConfig.config.messages.memory + `
                         ": $(Get-FreeRamPercent)`% " + `
                         $XMLConfig.config.messages.tillupdate + `
-                        ": $BlockJobLeft";
+                        ": $BlockJobLeft" + `
+                        $XMLConfig.config.messages.minutes;
                     Clear-Line $Message;
                     Start-Sleep -Seconds 5;
                 }
@@ -111,7 +114,8 @@ while (-not $StopRequested) {
                 $XMLConfig.config.messages.memory + `
                 ": $(Get-FreeRamPercent)`% " + `
                 $XMLConfig.config.messages.tillupdate + `
-                ": $BlockJobLeft";
+                ": $BlockJobLeft " + `
+                $XMLConfig.config.messages.minutes;
             Clear-Line $Message;
         }
         $NewTargetList = Get-Targets $TargetsURI $RunningLite;
