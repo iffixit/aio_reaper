@@ -44,6 +44,7 @@ $SoftwareName = $XMLConfig.config.name;
 $host.ui.RawUI.WindowTitle = "Installing $SoftwareName.";
 $host.ui.RawUI.BackgroundColor = 'Black';
 $host.ui.RawUI.ForegroundColor = 'Green';
+Clear-Host
 # Locations
 $GitStandalone32 = $XMLConfig.config.links.git;
 $PythonStandalone32 = $XMLConfig.config.links.py32
@@ -77,6 +78,7 @@ if ($FreeSpace -lt $DiskLimit) {
     [System.Console]::Beep();
     $Message = $XMLConfig.config.messages.insufficientspace;
     Write-Host $Message;
+    Remove-Item -FilePath ".\\settings.xml" -Force;
     Read-Host -Prompt "Press Enter to exit";
     exit;
 }
@@ -86,6 +88,7 @@ if ($IsAdmin) {
     [Console]::Beep();
     $Message = $XMLConfig.config.messages.runningadmin;
     Write-Host $Message;
+    Remove-Item -FilePath ".\\settings.xml" -Force;
     Read-Host "Press enter to exit";
     exit
 }
@@ -102,7 +105,7 @@ if (!(Test-Path $RootDir)) {
 if (Test-Path $RootDir) {
     Set-Location $RootDir;
 } # TODO Error checking here
-
+Copy-It
 
 $GitPath = $XMLConfig.config.folders.git;
 if (!(Test-Path "$RootDir\\$GitPath")) {
