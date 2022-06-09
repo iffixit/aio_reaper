@@ -35,13 +35,13 @@ try {
         if ($NewStartRequired) {
             if ($LiteMode) {
                 $RunnerProc = Start-Process -FilePath $PwshExe `
-                    -ArgumentList "-FilePath $RootDir\\runner.ps1 -args '-lite'" `
+                    -ArgumentList "$RootDir\\runner.ps1 -args '-lite'" `
                     -NoNewWindow -PassThru -WorkingDirectory $RootDir;
                 $NewStartRequired = $false
             }
             else {
                 $RunnerProc = Start-Process -FilePath $PwshExe `
-                    -ArgumentList "-FilePath $RootDir\\runner.ps1" `
+                    -ArgumentList "$RootDir\\runner.ps1" `
                     -NoNewWindow -PassThru -WorkingDirectory $RootDir;
                 $NewStartRequired = $false
             }
