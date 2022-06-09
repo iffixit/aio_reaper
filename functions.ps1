@@ -96,10 +96,10 @@ function Get-SlicedArray ($Array, $SliceSize) {
     $EndReached = $false;
     $Bingo = 0;
     foreach ($Item in $Array) {
-        if (%i -eq $Array.Count) {
+        if ($i -eq $Array.Count) {
             $EndReached = $true;
         }
-        if (%i % $SliceSize -eq 0) {
+        if ($i % $SliceSize -eq 0) {
             $SlicedArray += $Array[$Bingo]..$Array[$i - 1];
             $Bingo = $i;
         }
