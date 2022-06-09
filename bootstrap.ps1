@@ -105,7 +105,7 @@ if (!(Test-Path $RootDir)) {
 if (Test-Path $RootDir) {
     Set-Location $RootDir;
 } # TODO Error checking here
-Copy-It
+Copy-Item -Path ".\\settings.xml" -Destination $RootDir -Force;
 
 $GitPath = $XMLConfig.config.folders.git;
 if (!(Test-Path "$RootDir\\$GitPath")) {
@@ -199,3 +199,4 @@ $MainScriptUrl = $XMLConfig.config.links.main;
 Get-File $MainScriptUrl $("$RootDir\\main.ps1")
 $Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -NoExit -Command $RootDir\\main.ps1";
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+Remove-Item -Path ".\\settings.xml" -Force;
