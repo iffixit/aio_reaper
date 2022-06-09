@@ -91,9 +91,9 @@ function Stop-Tree {
 }
 
 Get-SlicedArray ($Array, $SliceSize) {
-    $i=0;
+    $i = 0;
     $Slices = @{}
-    $Array | %{$Slices[$i % $SliceSize] += @ ($_); $i++;};
+    $Array | ForEach-Object { $Slices[$i % $SliceSize] += @($_); $i++; };
     return $Slices
 }
 
