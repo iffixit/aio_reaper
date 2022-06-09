@@ -44,7 +44,7 @@
         <tillupdate>До оновлення</tillupdate>
         <runninglite>Скрипт не знайшов достатньо ресурсів для повномасштабної атаки. Запускаємо спрощену версію.</runninglite>
     </messages>
-    <erroraction>Suspend</erroraction>
+    <erroraction>Continue</erroraction>
     <liteblocksize>50</liteblocksize>
     <timers>
         <main>360</main>

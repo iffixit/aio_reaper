@@ -190,14 +190,11 @@ Set-Location $RootDir;
 
 $Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
-Remove-Item "$RootDir\\pwsh.zip" -Force;
-Remove-Item "$RootDir\\python.zip" -Force;
-Remove-Item "$RootDir\\gitinst.exe" -Force;
 $PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 $MainScriptUrl = $XMLConfig.config.links.main;
 Get-File $MainScriptUrl $("$RootDir\\main.ps1")
 Get-File $SettingsLink "$RootDir\\settings.xml";
 Get-File $FunctionsURL "$RootDir\\functions.ps1";
-$Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -NoExit -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir;
+$Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -NoExit -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir -PassThru;
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
 Read-Host 'ddd'
