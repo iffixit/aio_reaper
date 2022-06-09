@@ -35,8 +35,9 @@
         <pythonmodule>Встановлюємо модуль Python</pythonmodule>
         <installcomplete>Завершено завантаження і розпаковку навантаження.</installcomplete>
         <runningadmin>Скрипт запущено із правами адміністратора. Це - неправильно, такий режим роботи не підтримується. Будьте ласкаві, запустіть програму за інструкцією.</runningadmin>
-        <Memory>Пам'яті</Memory>
-        <Targets>Цілей</Targets>
+        <memory>Пам'яті</memory>
+        <cpu>ЦП</cpu>
+        <targets>Цілей</targets>
         <minutes>хвилин</minutes>
         <tillupdate>До оновлення</tillupdate>
     </messages>

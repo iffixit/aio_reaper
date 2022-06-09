@@ -79,10 +79,17 @@ while (-not $StopRequested) {
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
-                $Message = 
                 while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt [System.DateTime]::Now)) {
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
-                    Clear-Line $("$($Target.Count) $Message $BlockJobLeft");
+                    $Message = $XMLConfig.config.messages.targets + `
+                            ": $($Target.Count) " + `
+                            $XMLConfig.config.messages.cpu + `
+                            ": $(Get-CpuLoad)`% " + `
+                            $XMLConfig.config.messages.memory + `
+                            ": $(Get-FreeRamPercent)`% " + `
+                            $XMLConfig.config.messages.tillupdate + `
+                            ": $BlockJobLeft";
+                    Clear-Line $Message;
                     Start-Sleep -Seconds 5;
                 }
                 Stop-Tree $PyProcess.Id;
