@@ -197,6 +197,6 @@ Remove-Item "$RootDir\\gitinst.exe" -Force;
 $PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 $MainScriptUrl = $XMLConfig.config.links.main;
 Get-File $MainScriptUrl $("$RootDir\\main.ps1")
-$Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -NoExit -Command $RootDir\\main.ps1";
+$Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -NoExit -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir;
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
 Remove-Item -Path ".\\settings.xml" -Force;

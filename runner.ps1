@@ -7,11 +7,12 @@ $ActionPreference = $XMLConfig.config.erroraction;
 $ErrorActionPreference = $ActionPreference;
 $ProgressPreference = $ActionPreference;
 $WarningPreference = $ActionPreference;
-.\functions.ps1
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\\" + $InstallFolder;
+Set-Location $RootDir;
+.\functions.ps1
 
 $PythonPath = $("$RootDir\\$($XMLConfig.config.folders.python)\\");
 $PythonExe = $PythonPath + "python.exe";
