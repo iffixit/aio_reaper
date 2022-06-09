@@ -69,13 +69,11 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-                Write-Host $LoadPath
-                Write-Host $([System.Environment]::GetEnvironmentVariable('PYTHONPATH'));
-                Read-Host "a"
-                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -NoNewWindow -PassThru;
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath`
+                    -ArgumentList $RunnerArgs -NoNewWindow -PassThru`
+                    -RedirectStandart
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
-                Read-Host "b"
             }
         }
     }
@@ -86,7 +84,7 @@ while (-not $StopRequested) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath`
-                -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
+                    -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
