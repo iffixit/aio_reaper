@@ -54,7 +54,6 @@ foreach ($ProcessID in $Runners) {
     Stop-Tree $ProcessID | Out-Null;
 }
 
-Clear-Line "Отримуємо список цілей...";
 $TargetList = @()
 $TargetList = Get-Targets $TargetsURI $RunningLite;
 $StopRequested = $false;
@@ -63,6 +62,7 @@ $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
+Start-Process -FilePath $PythonExe -ArgumentList "-m venv venv" -NoNewWindow -Wait;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
