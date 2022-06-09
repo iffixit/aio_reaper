@@ -57,6 +57,7 @@ Write-Host $TargetList.Count;
 $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
+$Targets = @()
 
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
