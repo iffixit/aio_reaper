@@ -155,6 +155,8 @@ Set-Location $RootDir;
 if (Test-Path "$RootDir\\python.zip") {
     Remove-Item "$RootDir\\python.zip" -Force;
 }
+$PythonFolder = $("$RootDir\\$PyPath")
+$PythonExe = $PythonFolder + "\\" + "python.exe";
 
 $PoshPath = $XMLConfig.config.folders.posh;
 if (!(Test-Path "$RootDir\\$PoshPath")) {

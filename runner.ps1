@@ -19,9 +19,9 @@ $PythonExe = $PythonPath + "python.exe";
 $LoadPath = $("$RootDir\\$($XMLConfig.config.folders.load)\\");
 $LoadFileName = $XMLConfig.config.mainloadfile;
 $TargetsURI = $XMLConfig.config.links.targets;
-$LiteBlockSize = 50;
+$LiteBlockSize = $XMLConfig.config.liteblocksize;
 $BlockSize = $LiteBlockSize * 4;
-$MinutesPerBlock = 60;
+$MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 
 $RunnerVersion = "1.0.0 Alpha / Winged ratel";
 if ($args -like "*-lite*") {
@@ -60,7 +60,7 @@ $StartTask = $true;
 
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
-        $Targets = $TargetList | Split-Array $BlockSize;
+        $Targets = $TargetList | Split-Array -size $BlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
@@ -72,7 +72,7 @@ while (-not $StopRequested) {
         }
     }
     if ($StartTask -and $RunningLite) {
-        $Targets = $TargetList | Split-Array $LiteBlockSize;
+        $Targets = $TargetList | Split-Array -size $LiteBlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
