@@ -58,10 +58,8 @@ $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
 $Targets = @()
-$Targets = for($counter = 0; $counter -lt $TargetList.Count; $counter += $BlockSize) `
-    { ,($TargetList[$counter]..$TargetList[$counter+$BlockSize])};
-foreach ($Target in $Targets)
-{
+$Targets = Get-SlicedArray $TargetList $BlockSize;
+foreach ($Target in $Targets.Item) {
     Write-Host $Target.Count;
 }
 Read-Host "A"
