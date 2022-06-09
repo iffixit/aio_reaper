@@ -40,6 +40,7 @@ function Get-Banner ([String] $BannerURL) {
 
 function Get-File ($URL, [String] $FileName) {
     $httpClient = New-Object System.Net.Http.HttpClient;
+    $httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
     $Response = $httpClient.GetAsync($URL);
     $Response.Wait();
     $FileStream = New-Object System.IO.FileStream($FileName, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write);
