@@ -12,7 +12,7 @@ $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\\" + $InstallFolder;
 Set-Location $RootDir;
-.\functions.ps1
+. "$RootDir\\functions.ps1";
 
 $PythonPath = $("$RootDir\\$($XMLConfig.config.folders.python)\\");
 $PythonExe = $PythonPath + "python.exe";

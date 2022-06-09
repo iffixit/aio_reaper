@@ -9,7 +9,7 @@ $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\" + $InstallFolder;
 Set-Location $RootDir;
-.\functions.ps1;
+. "$RootDir\\functions.ps1";
 $PwshDir = $("$RootDir\\$($XMLConfig.config.folders.posh)\\");
 $PwshExe = $("$PwshDir\\pwsh.exe");
 $UpdateCheckTime = $XMLConfig.config.timers.main;
@@ -34,10 +34,10 @@ try {
     while ($true) {
         if ($NewStartRequired) {
             if ($LiteMode) {
-                $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "$RootDir\\runner.ps1 -lite" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+                $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "-FilePath $RootDir\\runner.ps1 -args '-lite'" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
             }
             else {
-                $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "$RootDir\\runner.ps1" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+                $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "-FilePath $RootDir\\runner.ps1" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
             }
         }
         while ($null -eq $RunnerProc.Id) {
