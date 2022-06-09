@@ -193,6 +193,15 @@ $Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
 $PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 $MainScriptUrl = $XMLConfig.config.links.main;
+if (Test-Path "$RootDir\\main.ps1") {
+    Remove-Item "$RootDir\\main.ps1" -Force;
+}
+if (Test-Path "$RootDir\\settings.xml") {
+    Remove-Item "$RootDir\\settings.xml" -Force;
+}
+if (Test-Path "$RootDir\\functions.ps1") {
+    Remove-Item "$RootDir\\functions.ps1" -Force;
+}
 Get-File $MainScriptUrl "$RootDir\\main.ps1";
 Get-File $SettingsLink "$RootDir\\settings.xml";
 Get-File $FunctionsURL "$RootDir\\functions.ps1";
