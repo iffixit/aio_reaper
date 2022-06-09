@@ -19,7 +19,6 @@ if ($FreeMem -lt $RamLimit) {
     $LiteMode = $true;
 }
 $RunnerURL = $XMLConfig.config.links.runner;
-Get-File $RunnerURL $("$RootDir\\runner.ps1")
 $NewStartRequired = $true;
 $TitleStarted = $XMLConfig.config.titles.started;
 $TitleOK = $XMLConfig.config.titles.ok;
@@ -28,44 +27,63 @@ $TitleError = $XMLConfig.config.titles.error;
 $TitleDied = $XMLConfig.config.titles.died;
 $TitleExiting = $XMLConfig.config.titles.exiting;
 $TitleCompleted = $XMLConfig.config.titles.completed;
-while ($true) {
-    if ($NewStartRequired) {
-        if ($LiteMode) {
-            $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "$RootDir\\runner.ps1 -lite" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+$host.UI.RawUI.WindowTitle = $TitleStarted;
+Get-File $RunnerURL $("$RootDir\\runner.ps1")
+try {
+    while ($true) {
+        if ($NewStartRequired) {
+            if ($LiteMode) {
+                $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "$RootDir\\runner.ps1 -lite" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+            }
+            else {
+                $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "$RootDir\\runner.ps1" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+            }
         }
-        else {
-            $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "$RootDir\\runner.ps1" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+        while ($null -eq $RunnerProc.Id) {
+            Start-Sleep -Seconds 1;
         }
-    }
-    while ($null -eq $RunnerProc.Id) {
-        Start-Sleep -Seconds 1;
-    }
-    $Now = [System.DateTime]::Now;
-    $NextCheck = $Now.AddMinutes($UpdateCheckTime);
-    while ($Now -lt $NextCheck -and -not $NewStartRequired) {
-        if ($RunnerProc.HasExited) {
+        $Now = [System.DateTime]::Now;
+        $NextCheck = $Now.AddMinutes($UpdateCheckTime);
+        while ($Now -lt $NextCheck -and -not $NewStartRequired) {
+            $host.UI.RawUI.WindowTitle = $TitleOK;
+            if ($RunnerProc.HasExited) {
+                $NewStartRequired = $true;
+                $host.UI.RawUI.WindowTitle = $TitleRestart;
+            }
+            $testRunnerProc = Get-Process -Id $RunnerProc.Id;
+            if (-not $testRunnerProc) {
+                $NewStartRequired = $true;
+                $host.UI.RawUI.WindowTitle = $TitleRestart;
+            }
+        }
+        if ($NewStartRequired) {
+            Stop-Tree $RunnerProc.Id;
+        }
+        Get-File $RunnerURL $("$RootDir\\runner_new.ps1");
+        $Now = [System.DateTime]::Now;
+        $File = Get-Item $("$RootDir\\runner.ps1");
+        $File.LastWriteTime = $Now;
+        $File = Get-Item $("$RootDir\\runner_new.ps1");
+        $File.LastWriteTime = $Now;
+        $GotNewVersion = FilesAreEqual $("$RootDir\\runner.ps1") $("$RootDir\\runner_new.ps1");
+        if ($GotNewVersion) {
             $NewStartRequired = $true;
+            Stop-Tree $RunnerProc.Id;
+            Remove-Item -Path $("$RootDir\\runner.ps1") -Force;
+            Rename-Item -Path $("$RootDir\\runner_new.ps1") -NewName $("$RootDir\\runner.ps1");
         }
-        $testRunnerProc = Get-Process -Id $RunnerProc.Id;
-        if (-not $testRunnerProc) {
-            $NewStartRequired = $true;
-        }
     }
-    if ($NewStartRequired) {
-        Stop-Tree $RunnerProc.Id;
-    }
-    Get-File $RunnerURL $("$RootDir\\runner_new.ps1");
-    $Now = [System.DateTime]::Now;
-    $File = Get-Item $("$RootDir\\runner.ps1");
-    $File.LastWriteTime = $Now;
-    $File = Get-Item $("$RootDir\\runner_new.ps1");
-    $File.LastWriteTime = $Now;
-    $GotNewVersion = FilesAreEqual $("$RootDir\\runner.ps1") $("$RootDir\\runner_new.ps1");
-    if ($GotNewVersion) {
-        $NewStartRequired = $true;
-        Stop-Tree $RunnerProc.Id;
-        Remove-Item -Path $("$RootDir\\runner.ps1") -Force;
-        Rename-Item -Path $("$RootDir\\runner_new.ps1") -NewName $("$RootDir\\runner.ps1");
-    }
-    
+}
+catch {
+    $host.UI.RawUI.WindowTitle = $TitleError;
+    Write-Host "Error: $($_.Exception.Message)";
+    Write-Host "$($_.StackTrace)";
+    Stop-Tree $RunnerProc.Id -Force;
+}
+finally {
+    $host.UI.RawUI.WindowTitle = $TitleExiting;
+    Stop-Tree $RunnerProc.Id -Force;
+    Remove-Item -Path $("$RootDir\\runner.ps1") -Force;
+    $host.UI.RawUI.WindowTitle = $TitleCompleted;
+    Read-Host "Press Enter to exit...";
 }

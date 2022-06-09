@@ -12,8 +12,9 @@
         <load>https://github.com/porthole-ascend-cinnamon/mhddos_proxy.git</load>
         <targets>https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets</targets>
         <banner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/banner</banner>
-        <funclib>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/functions.ps1</funclib>
-        <runner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/runner.ps1</runner>
+        <funclib>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/functions.ps1</funclib>
+        <runner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/runner.ps1</runner>
+        <main>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/main.ps1</main>
     </links>
     <folders>
         <install>AIOReaper</install>
