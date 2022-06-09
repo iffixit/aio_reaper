@@ -10,13 +10,13 @@ $WarningPreference = $ActionPreference;
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
-$RootDir = $SystemDrive + "\\" + $InstallFolder;
+$RootDir = $SystemDrive + "\" + $InstallFolder;
 Set-Location $RootDir;
 . "$RootDir\\functions.ps1";
 
-$PythonPath = $("$RootDir\\$($XMLConfig.config.folders.python)\\");
+$PythonPath = $("$RootDir\$($XMLConfig.config.folders.python)\");
 $PythonExe = $PythonPath + "python.exe";
-$LoadPath = $("$RootDir\\$($XMLConfig.config.folders.load)\\");
+$LoadPath = $("$RootDir\$($XMLConfig.config.folders.load)\");
 $LoadFileName = $LoadPath + $($XMLConfig.config.mainloadfile);
 $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
