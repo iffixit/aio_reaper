@@ -92,9 +92,9 @@ function Stop-Tree {
 
 Get-SlicedArray ($Array, $SliceSize) {
     $i = 0;
-    $Slices = @{}
+    $Slices = @{};
     $Array | ForEach-Object { $Slices[$i % $SliceSize] += @($_); $i++; };
-    return $Slices
+    return $Slices;
 }
 
 function Get-Targets ($TargetsURI, $RunningLite) {
