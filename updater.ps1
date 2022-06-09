@@ -6,7 +6,7 @@ Add-Type -AssemblyName System.Net.Http;
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
-$RootDir = $SystemDrive + "\" + $InstallFolder;
+$RootDir = $SystemDrive + "\\" + $InstallFolder;
 Set-Location $RootDir;
 . "$RootDir\\functions.ps1";
 $Message = $XMLConfig.config.messages.unpacking;
