@@ -51,9 +51,11 @@ Clear-Host
 $GitStandalone32 = $XMLConfig.config.links.git;
 $PythonStandalone32 = $XMLConfig.config.links.py32
 $PythonStandalone64 = $XMLConfig.config.links.py64
+$PythonStandaloneWin7 = $XMLConfig.config.links.pywin7
 $PwshStandalone32 = $XMLConfig.config.links.posh32
 $PwshStandalone64 = $XMLConfig.config.links.posh64
 $Is64bit = $false;
+$IsWindows7 = $false;
 
 $FunctionsURL = $XMLConfig.config.links.funclib;
 
@@ -96,6 +98,12 @@ if ($IsAdmin) {
 if ((Get-CimInstance Win32_OperatingSystem | Select-Object OSArchitecture).OSArchitecture -eq "64-bit") {
     $Is64bit = $true;
 }
+$WinVer = [System.Environment]::OSVersion.Version
+if ($Winver.Major -lt 10){
+    if ($Winver.Minor -lt 2) {
+        $IsWindows7 = $true;
+    }
+}
 
 # Creating software root folder
 $RootDir = $SystemDrive + "\" + $InstallFolder;
@@ -120,16 +128,20 @@ $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
 if (Test-Path "$RootDir\\gitinst.exe") {
     Remove-Item "$RootDir\\gitinst.exe" -Force;
 }
-
+$PyString = "[placeholder]";
 $PyPath = $XMLConfig.config.folders.python;
 if (!(Test-Path "$RootDir\$PyPath")) {
     $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message Python...");
-    if ($Is64bit) {
+    if ($IsWindows7) {
+        Get-File $PythonStandaloneWin7 "$RootDir\\python.zip";
+        $PyString = "python38";
+    } else if ($Is64bit) {
         Get-File $PythonStandalone64 "$RootDir\\python.zip";
-    }
-    else {
+        $PyString = "python310";
+    } else {
         Get-File $PythonStandalone32 "$RootDir\\python.zip";
+        $PyString = "python310";
     }
     $Message = $XMLConfig.config.messages.unpacking;
     Clear-Line "$Message Python...";
@@ -140,13 +152,13 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     Set-Location $PythonFolder;
     $Message = $XMLConfig.config.messages.pythonmodule;
     Clear-Line "$Message pip...";
-    $Strings = "python310.zip`r`n" + `
+    $Strings = "$PyString`r`n" + `
         ".`r`n" + `
         "..\$($XMLConfig.config.folders.load)`r`n" + `
         "`r`n" + `
         "# Uncomment to run site.main() automatically`r`n" + `
         "import site`r`n"
-    $Strings | Set-Content -Path "$PythonFolder\\python310._pth";
+    $Strings | Set-Content -Path "$PythonFolder\\$PyString._pth";
     $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
     Get-File $PipInstaller "$PythonFolder\\get-pip.py";
     Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
