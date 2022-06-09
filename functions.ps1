@@ -91,10 +91,24 @@ function Stop-Tree {
 }
 
 function Get-SlicedArray ($Array, $SliceSize) {
-    $i = 0;
-    $Slices = @{};
-    $Array | ForEach-Object { $Slices[$i % $SliceSize] += @($_); $i++; };
-    return $Slices;
+    $i = 1;
+    $SlicedArray = @();
+    $EndReached = $false;
+    $Bingo = 0;
+    foreach ($Item in $Array) {
+        if (%i -eq $Array.Count) {
+            $EndReached = $true;
+        }
+        if (%i % $SliceSize -eq 0) {
+            $SlicedArray += $Array[$Bingo]..$Array[$i - 1];
+            $Bingo = $i;
+        }
+        if ($EndReached) {
+            $SlicedArray += $Array[$Bingo]..$Array[$i];
+        }
+        $i++;
+    }
+    return $SlicedArray;
 }
 
 function Get-Targets ($TargetsURI, $RunningLite) {
