@@ -13,7 +13,7 @@ Set-Location $RootDir;
 $PwshDir = $("$RootDir\\$($XMLConfig.config.folders.posh)\\");
 $PwshExe = $("$PwshDir\\pwsh.exe");
 $UpdateCheckTime = $XMLConfig.config.timers.main;
-$FreeMem = GetFreeRamGB;
+$FreeMem = Get-FreeRamGB;
 $RamLimit = $XMLConfig.config.limits.RAM
 $LiteMode = $false
 if ($FreeMem -lt $RamLimit) {

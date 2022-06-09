@@ -38,6 +38,18 @@ function Get-Banner ([String] $BannerURL) {
     return $Response;
 }
 
+function Get-File ($URL, [String] $FileName) {
+    $httpClient = New-Object System.Net.Http.HttpClient;
+    $Response = $httpClient.GetAsync($URL);
+    $Response.Wait();
+    $FileStream = New-Object System.IO.FileStream($FileName, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write);
+    $DownloadTask = $Response.Result.Content.CopyToAsync($FileStream);
+    $DownloadTask.Wait();
+    $FileStream.Close();
+    $httpClient.Dispose();
+}
+
+
 #From: https://keestalkstech.com/2013/01/comparing-files-with-powershell/
 function FilesAreEqual {
     param(
