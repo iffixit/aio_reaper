@@ -52,7 +52,7 @@ foreach ($ProcessID in $Runners) {
 
 Clear-Line "Отримуємо список цілей...";
 $TargetList = @()
-$TargetList = Get-Targets $TargetsURI $RunningLite;
+$TargetList = $(Get-Targets $TargetsURI $RunningLite) -split " ";
 Write-Host $TargetList.Count;
 $StopRequested = $false;
 $StartTask = $true;
