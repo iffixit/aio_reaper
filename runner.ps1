@@ -62,7 +62,7 @@ $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
-Start-Process -FilePath $PythonExe -ArgumentList "-m venv venv" -NoNewWindow -Wait;
+Start-Process -FilePath $PythonExe -ArgumentList -WorkingDirectory $LoadPath "-m venv venv" -NoNewWindow -Wait;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
