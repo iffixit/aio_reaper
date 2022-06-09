@@ -61,7 +61,7 @@ $Targets = @()
 $Targets = $TargetList | Split-Array -size $BlockSize;
 foreach ($Target in $Targets)
 {
-    Write-Host $Target;
+    Write-Host $Target.Count;
 }
 Read-Host "A"
 
