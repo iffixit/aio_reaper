@@ -63,7 +63,6 @@ while (-not $StopRequested) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
-                Write-Host $Target
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
                 Write-Host $RunnerArgs
