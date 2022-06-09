@@ -53,22 +53,14 @@ foreach ($ProcessID in $Runners) {
 Clear-Line "Отримуємо список цілей...";
 $TargetList = @()
 $TargetList = Get-Targets $TargetsURI $RunningLite;
-Write-Host $TargetList.Count;
 $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
 $Targets = @()
-$Targets = Get-SlicedArray $TargetList $BlockSize;
-Write-Host $Targets;
-foreach ($Target in $Targets) {
-    Write-Host $Target.Count;
-    Write-Host $Target;
-}
-Read-Host "A"
 
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
-        $Targets = $TargetList | Split-Array -size $BlockSize;
+        $Targets = Get-SlicedArray $TargetList $BlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
@@ -80,7 +72,7 @@ while (-not $StopRequested) {
         }
     }
     if ($StartTask -and $RunningLite) {
-        $Targets = $TargetList | Split-Array -size $LiteBlockSize;
+        $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
