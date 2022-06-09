@@ -8,7 +8,7 @@ $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\\" + $InstallFolder;
 Set-Location $RootDir;
-. $("$RootDir\\functions.ps1");
+. "$RootDir\\functions.ps1";
 $Message = $XMLConfig.config.messages.unpacking;
 $mhddos_proxy_URL = $XMLConfig.config.links.load;
 $MhddosPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
