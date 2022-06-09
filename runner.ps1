@@ -19,8 +19,8 @@ $PythonExe = $PythonPath + "python.exe";
 $LoadPath = $("$RootDir\\$($XMLConfig.config.folders.load)\\");
 $LoadFileName = $LoadPath + $($XMLConfig.config.mainloadfile);
 $TargetsURI = $XMLConfig.config.links.targets;
-$LiteBlockSize = $XMLConfig.config.liteblocksize;
-$BlockSize = $LiteBlockSize * 4;
+$LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
+$BlockSize = [Int] $LiteBlockSize * 4;
 $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 
 $RunnerVersion = "1.0.0 Alpha / Winged ratel";
@@ -63,6 +63,7 @@ while (-not $StopRequested) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
+
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName  $TargetString");
                 Write-Host $LoadFileName
