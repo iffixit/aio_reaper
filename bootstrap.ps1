@@ -29,8 +29,8 @@ Add-Type -AssemblyName System.Net.Http;
 
 #TODO: Somehow move that into better place
 $SettingsLink = "https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/settings.xml";
-Get-File $SettingsLink ".\\settings.xml";
-[xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
+$XMLConfig = New-Object System.Xml.XmlDocument;
+$XMLConfig.Load($SettingsLink);
 
 $ActionPreference = $XMLConfig.config.erroraction;
 $ErrorActionPreference = $ActionPreference;
@@ -78,7 +78,6 @@ if ($FreeSpace -lt $DiskLimit) {
     [System.Console]::Beep();
     $Message = $XMLConfig.config.messages.insufficientspace;
     Write-Host $Message;
-    Remove-Item -FilePath ".\\settings.xml" -Force;
     Read-Host -Prompt "Press Enter to exit";
     exit;
 }
@@ -88,7 +87,6 @@ if ($IsAdmin) {
     [Console]::Beep();
     $Message = $XMLConfig.config.messages.runningadmin;
     Write-Host $Message;
-    Remove-Item -FilePath ".\\settings.xml" -Force;
     Read-Host "Press enter to exit";
     exit
 }
@@ -105,7 +103,7 @@ if (!(Test-Path $RootDir)) {
 if (Test-Path $RootDir) {
     Set-Location $RootDir;
 } # TODO Error checking here
-Copy-Item -Path ".\\settings.xml" -Destination $RootDir -Force;
+
 
 $GitPath = $XMLConfig.config.folders.git;
 if (!(Test-Path "$RootDir\\$GitPath")) {
@@ -187,8 +185,8 @@ Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
 
-Set-Location $RootDir
-Get-File $FunctionsURL "$RootDir\\functions.ps1";
+Set-Location $RootDir;
+
 $Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
 Remove-Item "$RootDir\\pwsh.zip" -Force;
@@ -197,6 +195,7 @@ Remove-Item "$RootDir\\gitinst.exe" -Force;
 $PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 $MainScriptUrl = $XMLConfig.config.links.main;
 Get-File $MainScriptUrl $("$RootDir\\main.ps1")
+Get-File $SettingsLink "$RootDir\\settings.xml";
+Get-File $FunctionsURL "$RootDir\\functions.ps1";
 $Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -NoExit -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir;
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-Remove-Item -Path ".\\settings.xml" -Force;
