@@ -53,8 +53,7 @@ foreach ($ProcessID in $Runners) {
 Clear-Line "Отримуємо список цілей...";
 $TargetList = @()
 $TargetList = Get-Targets $TargetsURI $RunningLite;
-Write-Host "$($TargetList.Count)"
-Read-Host;
+Write-Host $TargetList.Count;
 $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();

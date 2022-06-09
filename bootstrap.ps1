@@ -193,7 +193,7 @@ $Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
 $PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 $MainScriptUrl = $XMLConfig.config.links.main;
-Get-File $MainScriptUrl $("$RootDir\\main.ps1")
+Get-File $MainScriptUrl "$RootDir\\main.ps1";
 Get-File $SettingsLink "$RootDir\\settings.xml";
 Get-File $FunctionsURL "$RootDir\\functions.ps1";
 $Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -NoExit -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir -PassThru;
