@@ -136,7 +136,7 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     if ($IsWindows7) {
         Get-File $PythonStandaloneWin7 "$RootDir\\python.zip";
         $PyString = "python38";
-    } else if ($Is64bit) {
+    } elseif ($Is64bit) {
         Get-File $PythonStandalone64 "$RootDir\\python.zip";
         $PyString = "python310";
     } else {
