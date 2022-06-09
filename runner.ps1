@@ -44,7 +44,7 @@ Set-Location $RootDir;
 
 $Runners = Get-ProcByCmdline "$LoadPath";
 $Runners += Get-ProcByPath "$PythonExe";
-$Runners = $Runners | Sort-Object -Unique;;
+$Runners = $Runners | Sort-Object -Unique; ;
 foreach ($ProcessID in $Runners) {
     Stop-Tree $ProcessID | Out-Null;
 }
@@ -75,20 +75,20 @@ while (-not $StopRequested) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $WorkDir`
-                    -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
+                -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt [System.DateTime]::Now)) {
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     $Message = $XMLConfig.config.messages.targets + `
-                            ": $($Target.Count) " + `
-                            $XMLConfig.config.messages.cpu + `
-                            ": $(Get-CpuLoad)`% " + `
-                            $XMLConfig.config.messages.memory + `
-                            ": $(Get-FreeRamPercent)`% " + `
-                            $XMLConfig.config.messages.tillupdate + `
-                            ": $BlockJobLeft";
+                        ": $($Target.Count) " + `
+                        $XMLConfig.config.messages.cpu + `
+                        ": $(Get-CpuLoad)`% " + `
+                        $XMLConfig.config.messages.memory + `
+                        ": $(Get-FreeRamPercent)`% " + `
+                        $XMLConfig.config.messages.tillupdate + `
+                        ": $BlockJobLeft";
                     Clear-Line $Message;
                     Start-Sleep -Seconds 5;
                 }
@@ -104,14 +104,25 @@ while (-not $StopRequested) {
         while ($([System.DateTime]::Now) -lt $StopCycle) {
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
             $Message = $XMLConfig.config.messages.targets + `
-                    ": $($TargetList.Count) " + `
-                    $XMLConfig.config.messages.cpu + `
-                    ": $(Get-CpuLoad)`% " + `
-                    $XMLConfig.config.messages.memory + `
-                    ": $(Get-FreeRamPercent)`% " + `
-                    $XMLConfig.config.messages.tillupdate + `
-                    ": $BlockJobLeft";
+                ": $($TargetList.Count) " + `
+                $XMLConfig.config.messages.cpu + `
+                ": $(Get-CpuLoad)`% " + `
+                $XMLConfig.config.messages.memory + `
+                ": $(Get-FreeRamPercent)`% " + `
+                $XMLConfig.config.messages.tillupdate + `
+                ": $BlockJobLeft";
             Clear-Line $Message;
         }
+        $NewTargetList = Get-Targets $TargetsURI $RunningLite;
+        if ($TargetList -eq $NewTargetList) {
+            $StartTask = $false;
+        }
+        else {
+            $TargetList = $NewTargetList;
+            $StartTask = $true;
+        }
+    }
+    if ($RunningLite) {
+        $TargetList = Get-Targets $TargetsURI $RunningLite;
     }
 }
