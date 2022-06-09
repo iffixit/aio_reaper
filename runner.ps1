@@ -52,13 +52,14 @@ foreach ($ProcessID in $Runners) {
 
 Clear-Line "Отримуємо список цілей...";
 $TargetList = @()
-$TargetList = $(Get-Targets $TargetsURI $RunningLite) -split " ";
+$TargetList = Get-Targets $TargetsURI $RunningLite;
 Write-Host $TargetList.Count;
 $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
 $Targets = @()
-$Targets = $TargetList | Split-Array -size $BlockSize;
+$Targets = for($counter = 0; $counter -lt $TargetList.Count; $counter += $BlockSize) `
+    { ,($TargetList[$counter]..$TargetList[$counter+$BlockSize])};
 foreach ($Target in $Targets)
 {
     Write-Host $Target.Count;

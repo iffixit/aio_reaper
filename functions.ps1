@@ -84,35 +84,17 @@ function FilesAreEqual {
 }
 
 # From https://stackoverflow.com/a/55942155
-# Зупинка процесу з усіма дочірніми
 function Stop-Tree {
     Param([int]$ppid)
     Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $ppid } | ForEach-Object { Stop-Tree $_.ProcessId }
     Stop-Process -Id $ppid -Force -ErrorAction SilentlyContinue
 }
 
-# From https://stackoverflow.com/a/53304601
-# Розбивка масиву на задану кількість елементів по заданому розміру.
-function Split-Array {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [String[]] $InputObject
-        ,
-        [ValidateRange(1, [int]::MaxValue)]
-        [int] $Size = 10
-    )
-    begin { $items = New-Object System.Collections.Generic.List[object] }
-    process { $items.AddRange($InputObject) }
-    end {
-        $chunkCount = [Math]::Floor($items.Count / $Size)
-        foreach ($chunkNdx in 0..($chunkCount - 1)) {
-            , $items.GetRange($chunkNdx * $Size, $Size).ToArray()
-        }
-        if ($chunkCount * $Size -lt $items.Count) {
-            , $items.GetRange($chunkCount * $Size, $items.Count - $chunkCount * $Size).ToArray()
-        }
-    }
+Get-SlicedArray ($Array, $SliceSize) {
+    $i=0;
+    $Slices = @{}
+    $Array | %{$Slices[$i % $SliceSize] += @ ($_); $i++;};
+    return $Slices
 }
 
 function Get-Targets ($TargetsURI, $RunningLite) {
