@@ -58,6 +58,12 @@ $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
 $Targets = @()
+$Targets = $TargetList | Split-Array -size $BlockSize;
+foreach ($Target in $Targets)
+{
+    Write-Host $Target;
+}
+Read-Host "A"
 
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
