@@ -121,7 +121,7 @@ function Get-Targets ($TargetsURI, $RunningLite) {
         $DirtyTargets = $DirtyTargets -replace '`t', ' ';
         $DirtyTargets = $DirtyTargets -replace ',', ' ';
         $DirtyTargets = $DirtyTargets -replace '  ', ' ';
-        $DirtyTargets = $DirtyTargets -replace 'tcp):', 'tcp:';
+        $DirtyTargets = $DirtyTargets -replace 'tcp`)`:', 'tcp`:';
         $Targets = @()
         foreach ($Target in $DirtyTargets) {
             if ($Target -like "*null*") {
