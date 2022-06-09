@@ -17,7 +17,7 @@ Set-Location $RootDir;
 $PythonPath = $("$RootDir\\$($XMLConfig.config.folders.python)\\");
 $PythonExe = $PythonPath + "python.exe";
 $LoadPath = $("$RootDir\\$($XMLConfig.config.folders.load)\\");
-$LoadFileName = $XMLConfig.config.mainloadfile;
+$LoadFileName = $LoadPath + $($XMLConfig.config.mainloadfile);
 $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = $XMLConfig.config.liteblocksize;
 $BlockSize = $LiteBlockSize * 4;
@@ -57,20 +57,21 @@ $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
 $Targets = @()
-
+$Globalargs = $XMLConfig.config.baseloadargs;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
-                $RunnerArgs = $("$LoadFileName $TargetString");
+                $RunnerArgs = $("$LoadFileName  $TargetString");
                 Write-Host $LoadFileName
                 Write-Host $TargetString
                 Read-Host "a"
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -WindowStyle Hidden -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
+                Read-Host "b"
             }
         }
     }
