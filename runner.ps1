@@ -71,7 +71,7 @@ while (-not $StopRequested) {
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath `
                     -ArgumentList $RunnerArgs -NoNewWindow -PassThru `
-                    -RedirectStandardError "$RootDir\nul" -RedirectStandardOutput "$RootDir\nul";
+                    -RedirectStandardError "$RootDir\nul" -RedirectStandardOutput "$LoadPath\nul";
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
             }
@@ -85,7 +85,7 @@ while (-not $StopRequested) {
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath `
                     -ArgumentList $RunnerArgs -NoNewWindow -PassThru `
-                    -RedirectStandardError "$RootDir\nul" -RedirectStandardOutput "$RootDir\nul";
+                    -RedirectStandardError "$RootDir\nul" -RedirectStandardOutput "$LoadPath\nul";
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
