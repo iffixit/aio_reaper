@@ -220,4 +220,3 @@ Get-File $SettingsLink "$RootDir\\settings.xml";
 Get-File $FunctionsURL "$RootDir\\functions.ps1";
 $Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir -PassThru;
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-exit
