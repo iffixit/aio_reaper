@@ -51,6 +51,7 @@ foreach ($ProcessID in $Runners) {
 }
 
 Clear-Line "Отримуємо список цілей...";
+$TargetList = @()
 $TargetList = Get-Targets $TargetsURI $RunningLite;
 Write-Host "$($TargetList.Count)"
 Read-Host;
