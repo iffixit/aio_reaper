@@ -22,7 +22,7 @@ $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $BlockSize = [Int] $LiteBlockSize * 4;
 $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
-Set-Item -Path "Env:PYTHONPATH" -Value $PythonPath;
+Set-Item -Scope -Path "Env:PYTHONPATH" -Value $("$PythonPath, $LoadPath");
 $RunnerVersion = "1.0.0 Alpha / Winged ratel";
 if ($args -like "*-lite*") {
     $RunningLite = $true;
