@@ -137,7 +137,7 @@ function Get-Targets ($TargetsURI, $RunningLite) {
             }
         }
         if ($RunningLite) {
-            $TargetList = $Targets | Select-Object -Unique | Sort-Object { Get-Random }
+            $TargetList = $Targets | Select-Object -Unique | Sort-Object { Get-Random };
         }
         else {
             $TargetList = $Targets | Select-Object -Unique | Sort-Object;
