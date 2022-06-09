@@ -180,14 +180,11 @@ $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
 Get-File $PipInstaller "$PythonFolder\\get-pip.py";
 Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
 Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -WindowStyle Hidden -Wait;
-
 Set-Location $LoadPath;
 Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
-
 Set-Location $RootDir;
-
 $Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
 $PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";

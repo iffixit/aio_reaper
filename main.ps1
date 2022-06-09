@@ -13,7 +13,6 @@ Set-Location $RootDir;
 $PwshDir = $("$RootDir\\$($XMLConfig.config.folders.posh)\\");
 $PwshExe = $("$PwshDir\\pwsh.exe");
 $UpdateCheckTime = $XMLConfig.config.timers.main;
-Clear-Line $UpdateCheckTime
 $FreeMem = Get-FreeRamGB;
 $RamLimit = $XMLConfig.config.limits.RAM
 $LiteMode = $false
@@ -35,10 +34,16 @@ try {
     while ($true) {
         if ($NewStartRequired) {
             if ($LiteMode) {
-                $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "-FilePath $RootDir\\runner.ps1 -args '-lite'" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+                $RunnerProc = Start-Process -FilePath $PwshExe `
+                    -ArgumentList "-FilePath $RootDir\\runner.ps1 -args '-lite'" `
+                    -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+                $NewStartRequired = $false
             }
             else {
-                $RunnerProc = Start-Process -FilePath $PwshExe -ArgumentList "-FilePath $RootDir\\runner.ps1" -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+                $RunnerProc = Start-Process -FilePath $PwshExe `
+                    -ArgumentList "-FilePath $RootDir\\runner.ps1" `
+                    -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+                $NewStartRequired = $false
             }
         }
         while ($null -eq $RunnerProc.Id) {
