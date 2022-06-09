@@ -90,7 +90,7 @@ function Stop-Tree {
     Stop-Process -Id $ppid -Force -ErrorAction SilentlyContinue
 }
 
-Get-SlicedArray ($Array, $SliceSize) {
+function Get-SlicedArray ($Array, $SliceSize) {
     $i = 0;
     $Slices = @{};
     $Array | ForEach-Object { $Slices[$i % $SliceSize] += @($_); $i++; };
