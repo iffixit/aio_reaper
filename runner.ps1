@@ -65,7 +65,7 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-                PS51> [System.Environment]::GetEnvironmentVariable('PYTHONPATH', [System.EnvironmentVariableTarget]::Process);
+                [System.Environment]::GetEnvironmentVariable('PYTHONPATH', [System.EnvironmentVariableTarget]::Process);
                 Read-Host "a"
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -NoNewWindow -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
