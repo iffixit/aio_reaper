@@ -140,13 +140,13 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     Set-Location $PythonFolder;
     $Message = $XMLConfig.config.messages.pythonmodule;
     Clear-Line "$Message pip...";
-    @'
-python310.zip
-.
-
-# Uncomment to run site.main() automatically
-import site
-'@ | Set-Content -Path "$PythonFolder\\python310._pth";
+    $Strings = "python310.zip`r`n" + `
+        ".`r`n" + `
+        "..\$($XMLConfig.config.folders.load)`r`n" + `
+        "`r`n" + `
+        "# Uncomment to run site.main() automatically`r`n" + `
+        "import site`r`n"
+    $Strings | Set-Content -Path "$PythonFolder\\python310._pth";
     $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
     Get-File $PipInstaller "$PythonFolder\\get-pip.py";
     Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
