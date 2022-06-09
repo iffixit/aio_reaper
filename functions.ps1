@@ -93,7 +93,7 @@ function Stop-Tree {
 function Get-SlicedArray ($Array, $SliceSize) {
     $SlicedArray = @();
    for ($i=0; $i -lt $Array.Count; $i += $SliceSize){
-       $SlicedArray += , ($Array | Select-Object -Skip $i -First $SliceSize)
+       $SlicedArray += , ($Array | select -Skip $i -First $SliceSize)
    }
     return $SlicedArray;
 }
