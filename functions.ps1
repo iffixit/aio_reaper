@@ -138,10 +138,10 @@ function Get-Targets ($TargetsURI, $RunningLite) {
             }
         }
         if ($RunningLite) {
-            $TargetList = $Targets | Select-Object -Unique | Sort-Object { Get-Random };
+            $TargetList = $Targets -split " " | Select-Object -Unique | Sort-Object { Get-Random };
         }
         else {
-            $TargetList = $Targets | Select-Object -Unique | Sort-Object;
+            $TargetList = $Targets -split " " | Select-Object -Unique | Sort-Object;
         }
     } while ($TargetList.Length -eq 0)
     return $TargetList;
