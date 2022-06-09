@@ -58,7 +58,7 @@ $StartTask = $true;
 
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
-        $Targets = $TargetList | Split-Array -size $BlockSize;
+        $Targets = $TargetList | Split-Array $BlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
@@ -70,7 +70,7 @@ while (-not $StopRequested) {
         }
     }
     if ($StartTask -and $RunningLite) {
-        $Targets = $TargetList | Split-Array -size $LiteBlockSize;
+        $Targets = $TargetList | Split-Array $LiteBlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
