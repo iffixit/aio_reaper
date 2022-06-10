@@ -104,7 +104,7 @@ while (-not $StopRequested) {
                         $XMLConfig.config.messages.memory + `
                         ": $(Get-FreeRamPercent)`% " + `
                         $XMLConfig.config.messages.tillupdate + `
-                        ": $BlockJobLeft" + `
+                        ": $BlockJobLeft " + `
                         $XMLConfig.config.messages.minutes + `
                         $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                     Clear-Line $Message;
@@ -123,7 +123,7 @@ while (-not $StopRequested) {
             $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
             $Message = $XMLConfig.config.messages.targets + `
-                ": $($Target.Count) " + `
+                ": $($TargetList.Count) " + `
                 $XMLConfig.config.messages.cpu + `
                 ": $(Get-CpuLoad)`% " + `
                 $XMLConfig.config.messages.memory + `
