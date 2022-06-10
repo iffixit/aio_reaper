@@ -29,7 +29,7 @@ $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.0.8 Alpha / Winged ratel";
+$RunnerVersion = "1.0.9 Alpha / Winged ratel";
 
 
 if ($args -like "*-lite*") {
@@ -72,10 +72,10 @@ $PyProcessInfo = New-Object System.Diagnostics.ProcessStartInfo;
 $PyProcessInfo.FileName = $PythonExe;
 
 $PyProcessInfo.UseShellExecute = $false;
-#$PyProcessInfo.RedirectStandardOutput = $true;
-#$PyProcessInfo.RedirectStandardError = $true;
-#$PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
-#$PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
+$PyProcessInfo.RedirectStandardOutput = $true;
+$PyProcessInfo.RedirectStandardError = $true;
+$PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
+$PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 
 $PyProcessInfo.WorkingDirectory = $LoadPath;
 $PyProcessInfo.CreateNoWindow = $false;
@@ -133,12 +133,11 @@ while (-not $StopRequested) {
         $StartTask = $false;
     }
     if (!$RunningLite) {
-        Write-Host "Output cycle"
-        $Now = [System.DateTime]::Now;
-        $StopCycle = $Now.AddMinutes($MinutesPerBlock);
+        Write-Host "Output cycle $MinutesPerBlock"
+        $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
         Write-Host $Now
         Write-Host $StopCycle
-        Write-Host $($StopCycle -gt $Now)
+        Write-Host $($StopCycle -gt [System.DateTime]::Now)
         while ($StopCycle -gt $Now) {
             $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
