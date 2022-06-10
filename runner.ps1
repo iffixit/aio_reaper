@@ -74,10 +74,11 @@ $PyProcessInfo.FileName = $PythonExe;
 $PyProcessInfo.UseShellExecute = $false;
 #$PyProcessInfo.RedirectStandardOutput = $true;
 #$PyProcessInfo.RedirectStandardError = $true;
+#$PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
+#$PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
+
 $PyProcessInfo.WorkingDirectory = $LoadPath;
 $PyProcessInfo.CreateNoWindow = $false;
-$PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
-$PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
         $TargetList -join "`r`n" | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
