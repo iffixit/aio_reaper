@@ -29,7 +29,7 @@ $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.0.4!!! Alpha / Winged ratel";
+$RunnerVersion = "1.0.5 Alpha / Winged ratel";
 
 
 if ($args -like "*-lite*") {
@@ -80,7 +80,7 @@ $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
 $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
-        $TargetList -join " " | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
+        $TargetList -join "`r`n" | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
         $TargetString = $("-c $LoadPath\targets.txt");
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
         $PyProcessInfo.Arguments = $RunnerArgs;
@@ -163,14 +163,18 @@ while (-not $StopRequested) {
         }
     }
     [System.Diagnostics.Process]$Process = $null;
+    $NewProcessList = $ProcessList;
+    $NewIDList = $IDList;
     foreach ($Process in $ProcessList) {
         if ($Process.HasExited) {
             Write-Host "$($Process.StandardError.ReadToEnd())";
             Write-Host "$($Process.StandardOutput.ReadToEnd())";
-            $ProcessList.Remove($Process);
-            $IDList.Remove($Process.Id);
+            $NewProcessList.Remove($Process);
+            $NewIDList.Remove($Process.Id);
         }
     }
+    $ProcessList = $NewProcessList;
+    $IDList = $NewIDList;
     Read-Host "...";
     if ($RunningLite) {
         $TargetList = Get-Targets $TargetsURI $RunningLite;
