@@ -222,7 +222,7 @@ Get-File $FunctionsURL "$RootDir\\functions.ps1";
 Get-File $IconLink "$RootDir\\1984PC.ico";
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
 $ShortcutPath = $("$DesktopPath\$SoftwareName.lnk");
-$WScriptShell - New-Object -ComObjetc WScript.Shell;
+$WScriptShell = New-Object -ComObjetc WScript.Shell;
 $Shortcut = $WScriptShell.CreateShortCut($ShortcutPath);
 $Shortcut.TargetPath = $PwshExe;
 $Shortcut.IconLocation = "$RootDir\\1984PC.ico";
