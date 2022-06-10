@@ -28,7 +28,7 @@ $BlockSize = [Int] $LiteBlockSize * 4;
 $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
-$RunnerVersion = "1.0.1 Alpha / Winged ratel";
+$RunnerVersion = "1.0.2 Alpha / Winged ratel";
 if ($args -like "*-lite*") {
     $RunningLite = $true;
 }
@@ -71,7 +71,7 @@ $PyProcessInfo.UseShellExecute = $false;
 $PyProcessInfo.RedirectStandardOutput = $true;
 $PyProcessInfo.RedirectStandardError = $true;
 $PyProcessInfo.WorkingDirectory = $LoadPath;
-$PyProcessInfo.CreateNoWindow = $true;
+$PyProcessInfo.CreateNoWindow = $false;
 $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
 $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 while (-not $StopRequested) {
@@ -155,14 +155,14 @@ while (-not $StopRequested) {
             Clear-Line $Message;
         }
         $NewTargetList = Get-Targets $TargetsURI $RunningLite;
-        if ($TargetList -eq $NewTargetList) {
+        if ($TargetList.Count -eq $NewTargetList.Count) {
             $StartTask = $false;
         }
         else {
             $TargetList = $NewTargetList;
             $Runners = Get-ProcByCmdline "$LoadPath";
             $Runners += Get-ProcByPath "$PythonExe";
-            $Runners = $Runners | Sort-Object -Unique; ;
+            $Runners = $Runners | Sort-Object -Unique;
             foreach ($ProcessID in $Runners) {
                 Stop-Tree $ProcessID | Out-Null;
             }
