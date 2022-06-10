@@ -27,7 +27,7 @@ $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
-$RunnerVersion = "1.0.3 Alpha / Winged ratel";
+$RunnerVersion = "1.0.3+ Alpha / Winged ratel";
 if ($args -like "*-lite*") {
     $RunningLite = $true;
 }
@@ -75,8 +75,8 @@ $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
 $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
-        $TargetList | Out-File -Encoding UTF8 -FilePath "$LoadDir\targets.txt" -Force | Out-Null;
-        $TargetString = $("-c $LoadDir\targets.txt");
+        $TargetList | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
+        $TargetString = $("-c $LoadPath\targets.txt");
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
         $PyProcessInfo.Arguments = $RunnerArgs;
         $PyProcess = New-Object System.Diagnostics.Process;
