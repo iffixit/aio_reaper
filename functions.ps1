@@ -204,3 +204,12 @@ function Measure-Bandwith {
     $value = "{0:N2}" -f $averageBandwidth
     return "$value `%"
 }
+
+function Stop-Runners ($LoadPath, $PythonExe) {
+    foreach ($result in $(Get-ProcByCmdline "$LoadPath"; )) {
+        Stop-Tree $result.Id;
+    }
+    foreach ($result in $(Get-ProcByPath "$PythonExe"; )) {
+        Stop-Tree $result.Id;
+    }
+}

@@ -52,20 +52,12 @@ Write-Host $StartupMessage;
 Write-Host "$($XMLConfig.config.messages.presstoexit)"
 Set-Location $RootDir;
 
-[System.Collections.ArrayList] $Runners = @()
-$Runners += Get-ProcByCmdline "$LoadPath";
-$Runners += Get-ProcByPath "$PythonExe";
-$Runners = $Runners | Sort-Object -Unique; ;
-foreach ($ProcessID in $Runners) {
-    Stop-Tree $ProcessID | Out-Null;
-}
+Stop-Runners $LoadPath $PythonExe;
 
 $TargetList = @()
 $TargetList = Get-Targets $TargetsURI $RunningLite;
 $StopRequested = $false;
 $StartTask = $true;
-[System.Collections.ArrayList]$IDList = @();
-[System.Collections.ArrayList]$ProcessList = @();
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
@@ -78,8 +70,6 @@ while (-not $StopRequested) {
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
         $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
         $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-        $ProcessList += $PyProcess;
-        $IDList += $PyProcess.Id;
         $StartTask = $false;
     }
 
@@ -88,7 +78,7 @@ while (-not $StopRequested) {
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
-                $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
+                $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
@@ -106,7 +96,7 @@ while (-not $StopRequested) {
                         $XMLConfig.config.messages.tillupdate + `
                         ": $BlockJobLeft " + `
                         $XMLConfig.config.messages.minutes + `
-                        $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                    $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                     Clear-Line $Message;
                     Start-Sleep -Seconds 5;
                 }
@@ -131,7 +121,7 @@ while (-not $StopRequested) {
                 $XMLConfig.config.messages.tillupdate + `
                 ": $BlockJobLeft " + `
                 $XMLConfig.config.messages.minutes + `
-                $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+            $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
         }
         $NewTargetList = Get-Targets $TargetsURI $RunningLite;
@@ -140,35 +130,13 @@ while (-not $StopRequested) {
         }
         else {
             $TargetList = $NewTargetList;
-            $Runners = Get-ProcByCmdline "$LoadPath";
-            $Runners += Get-ProcByPath "$PythonExe";
-            $Runners = $Runners | Sort-Object -Unique;
-            foreach ($ProcessID in $Runners) {
-                Stop-Tree $ProcessID | Out-Null;
-            }
+            Stop-Runners $LoadPath $PythonExe;
             $StartTask = $true;
         }
     }
-    $NewProcessList = $ProcessList;
-    $NewIDList = $IDList;
-    foreach ($Process in $ProcessList) {
-        if ($Process.HasExited) {
-            Write-Host "$($Process.StandardError.ReadToEnd())";
-            Write-Host "$($Process.StandardOutput.ReadToEnd())";
-            $NewProcessList.Remove($Process);
-            $NewIDList.Remove($Process.Id);
-        }
-    }
-    $ProcessList = $NewProcessList;
-    $IDList = $NewIDList;
-    Read-Host "...";
+
     if ($RunningLite) {
         $TargetList = Get-Targets $TargetsURI $RunningLite;
-        $Runners = Get-ProcByCmdline "$LoadPath";
-        $Runners += Get-ProcByPath "$PythonExe";
-        $Runners = $Runners | Sort-Object -Unique; ;
-        foreach ($ProcessID in $Runners) {
-            Stop-Tree $ProcessID | Out-Null;
-        }
+        Stop-Runners $LoadPath $PythonExe;
     }
 }
