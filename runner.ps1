@@ -29,7 +29,7 @@ $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.0.6+ Alpha / Winged ratel";
+$RunnerVersion = "1.0.7 Alpha / Winged ratel";
 
 
 if ($args -like "*-lite*") {
