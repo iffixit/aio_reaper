@@ -155,7 +155,7 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     Set-Location $PythonFolder;
     $Message = $XMLConfig.config.messages.pythonmodule;
     Clear-Line "$Message pip...";
-    $Strings = "$PyString`r`n" + `
+    $Strings = "$PyString.zip`r`n" + `
         ".`r`n" + `
         "..\$($XMLConfig.config.folders.load)`r`n" + `
         "`r`n" + `
