@@ -78,6 +78,8 @@ while (-not $StopRequested) {
                 $PyProcessInfo.RedirectStandardError = $true;
                 $PyProcessInfo.WorkingDirectory = $LoadPath;
                 $PyProcessInfo.CreateNoWindow = $true;
+                $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
+                $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
                 $PyProcess = New-Object System.Diagnostics.Process;
                 $PyProcess.StartInfo = $PyProcessInfo;
                 $PyProcess.Start() | Out-Null;
@@ -98,6 +100,8 @@ while (-not $StopRequested) {
                 $PyProcessInfo.UseShellExecute = $false;
                 $PyProcessInfo.RedirectStandardOutput = $true;
                 $PyProcessInfo.RedirectStandardError = $true;
+                $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
+                $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
                 $PyProcessInfo.WorkingDirectory = $LoadPath;
                 $PyProcessInfo.CreateNoWindow = $true;
                 $PyProcess = New-Object System.Diagnostics.Process;
