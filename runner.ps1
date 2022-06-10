@@ -29,7 +29,7 @@ $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.0.7 Alpha / Winged ratel";
+$RunnerVersion = "1.0.8 Alpha / Winged ratel";
 
 
 if ($args -like "*-lite*") {
@@ -136,6 +136,9 @@ while (-not $StopRequested) {
         Write-Host "Output cycle"
         $Now = [System.DateTime]::Now;
         $StopCycle = $Now.AddMinutes($MinutesPerBlock);
+        Write-Host $Now
+        Write-Host $StopCycle
+        Write-Host $($StopCycle -gt $Now)
         while ($StopCycle -gt $Now) {
             $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
