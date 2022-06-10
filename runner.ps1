@@ -87,6 +87,7 @@ while (-not $StopRequested) {
                 $IDList += $PyProcess.Id;
             }
         }
+        $StartTask = $false;
     }
     if ($StartTask -and $RunningLite) {
         $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
@@ -130,6 +131,7 @@ while (-not $StopRequested) {
                 Clear-Line $("$($Target.Count) $Message");
             }
         }
+        $StartTask = $false;
     }
     if (-not $RunningLite) {
         $Now = [System.DateTime]::Now;
