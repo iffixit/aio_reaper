@@ -17,6 +17,7 @@
         <runner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/runner.ps1</runner>
         <main>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/main.ps1</main>
         <icon>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/1984PC.ICO</icon>
+        <kickstart>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/kickstart.ps1</kickstart>
     </links>
     <folders>
         <install>AIOReaper</install>

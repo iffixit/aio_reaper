@@ -208,19 +208,7 @@ Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wa
 $Message = $XMLConfig.config.messages.installcomplete;
 Clear-Line $Message
 $PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
-$MainScriptUrl = $XMLConfig.config.links.main;
-if (Test-Path "$RootDir\\main.ps1") {
-    Remove-Item "$RootDir\\main.ps1" -Force;
-}
-if (Test-Path "$RootDir\\settings.xml") {
-    Remove-Item "$RootDir\\settings.xml" -Force;
-}
-if (Test-Path "$RootDir\\functions.ps1") {
-    Remove-Item "$RootDir\\functions.ps1" -Force;
-}
-Get-File $MainScriptUrl "$RootDir\\main.ps1";
-Get-File $SettingsLink "$RootDir\\settings.xml";
-Get-File $FunctionsURL "$RootDir\\functions.ps1";
+
 Get-File $IconLink "$RootDir\\1984PC.ico";
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
 $ShortcutPath = $("$DesktopPath\$SoftwareName.lnk");
@@ -228,8 +216,6 @@ $WScriptShell = New-Object -ComObject WScript.Shell;
 $Shortcut = $WScriptShell.CreateShortCut($ShortcutPath);
 $Shortcut.TargetPath = $PwshExe;
 $Shortcut.IconLocation = "$RootDir\\1984PC.ico";
-$Shortcut.Arguments = "-NoLogo -NoProfile -Command $RootDir\\main.ps1";
+$Shortcut.Arguments = "-NoLogo -NoProfile -Command $RootDir\\kickstart.ps1";
 $Shortcut.WorkingDirectory = "$RootDir";
 $Shortcut.Save();
-$Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir -PassThru;
-$Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;

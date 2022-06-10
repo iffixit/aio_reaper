@@ -24,7 +24,7 @@ if (Test-Path $BogusInitPyPath) {
 }
 $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
-$MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
+$MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
@@ -120,9 +120,6 @@ while (-not $StopRequested) {
     if (!$RunningLite) {
         Write-Host "Output cycle $MinutesPerBlock"
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        Write-Host $Now
-        Write-Host $StopCycle
-        Write-Host $($StopCycle -gt [System.DateTime]::Now)
         while ($StopCycle -gt $Now) {
             $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
