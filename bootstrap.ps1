@@ -233,4 +233,3 @@ $Shortcut.WorkingDirectory = "$RootDir";
 $Shortcut.Save();
 $Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir -PassThru;
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-Read-Host "Press any key to exit...";
