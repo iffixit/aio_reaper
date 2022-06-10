@@ -100,7 +100,7 @@ if ((Get-CimInstance Win32_OperatingSystem | Select-Object OSArchitecture).OSArc
     $Is64bit = $true;
 }
 $WinVer = [System.Environment]::OSVersion.Version
-if ($Winver.Major -lt 10){
+if ($Winver.Major -lt 10) {
     if ($Winver.Minor -lt 2) {
         $IsWindows7 = $true;
     }
@@ -137,10 +137,12 @@ if (!(Test-Path "$RootDir\$PyPath")) {
     if ($IsWindows7) {
         Get-File $PythonStandaloneWin7 "$RootDir\\python.zip";
         $PyString = "python38";
-    } elseif ($Is64bit) {
+    }
+    elseif ($Is64bit) {
         Get-File $PythonStandalone64 "$RootDir\\python.zip";
         $PyString = "python310";
-    } else {
+    }
+    else {
         Get-File $PythonStandalone32 "$RootDir\\python.zip";
         $PyString = "python310";
     }
@@ -231,3 +233,4 @@ $Shortcut.WorkingDirectory = "$RootDir";
 $Shortcut.Save();
 $Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir -PassThru;
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+Read-Host "Press any key to exit...";
