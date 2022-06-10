@@ -99,7 +99,6 @@ while (-not $StopRequested) {
                 $PyProcess.StartInfo = $PyProcessInfo;
                 $PyProcess.Start() | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-                $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt [System.DateTime]::Now)) {
@@ -124,9 +123,10 @@ while (-not $StopRequested) {
         $StartTask = $false;
     }
     if (-not $RunningLite) {
-        $Now = [System.DateTime]::Now();
+        $Now = [System.DateTime]::Now;
         $StopCycle = $Now.AddMinutes($MinutesPerBlock);
-        while ($([System.DateTime]::Now()) -lt $StopCycle) {
+        while ($StopCycle -gt $Now) {
+            $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
