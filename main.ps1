@@ -92,6 +92,6 @@ finally {
     Stop-Tree $RunnerProc.Id -Force;
     Remove-Item -Path $("$RootDir\\runner.ps1") -Force;
     $host.UI.RawUI.WindowTitle = $TitleCompleted;
-    Start-Sleep -Seconds 5;
-    Read-Host "Press Enter to exit...";
+    $Message = $XMLConfig.config.messages.pressenter;
+    Read-Host "$Message"
 }
