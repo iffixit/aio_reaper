@@ -44,11 +44,12 @@ Clear-Host;
 $BannerURL = $XMLConfig.config.links.banner;
 $Banner = Get-Banner $BannerURL;
 Write-Host $Banner;
-$StartupMessage = "Бігунець версії $RunnerVersion";
+$StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
 if ($RunningLite) {
     $StartupMessage = $StartupMessage + " Lite";
 }
 Write-Host $StartupMessage;
+Write-Host "$($XMLConfig.config.messages.presstoexit)"
 Set-Location $RootDir;
 
 [System.Collections.ArrayList] $Runners = @()
@@ -83,13 +84,11 @@ while (-not $StopRequested) {
     }
 
     if ($StartTask -and $RunningLite) {
-        Write-Host "Запускаємо бігунець в лайт-режимі";
         $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
@@ -106,7 +105,8 @@ while (-not $StopRequested) {
                         ": $(Get-FreeRamPercent)`% " + `
                         $XMLConfig.config.messages.tillupdate + `
                         ": $BlockJobLeft" + `
-                        $XMLConfig.config.messages.minutes;
+                        $XMLConfig.config.messages.minutes + `
+                        $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                     Clear-Line $Message;
                     Start-Sleep -Seconds 5;
                 }
@@ -118,20 +118,20 @@ while (-not $StopRequested) {
         $StartTask = $false;
     }
     if (!$RunningLite) {
-        Write-Host "Output cycle $MinutesPerBlock"
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
         while ($StopCycle -gt $Now) {
             $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
             $Message = $XMLConfig.config.messages.targets + `
-                ": $($TargetList.Count) " + `
+                ": $($Target.Count) " + `
                 $XMLConfig.config.messages.cpu + `
                 ": $(Get-CpuLoad)`% " + `
                 $XMLConfig.config.messages.memory + `
                 ": $(Get-FreeRamPercent)`% " + `
                 $XMLConfig.config.messages.tillupdate + `
-                ": $BlockJobLeft " + `
-                $XMLConfig.config.messages.minutes;
+                ": $BlockJobLeft" + `
+                $XMLConfig.config.messages.minutes + `
+                $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
         }
         $NewTargetList = Get-Targets $TargetsURI $RunningLite;

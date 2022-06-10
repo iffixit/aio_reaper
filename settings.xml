@@ -44,9 +44,12 @@
         <cpu>ЦП</cpu>
         <targets>Цілей</targets>
         <minutes>хвилин</minutes>
+        <network>мережі зайнято.</network>
         <tillupdate>До оновлення</tillupdate>
         <runninglite>Скрипт не знайшов достатньо ресурсів для повномасштабної атаки. Запускаємо спрощену версію.</runninglite>
         <pressenter>Натисніть Ентер [⏎] для завершення...</pressenter>
+        <runnerstart>Бігунець версії</runnerstart>
+        <presstoexit>Натисніть [Ctrl] + [C] для виходу з програми.</presstoexit>
     </messages>
     <erroraction>Continue</erroraction>
     <liteblocksize>50</liteblocksize>

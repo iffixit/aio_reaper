@@ -202,5 +202,5 @@ function Measure-Bandwith {
         $averageBandwidth = $totalBandwidth / $count
     }
     $value = "{0:N2}" -f $averageBandwidth
-    return "Задіяно $value `% мережі."
+    return "$value `%"
 }
