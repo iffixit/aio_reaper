@@ -129,7 +129,7 @@ while (-not $StopRequested) {
                 $XMLConfig.config.messages.memory + `
                 ": $(Get-FreeRamPercent)`% " + `
                 $XMLConfig.config.messages.tillupdate + `
-                ": $BlockJobLeft" + `
+                ": $BlockJobLeft " + `
                 $XMLConfig.config.messages.minutes + `
                 $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
