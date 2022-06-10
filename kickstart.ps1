@@ -30,6 +30,7 @@ $RootDir = $SystemDrive + "\" + $InstallFolder;
 
 $MainScriptUrl = $XMLConfig.config.links.main;
 $FunctionsURL = $XMLConfig.config.links.funclib;
+$PoshPath = $XMLConfig.config.folders.posh;
 
 if (Test-Path "$RootDir\\main.ps1") {
     Remove-Item "$RootDir\\main.ps1" -Force;
@@ -43,6 +44,9 @@ if (Test-Path "$RootDir\\functions.ps1") {
 Get-File $MainScriptUrl "$RootDir\\main.ps1";
 Get-File $SettingsLink "$RootDir\\settings.xml";
 Get-File $FunctionsURL "$RootDir\\functions.ps1";
+
+
+$PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 
 $Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir -PassThru;
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
