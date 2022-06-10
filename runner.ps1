@@ -75,7 +75,7 @@ $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
 $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
-        $TargetList | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
+        $TargetList -join " " | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
         $TargetString = $("-c $LoadPath\targets.txt");
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
         $PyProcessInfo.Arguments = $RunnerArgs;
