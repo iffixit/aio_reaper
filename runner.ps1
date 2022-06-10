@@ -29,7 +29,7 @@ $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.0.5 Alpha / Winged ratel";
+$RunnerVersion = "1.0.6 Alpha / Winged ratel";
 
 
 if ($args -like "*-lite*") {
@@ -162,7 +162,6 @@ while (-not $StopRequested) {
             $StartTask = $true;
         }
     }
-    [System.Diagnostics.Process]$Process = $null;
     $NewProcessList = $ProcessList;
     $NewIDList = $IDList;
     foreach ($Process in $ProcessList) {
