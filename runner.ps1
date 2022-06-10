@@ -48,7 +48,7 @@ if ($RunningLite) {
 Write-Host $StartupMessage;
 Set-Location $RootDir;
 
-$Runners = Get-ProcByCmdline "$LoadPath";
+[System.Collections.ArrayList] $Runners = Get-ProcByCmdline "$LoadPath";
 $Runners += Get-ProcByPath "$PythonExe";
 $Runners = $Runners | Sort-Object -Unique; ;
 foreach ($ProcessID in $Runners) {
@@ -86,6 +86,10 @@ while (-not $StopRequested) {
                 $PyProcess.Start() | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
+                $PyProcess.WaitForExit();
+                Write-Host "$($PyProcess.StandardInput.ReadToEnd())";
+                Write-Host "$($PyProcess.StandardError.ReadToEnd())";
+                Read-Host "...";
             }
         }
         $StartTask = $false;
