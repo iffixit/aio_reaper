@@ -62,6 +62,7 @@ $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
+New-Item -Path "$LoadPath\stdout"
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
@@ -70,8 +71,7 @@ while (-not $StopRequested) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath `
-                    -ArgumentList $RunnerArgs -NoNewWindow -PassThru `
-                    -RedirectStandardError "$RootDir\nul" -RedirectStandardOutput "$LoadPath\nul";
+                    -ArgumentList $RunnerArgs -NoNewWindow -PassThru 2>&1 | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
             }
@@ -84,8 +84,7 @@ while (-not $StopRequested) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath `
-                    -ArgumentList $RunnerArgs -NoNewWindow -PassThru `
-                    -RedirectStandardError "$RootDir\nul" -RedirectStandardOutput "$LoadPath\nul";
+                    -ArgumentList $RunnerArgs -NoNewWindow -PassThru 2>&1 | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
