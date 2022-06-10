@@ -26,7 +26,8 @@ $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $BlockSize = [Int] $LiteBlockSize * 4;
 $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
-#[System.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
+[System.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
+[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 $RunnerVersion = "1.0.0 Alpha / Winged ratel";
 if ($args -like "*-lite*") {
     $RunningLite = $true;
