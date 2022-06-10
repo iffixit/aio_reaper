@@ -72,8 +72,8 @@ $PyProcessInfo = New-Object System.Diagnostics.ProcessStartInfo;
 $PyProcessInfo.FileName = $PythonExe;
 
 $PyProcessInfo.UseShellExecute = $false;
-$PyProcessInfo.RedirectStandardOutput = $true;
-$PyProcessInfo.RedirectStandardError = $true;
+#$PyProcessInfo.RedirectStandardOutput = $true;
+#$PyProcessInfo.RedirectStandardError = $true;
 $PyProcessInfo.WorkingDirectory = $LoadPath;
 $PyProcessInfo.CreateNoWindow = $false;
 $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
@@ -132,6 +132,7 @@ while (-not $StopRequested) {
         $StartTask = $false;
     }
     if (!$RunningLite) {
+        Write-Host "Output cycle"
         $Now = [System.DateTime]::Now;
         $StopCycle = $Now.AddMinutes($MinutesPerBlock);
         while ($StopCycle -gt $Now) {
