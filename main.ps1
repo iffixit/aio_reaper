@@ -25,7 +25,6 @@ $TitleStarted = $XMLConfig.config.titles.started;
 $TitleOK = $XMLConfig.config.titles.ok;
 $TitleRestart = $XMLConfig.config.titles.restart;
 $TitleError = $XMLConfig.config.titles.error;
-#$TitleDied = $XMLConfig.config.titles.died;
 $TitleExiting = $XMLConfig.config.titles.exiting;
 $TitleCompleted = $XMLConfig.config.titles.completed;
 $host.UI.RawUI.WindowTitle = $TitleStarted;

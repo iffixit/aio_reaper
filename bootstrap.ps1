@@ -57,8 +57,7 @@ $PwshStandalone64 = $XMLConfig.config.links.posh64;
 $Is64bit = $false;
 $IsWindows7 = $false;
 $IconLink = $XMLConfig.config.links.icon;
-
-$FunctionsURL = $XMLConfig.config.links.funclib;
+$KickstartURL = $XMLConfig.config.links.kickstart;
 
 ################################################################################
 # Script logic
@@ -205,11 +204,9 @@ Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
 
-$Message = $XMLConfig.config.messages.installcomplete;
-Clear-Line $Message
 $PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
-
 Get-File $IconLink "$RootDir\\1984PC.ico";
+Get-File $KickstartURL "$RootDir\\kickstart.ps1";
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
 $ShortcutPath = $("$DesktopPath\$SoftwareName.lnk");
 $WScriptShell = New-Object -ComObject WScript.Shell;
@@ -219,3 +216,8 @@ $Shortcut.IconLocation = "$RootDir\\1984PC.ico";
 $Shortcut.Arguments = "-NoLogo -NoProfile -Command $RootDir\\kickstart.ps1";
 $Shortcut.WorkingDirectory = "$RootDir";
 $Shortcut.Save();
+
+$Message = $XMLConfig.config.messages.installcomplete;
+Clear-Line "$Message`n";
+$Message = $XMLConfig.config.messages.pressenter;
+Read-Host "$Message"

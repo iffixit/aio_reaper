@@ -46,6 +46,7 @@
         <minutes>хвилин</minutes>
         <tillupdate>До оновлення</tillupdate>
         <runninglite>Скрипт не знайшов достатньо ресурсів для повномасштабної атаки. Запускаємо спрощену версію.</runninglite>
+        <pressenter>Натисніть Ентер [⏎] для завершення...</pressenter>
     </messages>
     <erroraction>Continue</erroraction>
     <liteblocksize>50</liteblocksize>
