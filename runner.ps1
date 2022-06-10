@@ -77,9 +77,10 @@ while (-not $StopRequested) {
                 $PyProcessInfo.RedirectStandardOutput = $true;
                 $PyProcessInfo.RedirectStandardError = $true;
                 $PyProcessInfo.WorkingDirectory = $LoadPath;
+                $PyProcessInfo.CreateNoWindow = $true;
                 $PyProcess = New-Object System.Diagnostics.Process;
                 $PyProcess.StartInfo = $PyProcessInfo;
-                $PyProcess.Start();
+                $PyProcess.Start() | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
             }
@@ -98,9 +99,10 @@ while (-not $StopRequested) {
                 $PyProcessInfo.RedirectStandardOutput = $true;
                 $PyProcessInfo.RedirectStandardError = $true;
                 $PyProcessInfo.WorkingDirectory = $LoadPath;
+                $PyProcessInfo.CreateNoWindow = $true;
                 $PyProcess = New-Object System.Diagnostics.Process;
                 $PyProcess.StartInfo = $PyProcessInfo;
-                $PyProcess.Start();
+                $PyProcess.Start() | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
