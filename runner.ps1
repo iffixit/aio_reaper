@@ -84,6 +84,9 @@ while (-not $StopRequested) {
                 $PyProcess.Start() | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
+                $PyProcess.WaitForExit();
+                Write-Host "$($PyProcess.StandardOutput.ReadToEnd())";
+                Write-Host "$($PyProcess.StandardError.ReadToEnd())";
             }
         }
         $StartTask = $false;
