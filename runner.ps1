@@ -1,4 +1,4 @@
-[console]::TreatControlCAsInput = $true
+#[console]::TreatControlCAsInput = $true
 $host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
 $host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
 
@@ -28,7 +28,7 @@ $BlockSize = [Int] $LiteBlockSize * 4;
 $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
-$RunnerVersion = "1.0.0 Alpha / Winged ratel";
+$RunnerVersion = "1.0.1 Alpha / Winged ratel";
 if ($args -like "*-lite*") {
     $RunningLite = $true;
 }
@@ -60,6 +60,7 @@ $TargetList = Get-Targets $TargetsURI $RunningLite;
 $StopRequested = $false;
 $StartTask = $true;
 [System.Collections.ArrayList]$IDList = @();
+[System.Collections.ArrayList]$ProcessList = @();
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
@@ -85,15 +86,22 @@ while (-not $StopRequested) {
                 $PyProcess.StartInfo = $PyProcessInfo;
                 $PyProcess.Start() | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+                $ProcessList += $PyProcess;
                 $IDList += $PyProcess.Id;
-                $PyProcess.WaitForExit();
-                Write-Host "$($PyProcess.StandardInput.ReadToEnd())";
-                Write-Host "$($PyProcess.StandardError.ReadToEnd())";
-                Read-Host "...";
             }
         }
         $StartTask = $false;
     }
+    [System.Diagnostics.Process]$Process = $null;
+    foreach ($Process in $ProcessList) {
+        if ($Process.HasExited) {
+            Write-Host "$($Process.StandardError.ReadToEnd)";
+            Write-Host "$($Process.StandardOutput.ReadToEnd)";
+            $ProcessList -= $Process;
+            $IDList -= $Process.Id;
+        }
+    }
+    Read-Host "...";
     if ($StartTask -and $RunningLite) {
         $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
         foreach ($Target in $Targets) {
