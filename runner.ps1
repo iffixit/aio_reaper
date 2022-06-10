@@ -63,6 +63,16 @@ $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
+$PyProcessInfo = New-Object System.Diagnostics.ProcessStartInfo;
+$PyProcessInfo.FileName = $PythonExe;
+
+$PyProcessInfo.UseShellExecute = $false;
+$PyProcessInfo.RedirectStandardOutput = $true;
+$PyProcessInfo.RedirectStandardError = $true;
+$PyProcessInfo.WorkingDirectory = $LoadPath;
+$PyProcessInfo.CreateNoWindow = $true;
+$PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
+$PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
         $Targets = Get-SlicedArray $TargetList $BlockSize;
@@ -70,25 +80,12 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-                $PyProcessInfo = New-Object System.Diagnostics.ProcessStartInfo;
-                $PyProcessInfo.FileName = $PythonExe;
                 $PyProcessInfo.Arguments = $RunnerArgs;
-                $PyProcessInfo.UseShellExecute = $false;
-                $PyProcessInfo.RedirectStandardOutput = $true;
-                $PyProcessInfo.RedirectStandardError = $true;
-                $PyProcessInfo.WorkingDirectory = $LoadPath;
-                $PyProcessInfo.CreateNoWindow = $true;
-                $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
-                $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
                 $PyProcess = New-Object System.Diagnostics.Process;
                 $PyProcess.StartInfo = $PyProcessInfo;
                 $PyProcess.Start() | Out-Null;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $IDList += $PyProcess.Id;
-                $PyProcess.WaitForExit();
-                Write-Host "$($PyProcess.StandardOutput.ReadToEnd())";
-                Write-Host "$($PyProcess.StandardError.ReadToEnd())";
-                Read-Host "..."
             }
         }
         $StartTask = $false;
@@ -99,16 +96,8 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-                $PyProcessInfo = New-Object System.Diagnostics.ProcessStartInfo;
-                $PyProcessInfo.FileName = $PythonExe;
                 $PyProcessInfo.Arguments = $RunnerArgs;
                 $PyProcessInfo.UseShellExecute = $false;
-                $PyProcessInfo.RedirectStandardOutput = $true;
-                $PyProcessInfo.RedirectStandardError = $true;
-                $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
-                $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
-                $PyProcessInfo.WorkingDirectory = $LoadPath;
-                $PyProcessInfo.CreateNoWindow = $true;
                 $PyProcess = New-Object System.Diagnostics.Process;
                 $PyProcess.StartInfo = $PyProcessInfo;
                 $PyProcess.Start() | Out-Null;
@@ -159,10 +148,22 @@ while (-not $StopRequested) {
         }
         else {
             $TargetList = $NewTargetList;
+            $Runners = Get-ProcByCmdline "$LoadPath";
+            $Runners += Get-ProcByPath "$PythonExe";
+            $Runners = $Runners | Sort-Object -Unique; ;
+            foreach ($ProcessID in $Runners) {
+                Stop-Tree $ProcessID | Out-Null;
+            }
             $StartTask = $true;
         }
     }
     if ($RunningLite) {
         $TargetList = Get-Targets $TargetsURI $RunningLite;
+        $Runners = Get-ProcByCmdline "$LoadPath";
+        $Runners += Get-ProcByPath "$PythonExe";
+        $Runners = $Runners | Sort-Object -Unique; ;
+        foreach ($ProcessID in $Runners) {
+            Stop-Tree $ProcessID | Out-Null;
+        }
     }
 }
