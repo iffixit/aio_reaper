@@ -24,7 +24,6 @@ if (Test-Path $BogusInitPyPath) {
 }
 $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
-$BlockSize = [Int] $LiteBlockSize * 4;
 $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
@@ -71,37 +70,23 @@ $PyProcessInfo.UseShellExecute = $false;
 $PyProcessInfo.RedirectStandardOutput = $true;
 $PyProcessInfo.RedirectStandardError = $true;
 $PyProcessInfo.WorkingDirectory = $LoadPath;
-$PyProcessInfo.CreateNoWindow = $false;
+$PyProcessInfo.CreateNoWindow = $true;
 $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
 $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
-        $Targets = Get-SlicedArray $TargetList $BlockSize;
-        foreach ($Target in $Targets) {
-            if ($Target.Count -gt 0) {
-                $TargetString = $Target -join ' ';
-                $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-                $PyProcessInfo.Arguments = $RunnerArgs;
-                $PyProcess = New-Object System.Diagnostics.Process;
-                $PyProcess.StartInfo = $PyProcessInfo;
-                $PyProcess.Start() | Out-Null;
-                $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-                $ProcessList += $PyProcess;
-                $IDList += $PyProcess.Id;
-            }
-        }
+        $TargetString = $TargetList -join ' ';
+        $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
+        $PyProcessInfo.Arguments = $RunnerArgs;
+        $PyProcess = New-Object System.Diagnostics.Process;
+        $PyProcess.StartInfo = $PyProcessInfo;
+        $PyProcess.Start() | Out-Null;
+        $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+        $ProcessList += $PyProcess;
+        $IDList += $PyProcess.Id;
         $StartTask = $false;
     }
-    [System.Diagnostics.Process]$Process = $null;
-    foreach ($Process in $ProcessList) {
-        if ($Process.HasExited) {
-            Write-Host "$($Process.StandardError.ReadToEnd)";
-            Write-Host "$($Process.StandardOutput.ReadToEnd)";
-            $ProcessList -= $Process;
-            $IDList -= $Process.Id;
-        }
-    }
-    Read-Host "...";
+
     if ($StartTask -and $RunningLite) {
         $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
         foreach ($Target in $Targets) {
@@ -139,9 +124,9 @@ while (-not $StopRequested) {
         $StartTask = $false;
     }
     if (-not $RunningLite) {
-        $Now = [System.DateTime]::Now;
+        $Now = [System.DateTime]::Now();
         $StopCycle = $Now.AddMinutes($MinutesPerBlock);
-        while ($([System.DateTime]::Now) -lt $StopCycle) {
+        while ($([System.DateTime]::Now()) -lt $StopCycle) {
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
@@ -169,6 +154,16 @@ while (-not $StopRequested) {
             $StartTask = $true;
         }
     }
+    [System.Diagnostics.Process]$Process = $null;
+    foreach ($Process in $ProcessList) {
+        if ($Process.HasExited) {
+            Write-Host "$($Process.StandardError.ReadToEnd)";
+            Write-Host "$($Process.StandardOutput.ReadToEnd)";
+            $ProcessList -= $Process;
+            $IDList -= $Process.Id;
+        }
+    }
+    Read-Host "...";
     if ($RunningLite) {
         $TargetList = Get-Targets $TargetsURI $RunningLite;
         $Runners = Get-ProcByCmdline "$LoadPath";
