@@ -68,26 +68,14 @@ $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
-$PyProcessInfo = New-Object System.Diagnostics.ProcessStartInfo;
-$PyProcessInfo.FileName = $PythonExe;
 
-$PyProcessInfo.UseShellExecute = $false;
-$PyProcessInfo.RedirectStandardOutput = $true;
-$PyProcessInfo.RedirectStandardError = $true;
-$PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
-$PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 
-$PyProcessInfo.WorkingDirectory = $LoadPath;
-$PyProcessInfo.CreateNoWindow = $false;
 while (-not $StopRequested) {
     if ($StartTask -and (-not $RunningLite)) {
         $TargetList -join "`r`n" | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
         $TargetString = $("-c $LoadPath\targets.txt");
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-        $PyProcessInfo.Arguments = $RunnerArgs;
-        $PyProcess = New-Object System.Diagnostics.Process;
-        $PyProcess.StartInfo = $PyProcessInfo;
-        $PyProcess.Start() | Out-Null;
+        $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
         $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
         $ProcessList += $PyProcess;
         $IDList += $PyProcess.Id;
@@ -101,11 +89,8 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-                $PyProcessInfo.Arguments = $RunnerArgs;
-                $PyProcessInfo.UseShellExecute = $false;
-                $PyProcess = New-Object System.Diagnostics.Process;
-                $PyProcess.StartInfo = $PyProcessInfo;
-                $PyProcess.Start() | Out-Null;
+
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
