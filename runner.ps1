@@ -71,7 +71,7 @@ $PyProcessInfo.UseShellExecute = $false;
 $PyProcessInfo.RedirectStandardOutput = $true;
 $PyProcessInfo.RedirectStandardError = $true;
 $PyProcessInfo.WorkingDirectory = $LoadPath;
-$PyProcessInfo.CreateNoWindow = $true;
+$PyProcessInfo.CreateNoWindow = $false;
 $PyProcessInfo.StandardErrorEncoding = [System.Text.Encoding]::UTF8;
 $PyProcessInfo.StandardOutputEncoding = [System.Text.Encoding]::UTF8;
 while (-not $StopRequested) {
