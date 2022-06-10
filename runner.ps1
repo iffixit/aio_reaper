@@ -27,7 +27,7 @@ $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timer.minutesperblock;
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
-$RunnerVersion = "1.0.3+ Alpha / Winged ratel";
+$RunnerVersion = "1.0.3++ Alpha / Winged ratel";
 if ($args -like "*-lite*") {
     $RunningLite = $true;
 }
