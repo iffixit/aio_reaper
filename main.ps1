@@ -62,6 +62,7 @@ try {
                 $NewStartRequired = $true;
                 $host.UI.RawUI.WindowTitle = $TitleRestart;
             }
+            Start-Sleep -Seconds 1;
         }
         if ($NewStartRequired) {
             Stop-Tree $RunnerProc.Id;
