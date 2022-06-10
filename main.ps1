@@ -44,6 +44,7 @@ try {
                     -NoNewWindow -PassThru -WorkingDirectory $RootDir;
                 $NewStartRequired = $false
             }
+            $RunnerProc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
         }
         while ($null -eq $RunnerProc.Id) {
             Start-Sleep -Seconds 1;
