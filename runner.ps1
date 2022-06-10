@@ -94,6 +94,7 @@ while (-not $StopRequested) {
     }
 
     if ($StartTask -and $RunningLite) {
+        Write-Host "Запускаємо бігунець в лайт-режимі";
         $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
         foreach ($Target in $Targets) {
             if ($Target.Count -gt 0) {
@@ -130,7 +131,7 @@ while (-not $StopRequested) {
         }
         $StartTask = $false;
     }
-    if (-not $RunningLite) {
+    if (!$RunningLite) {
         $Now = [System.DateTime]::Now;
         $StopCycle = $Now.AddMinutes($MinutesPerBlock);
         while ($StopCycle -gt $Now) {
