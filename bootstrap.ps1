@@ -49,13 +49,14 @@ Clear-Host
 
 # Locations
 $GitStandalone32 = $XMLConfig.config.links.git;
-$PythonStandalone32 = $XMLConfig.config.links.py32
-$PythonStandalone64 = $XMLConfig.config.links.py64
-$PythonStandaloneWin7 = $XMLConfig.config.links.pywin7
-$PwshStandalone32 = $XMLConfig.config.links.posh32
-$PwshStandalone64 = $XMLConfig.config.links.posh64
+$PythonStandalone32 = $XMLConfig.config.links.py32;
+$PythonStandalone64 = $XMLConfig.config.links.py64;
+$PythonStandaloneWin7 = $XMLConfig.config.links.pywin7;
+$PwshStandalone32 = $XMLConfig.config.links.posh32;
+$PwshStandalone64 = $XMLConfig.config.links.posh64;
 $Is64bit = $false;
 $IsWindows7 = $false;
+$IconLink = $XMLConfig.config.links.icon;
 
 $FunctionsURL = $XMLConfig.config.links.funclib;
 
@@ -218,5 +219,15 @@ if (Test-Path "$RootDir\\functions.ps1") {
 Get-File $MainScriptUrl "$RootDir\\main.ps1";
 Get-File $SettingsLink "$RootDir\\settings.xml";
 Get-File $FunctionsURL "$RootDir\\functions.ps1";
+Get-File $IconLink "$RootDir\\1984PC.ico";
+$DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
+$ShortcutPath = $("$DesktopPath\$SoftwareName.lnk");
+$WScriptShell - New-Object -ComObjetc WScript.Shell;
+$Shortcut = $WScriptShell.CreateShortCut($ShortcutPath);
+$Shortcut.TargetPath = $PwshExe;
+$Shortcut.IconLocation = "$RootDir\\1984PC.ico";
+$Shortcut.Arguments = "-NoLogo -NoProfile -Command $RootDir\\main.ps1";
+$Shortcut.WorkingDirectory = "$RootDir";
+$Shortcut.Save();
 $Proc = Start-Process -FilePath $PwshExe -ArgumentList "-NoLogo -NoProfile -Command $RootDir\\main.ps1" -WorkingDirectory $RootDir -PassThru;
 $Proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
