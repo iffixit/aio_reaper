@@ -87,6 +87,7 @@ while (-not $StopRequested) {
                 $PyProcess.WaitForExit();
                 Write-Host "$($PyProcess.StandardOutput.ReadToEnd())";
                 Write-Host "$($PyProcess.StandardError.ReadToEnd())";
+                Read-Host "..."
             }
         }
         $StartTask = $false;
