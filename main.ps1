@@ -92,7 +92,10 @@ finally {
     $host.UI.RawUI.WindowTitle = $TitleExiting;
     Stop-Tree $RunnerProc.Id -Force;
     Remove-Item -Path $("$RootDir\\runner.ps1") -Force;
+    Clear-Host;
     $host.UI.RawUI.WindowTitle = $TitleCompleted;
+    $Message = $XMLConfig.config.messages.endrun;
+    Write-Host "$Message";
     $Message = $XMLConfig.config.messages.pressenter;
     Read-Host "$Message"
 }
