@@ -1,3 +1,4 @@
+#Requires -Version 5
 function Clear-Line ([String] $Message) {
     [int] $Width = $Host.UI.RawUI.WindowSize.Width;
     $Line = " " * $($Width - 1);
@@ -23,7 +24,13 @@ function Get-File ($URL, [String] $FileName) {
 ################################################################################
 
 # We need this because default PoSH network protocol is outdated.
-[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
+try {
+    [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
+}
+catch {
+    $p = [Enum]::ToObject([System.Net.SecurityProtocolType], 3072);
+    [System.Net.ServicePointManager]::SecurityProtocol = $p;
+}
 [Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8");
 # WebClient is outdated. Use HttpClient instead.
 Add-Type -AssemblyName System.Net.Http;
