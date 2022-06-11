@@ -31,6 +31,7 @@
         <diskspace>3</diskspace>
         <lowdisk>10</lowdisk>
         <RAM>4</RAM>
+        <targets>2100</targets>
     </limits>
     <messages>
         <lowdiskspace>У вас мало вільного місця на системному диску. Із роботою скрипту можуть виникнути різноманітні неочікуванності. Будте ласкаві, вивільніть щонайменше 10 Гб. </lowdiskspace>

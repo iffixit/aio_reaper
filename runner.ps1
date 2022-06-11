@@ -64,6 +64,8 @@ Set-Location $LoadPath;
 
 
 while (-not $StopRequested) {
+    #TODO: split BIG load to a smaller ones
+    #TODO: think out condition when to do that
     if ($StartTask -and (-not $RunningLite)) {
         $TargetList -join "`r`n" | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
         $TargetString = $("-c $LoadPath\targets.txt");
