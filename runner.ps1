@@ -59,7 +59,7 @@ $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
-
+[System.Diagnostics.Process] $PyProcess = $null;
 
 while (-not $StopRequested) {
     #TODO: split BIG load to a smaller ones
@@ -84,8 +84,10 @@ while (-not $StopRequested) {
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 $Now = [System.DateTime]::Now;
+                $PythonExited = $PyProcess.HasExited;
                 while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt $Now)) {
                     $Now = [System.DateTime]::Now;
+                    $PythonExited = $PyProcess.HasExited;
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
@@ -108,9 +110,11 @@ while (-not $StopRequested) {
         $StartTask = $false;
     }
     if (!$RunningLite) {
+        $PythonExited = $PyProcess.HasExited;
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        while ($StopCycle -gt $Now) {
+        while (($StopCycle -gt $Now) -and -not $PythonExited) {
             $Now = [System.DateTime]::Now;
+            $PythonExited = $PyProcess.HasExited;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
