@@ -2,7 +2,7 @@
 <config>
     <name>AIO Ukrainian reaper.</name>
     <mainloadfile>runner.py</mainloadfile>
-    <baseloadargs>--rpc 5000</baseloadargs>
+    <baseloadargs>--rpc 5000 AUTO_MH=1</baseloadargs>
     <links>
         <git>https://github.com/git-for-windows/git/releases/download/v2.36.1.windows.1/PortableGit-2.36.1-32-bit.7z.exe</git>
         <py32>https://www.python.org/ftp/python/3.10.4/python-3.10.4-embed-win32.zip</py32>
@@ -41,7 +41,7 @@
         <pythonmodule>Встановлюємо модуль Python</pythonmodule>
         <installcomplete>Завершено завантаження і розпаковку навантаження.</installcomplete>
         <runningadmin>Скрипт запущено із правами адміністратора. Це - неправильно, такий режим роботи не підтримується. Будьте ласкаві, запустіть програму за інструкцією.</runningadmin>
-        <memory>Пам'яті</memory>
+        <memory>Пам'яті вільно</memory>
         <cpu>ЦП</cpu>
         <targets>Цілей</targets>
         <minutes>хвилин</minutes>

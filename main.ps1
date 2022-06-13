@@ -1,10 +1,112 @@
 # DO REMEMBER CTRL+C breaks the pipeline!
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
 [Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8");
+
+# THIS IS WINDOWS 7 WORKAROUND. DO NOT MESS WITH IT
+$Code = @'using System;
+using System.Runtime.InteropServices;
+
+public static class ConsoleHelper
+{
+    private const int FixedWidthTrueType = 54;
+    private const int StandardOutputHandle = -11;
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern IntPtr GetStdHandle(int nStdHandle);
+
+    [return: MarshalAs(UnmanagedType.Bool)]
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    internal static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool MaximumWindow, ref FontInfo ConsoleCurrentFontEx);
+
+    [return: MarshalAs(UnmanagedType.Bool)]
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    internal static extern bool GetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool MaximumWindow, ref FontInfo ConsoleCurrentFontEx);
+
+
+    private static readonly IntPtr ConsoleOutputHandle = GetStdHandle(StandardOutputHandle);
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct FontInfo
+    {
+        internal int cbSize;
+        internal int FontIndex;
+        internal short FontWidth;
+        public short FontSize;
+        public int FontFamily;
+        public int FontWeight;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        //[MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.wc, SizeConst = 32)]
+        public string FontName;
+    }
+
+    public static FontInfo[] SetCurrentFont(string font, short fontSize = 0)
+    {
+        Console.WriteLine("Set Current Font: " + font);
+
+        FontInfo before = new FontInfo
+        {
+            cbSize = Marshal.SizeOf<FontInfo>()
+        };
+
+        if (GetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref before))
+        {
+
+            FontInfo set = new FontInfo
+            {
+                cbSize = Marshal.SizeOf<FontInfo>(),
+                FontIndex = 0,
+                FontFamily = FixedWidthTrueType,
+                FontName = font,
+                FontWeight = 400,
+                FontSize = fontSize > 0 ? fontSize : before.FontSize
+            };
+
+            // Get some settings from current font.
+            if (!SetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref set))
+            {
+                var ex = Marshal.GetLastWin32Error();
+                Console.WriteLine("Set error " + ex);
+                throw new System.ComponentModel.Win32Exception(ex);
+            }
+
+            FontInfo after = new FontInfo
+            {
+                cbSize = Marshal.SizeOf<FontInfo>()
+            };
+            GetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref after);
+
+            return new[] { before, set, after };
+        }
+        else
+        {
+            var er = Marshal.GetLastWin32Error();
+            Console.WriteLine("Get error " + er);
+            throw new System.ComponentModel.Win32Exception(er);
+        }
+    }
+}'@
+$IsWindows7 = $false;
+$WinVer = [System.Environment]::OSVersion.Version
+if ($Winver.Major -lt 10) {
+    if ($Winver.Minor -lt 2) {
+        $IsWindows7 = $true;
+    }
+}
+if (-not ([System.Management.Automation.PSTypeName]'ConsoleHelper').Type) {
+    Add-Type -TypeDefinition $Code -Language CSharp;
+}
+if ($IsWindows7) {
+    [ConsoleHelper]::SetCurrentFont("Consolas", 16);
+}
+#END OF WINDOWS 7 WORKAROUND
+
 # WebClient is outdated. Use HttpClient instead.
 Add-Type -AssemblyName System.Net.Http;
+
 [xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
+$host.UI.RawUI.Width = 120;
+$host.UI.RawUI.$bufferSize = 120;
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\\" + $InstallFolder;

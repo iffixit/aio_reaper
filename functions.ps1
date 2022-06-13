@@ -172,6 +172,10 @@ function Get-CpuLoad {
     return $(Get-CimInstance -ClassName win32_processor | Measure-Object -Property LoadPercentage -Average | Select-Object -ExpandProperty Average)
 }
 
+function Get-CpuSpeed {
+    Get-CimInstance Win32_Processor | Select-Object -Expand MaxClockSpeed
+}
+
 function Measure-Bandwith {
     $startTime = get-date
     $endTime = $startTime.AddSeconds(5)
