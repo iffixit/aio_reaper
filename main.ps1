@@ -98,7 +98,7 @@ if (-not ([System.Management.Automation.PSTypeName]'ConsoleHelper').Type) {
     Add-Type -TypeDefinition $Code -Language CSharp;
 }
 if ($IsWindows7) {
-    [ConsoleHelper]::SetCurrentFont("Consolas", 16);
+    [ConsoleHelper]::SetCurrentFont("Consolas", 16) | Out-Null;
 }
 #END OF WINDOWS 7 WORKAROUND
 
@@ -107,7 +107,7 @@ Add-Type -AssemblyName System.Net.Http;
 
 [xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
-$host.UI.RawUI.Width = 120;
+$host.UI.RawUI.Width = 121;
 $host.UI.RawUI.$bufferSize = 120;
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
