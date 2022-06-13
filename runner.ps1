@@ -79,7 +79,7 @@ while (-not $StopRequested) {
             if ($Target.Count -gt 0) {
                 $TargetString = $Target -join ' ';
                 $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
-                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -NoNewWindow -ArgumentList $RunnerArgs -PassThru;
+                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
