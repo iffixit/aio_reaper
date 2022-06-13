@@ -107,8 +107,16 @@ Add-Type -AssemblyName System.Net.Http;
 
 [xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
-$host.UI.RawUI.Width = 121;
-$host.UI.RawUI.$bufferSize = 120;
+
+$PSHost = Get-Host;
+$PSWindow = $PSHost.RawUI;
+$NewSize = $PSWindow.BufferSize;
+$NewSize.Width = 150;
+$PSWindow.BufferSize = $NewSize;
+$NewSize = $PSWindow.WindowSize;
+$NewSize.Width = 150;
+$PSWindow.WindowSize = $NewSize;
+
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\\" + $InstallFolder;
