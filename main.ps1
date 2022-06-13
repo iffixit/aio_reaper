@@ -108,10 +108,10 @@ Add-Type -AssemblyName System.Net.Http;
 [xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
 
-$host.UI.RawUI.BufferSize.Width = 150;
-$host.UI.RawUI.WindowSize.Width = 150;
-$host.UI.RawUI.MaxWindowSize.Width = 150;
-[Console]::bufferwidth = 150;
+$host.UI.RawUI.BufferSize.Width = 150 | Out-Null;
+$host.UI.RawUI.WindowSize.Width = 150 | Out-Null;
+$host.UI.RawUI.MaxWindowSize.Width = 150 | Out-Null;
+[Console]::bufferwidth = 150 | Out-Null;
 
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
