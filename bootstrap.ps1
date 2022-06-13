@@ -162,7 +162,6 @@ $PythonStandaloneWin7 = $XMLConfig.config.links.pywin7;
 $PwshStandalone32 = $XMLConfig.config.links.posh32;
 $PwshStandalone64 = $XMLConfig.config.links.posh64;
 $Is64bit = $false;
-$IsWindows7 = $false;
 $IconLink = $XMLConfig.config.links.icon;
 $KickstartURL = $XMLConfig.config.links.kickstart;
 
