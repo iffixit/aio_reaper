@@ -113,6 +113,16 @@ $host.UI.RawUI.WindowSize.Width = 150 | Out-Null;
 $host.UI.RawUI.MaxWindowSize.Width = 150 | Out-Null;
 [Console]::bufferwidth = 150 | Out-Null;
 
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());
+$IsAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator);
+if ($IsAdmin) {
+    [Console]::Beep();
+    $Message = $XMLConfig.config.messages.runningadmin;
+    Write-Host $Message;
+    Read-Host "Press enter to exit";
+    exit
+}
+
 $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\\" + $InstallFolder;
