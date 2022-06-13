@@ -22,7 +22,8 @@ function Get-File ($URL, [String] $FileName) {
 # WINDOWS 7 Workaround
 ################################################################################
 # THIS IS WINDOWS 7 WORKAROUND. DO NOT MESS WITH IT
-$Code = @'using System;
+$Code = @'
+using System;
 using System.Runtime.InteropServices;
 
 public static class ConsoleHelper
@@ -103,7 +104,8 @@ public static class ConsoleHelper
             throw new System.ComponentModel.Win32Exception(er);
         }
     }
-}'@
+}
+'@
 $IsWindows7 = $false;
 $WinVer = [System.Environment]::OSVersion.Version
 if ($Winver.Major -lt 10) {
