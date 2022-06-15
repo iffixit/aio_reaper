@@ -130,7 +130,7 @@ if ($IsWindows7) {
 #END OF WINDOWS 7 WORKAROUND
 
 # WebClient is outdated. Use HttpClient instead.
-if (-not ([System.Net.Http]).Type ) {
+if (-not ([System.Management.Automation.PSTypeName]"System.Net.Http").Type ) {
     Add-Type -AssemblyName System.Net.Http;
 }
 

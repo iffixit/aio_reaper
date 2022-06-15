@@ -159,9 +159,11 @@ catch {
     $p = [Enum]::ToObject([System.Net.SecurityProtocolType], 3072);
     [System.Net.ServicePointManager]::SecurityProtocol = $p;
 }
-[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8");
+[System.Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8");
 # WebClient is outdated. Use HttpClient instead.
-Add-Type -AssemblyName System.Net.Http;
+if (-not ([System.Management.Automation.PSTypeName]"System.Net.Http").Type ) {
+    Add-Type -AssemblyName System.Net.Http;
+}
 
 #TODO: Somehow move that into better place
 $SettingsLink = "https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/settings.xml";
