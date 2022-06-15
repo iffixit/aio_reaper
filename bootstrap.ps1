@@ -1,4 +1,30 @@
 #Requires -Version 5
+
+#Seems that Powershell does not guarantee avaliability of the required asseblies.
+$Types = @(
+    "System.Management.Automation.PSObject", `
+        "System.DateTime", `
+        "System.IO.FileMode", `
+        "System.IO.FileAccess", `
+        "System.IO.FileStream", `
+        "System.Net.ServicePointManager", `
+        "System.Text.Encoding", `
+        "System.Net.Http", `
+        "System.Xml.XmlDocument", `
+        "System.Console", `
+        "System.Security.Principal", `
+        "System.Environment"
+)
+foreach ($Type in $Types) {
+    Write-Host "Loading $Type";
+    try {
+        [System.Reflection.Assembly]::Load([System.Reflection.AssemblyName]::new("$Type"));
+    }
+    catch {
+        Out-Null;
+    }
+}
+Clear-Host;
 function Clear-Line ([String] $Message) {
     [int] $Width = $Host.UI.RawUI.WindowSize.Width;
     $Line = " " * $($Width - 1);
@@ -127,7 +153,7 @@ if ($IsWindows7) {
 
 # We need this because default PoSH network protocol is outdated.
 try {
-    [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
+    [System.Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
 }
 catch {
     $p = [Enum]::ToObject([System.Net.SecurityProtocolType], 3072);
@@ -193,8 +219,9 @@ if ($FreeSpace -lt $DiskLimit) {
     Read-Host -Prompt "Press Enter to exit";
     exit;
 }
-$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());
-$IsAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator);
+
+$currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent());
+$IsAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator);
 if ($IsAdmin) {
     [Console]::Beep();
     $Message = $XMLConfig.config.messages.runningadmin;

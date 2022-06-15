@@ -1,6 +1,33 @@
+#Seems that Powershell does not guarantee avaliability of the required asseblies.
+$Types = @(
+    "System.Management.Automation.PSObject", `
+        "System.DateTime", `
+        "System.IO.FileMode", `
+        "System.IO.FileAccess", `
+        "System.IO.FileStream", `
+        "System.Net.ServicePointManager", `
+        "System.Text.Encoding", `
+        "System.Net.Http", `
+        "System.Xml.XmlDocument", `
+        "System.Console", `
+        "System.Security.Principal", `
+        "System.Environment", `
+        "System.Diagnostics"
+)
+foreach ($Type in $Types) {
+    Write-Host "Loading $Type";
+    try {
+        [System.Reflection.Assembly]::Load([System.Reflection.AssemblyName]::new("$Type"));
+    }
+    catch {
+        Out-Null;
+    }
+}
+Clear-Host;
+
 # DO REMEMBER CTRL+C breaks the pipeline!
-[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
-[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8");
+[System.Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
+[System.Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8");
 
 # THIS IS WINDOWS 7 WORKAROUND. DO NOT MESS WITH IT
 $Code = @'
@@ -103,7 +130,10 @@ if ($IsWindows7) {
 #END OF WINDOWS 7 WORKAROUND
 
 # WebClient is outdated. Use HttpClient instead.
-Add-Type -AssemblyName System.Net.Http;
+if (-not ([System.Net.Http]).Type ) {
+    Add-Type -AssemblyName System.Net.Http;
+}
+
 
 [xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
@@ -113,8 +143,8 @@ $host.UI.RawUI.WindowSize.Width = 150 | Out-Null;
 $host.UI.RawUI.MaxWindowSize.Width = 150 | Out-Null;
 [Console]::bufferwidth = 150 | Out-Null;
 
-$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());
-$IsAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator);
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent());
+$IsAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator);
 if ($IsAdmin) {
     [Console]::Beep();
     $Message = $XMLConfig.config.messages.runningadmin;
