@@ -27,7 +27,7 @@ $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 
 
-$RunnerVersion = "1.0.0 Prebeta / Winged ratel";
+$RunnerVersion = "1.0.0 Prebeta / Winged ratel NIGHT DEBUG";
 
 
 if ($args -like "*-lite*") {
