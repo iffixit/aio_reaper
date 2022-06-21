@@ -10,19 +10,18 @@ $RootDir = $SystemDrive + "\\" + $InstallFolder;
 Set-Location $RootDir;
 . $("$RootDir\\functions.ps1");
 $Message = $XMLConfig.config.messages.unpacking;
-$MhddosPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
-if (Test-Path $MhddosPath) {
-    $null = Remove-Item -Path $MhddosPath -Recurse -Force | Out-Null;
+$LoadPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
+if (Test-Path $LoadPath) {
+    $null = Remove-Item -Path $LoadPath -Recurse -Force | Out-Null;
 }
 Clear-Line $("$Message mhddos_proxy")
 Set-Location $RootDir;
 $Message = $XMLConfig.config.messages.unpacking;
 $LoadURL = $XMLConfig.config.links.load;
-$LoadPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
 Clear-Line $("$Message load")
 $GitArgs = "clone $LoadURL $LoadPath";
 $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
-Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
+Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait;
 
 $PyPath = $XMLConfig.config.folders.python;
 $PythonFolder = $("$RootDir\\$PyPath")
