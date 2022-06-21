@@ -14,15 +14,15 @@ $LoadPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
 if (Test-Path $LoadPath) {
     $null = Remove-Item -Path $LoadPath -Recurse -Force | Out-Null;
 }
+Start-Sleep -Seconds 1;
 Clear-Line $("$Message mhddos_proxy")
-Set-Location $RootDir;
 $Message = $XMLConfig.config.messages.unpacking;
 $LoadURL = $XMLConfig.config.links.load;
 Clear-Line $("$Message load")
 $GitArgs = "clone $LoadURL $LoadPath";
 $GitPath = $XMLConfig.config.folders.git;
 $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
-Start-Process -FilePath $GitExe -ArgumentList $GitArgs -WindowStyle Hidden -Wait;
+Start-Process -FilePath $GitExe -ArgumentList $GitArgs -NoNewWindow -Wait;
 
 $PyPath = $XMLConfig.config.folders.python;
 $PythonFolder = $("$RootDir\\$PyPath")
@@ -30,4 +30,4 @@ $PythonExe = $PythonFolder + "\\" + "python.exe";
 Set-Location $LoadPath;
 Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
-Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
+Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -NoNewWindow -Wait;
