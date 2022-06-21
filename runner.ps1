@@ -45,7 +45,6 @@ $StopRequested = $false;
 $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
-Set-Location $LoadPath;
 [System.Diagnostics.Process] $PyProcess = $null;
 $RunnerID = $null;
 
