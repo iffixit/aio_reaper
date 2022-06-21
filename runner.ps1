@@ -87,7 +87,7 @@ while (-not $StopRequested) {
                 if (-not (Get-Process -Id $PyProcess.Id)) {
                     $PythonExited = $true
                 }
-                while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt $Now)) {
+                while (($PythonExited -eq $false) -and ($StopBlockJob -gt $Now)) {
                     $Now = [System.DateTime]::Now;
                     if (-not (Get-Process -Id $PyProcess.Id)) {
                         $PythonExited = $true
@@ -150,5 +150,8 @@ while (-not $StopRequested) {
     if ($RunningLite) {
         $TargetList = Get-Targets $TargetsURI $RunningLite;
         Stop-Runners $LoadPath $PythonExe;
+    }
+    if($PythonExited){
+        $StartTask = $true;
     }
 }
