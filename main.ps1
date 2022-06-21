@@ -172,6 +172,7 @@ if ($FreeMem -lt $RamLimit) {
     $LiteMode = $true;
 }
 $RunnerURL = $XMLConfig.config.links.runner;
+$UpdaterURL = $XMLConfig.config.links.updater;
 $NewStartRequired = $true;
 $TitleStarted = $XMLConfig.config.titles.started;
 $TitleOK = $XMLConfig.config.titles.ok;
