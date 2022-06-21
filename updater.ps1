@@ -20,8 +20,9 @@ $Message = $XMLConfig.config.messages.unpacking;
 $LoadURL = $XMLConfig.config.links.load;
 Clear-Line $("$Message load")
 $GitArgs = "clone $LoadURL $LoadPath";
+$GitPath = $XMLConfig.config.folders.git;
 $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
-Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait;
+Start-Process -FilePath $GitExe -ArgumentList $GitArgs -WindowStyle Hidden -Wait;
 
 $PyPath = $XMLConfig.config.folders.python;
 $PythonFolder = $("$RootDir\\$PyPath")
