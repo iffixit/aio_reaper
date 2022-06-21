@@ -138,12 +138,15 @@ if (-not ([System.Management.Automation.PSTypeName]"System.Net.Http").Type ) {
 
 [xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
-
-$host.UI.RawUI.BufferSize.Width = 150 | Out-Null;
-$host.UI.RawUI.WindowSize.Width = 149 | Out-Null;
-$host.UI.RawUI.MaxWindowSize.Width = 149 | Out-Null;
-[System.Console]::bufferwidth = 150 | Out-Null;
-
+try{
+    $host.UI.RawUI.BufferSize.Width = 150 | Out-Null;
+    $host.UI.RawUI.WindowSize.Width = 149 | Out-Null;
+    $host.UI.RawUI.MaxWindowSize.Width = 149 | Out-Null;
+    [System.Console]::bufferwidth = 150 | Out-Null;
+}
+catch {
+    Out-Null
+}
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent());
 $IsAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator);
 if ($IsAdmin) {
@@ -177,8 +180,8 @@ $TitleError = $XMLConfig.config.titles.error;
 $TitleExiting = $XMLConfig.config.titles.exiting;
 $TitleCompleted = $XMLConfig.config.titles.completed;
 $host.UI.RawUI.WindowTitle = $TitleStarted;
-Get-File $RunnerURL $("$RootDir\\runner.ps1")
-Get-File $UpdaterURL $("$RootDir\\updater.ps1")
+Get-File $RunnerURL $("$RootDir\\runner.ps1") | Out-Null
+Get-File $UpdaterURL $("$RootDir\\updater.ps1") | Out-Null
 try {
     while ($true) {
         if ($NewStartRequired) {
