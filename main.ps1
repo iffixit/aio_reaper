@@ -226,7 +226,7 @@ try {
             $UpdaterURL = $XMLConfig.config.links.updater;
             $TitleUpdating = $XMLConfig.config.title.updating;
             $host.UI.RawUI.WindowTitle = $TitleUpdating
-            $UpdaterProc = Start-Process -FilePath $PwshExe `
+            $null = Start-Process -FilePath $PwshExe `
                 -ArgumentList "$RootDir\\updater.ps1" `
                 -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
         }
