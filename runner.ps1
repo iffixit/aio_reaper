@@ -37,19 +37,6 @@ else {
     $RunningLite = $false;
 }
 
-
-Clear-Host;
-$BannerURL = $XMLConfig.config.links.banner;
-$Banner = Get-Banner $BannerURL;
-Write-Host $Banner;
-$StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
-if ($RunningLite) {
-    $StartupMessage = $StartupMessage + " Lite";
-}
-Write-Host $StartupMessage;
-Write-Host "$($XMLConfig.config.messages.presstoexit)"
-Set-Location $RootDir;
-
 Stop-Runners $LoadPath $PythonExe;
 
 $TargetList = @()
@@ -63,6 +50,17 @@ Set-Location $LoadPath;
 $RunnerID = $null;
 
 while (-not $StopRequested) {
+    Clear-Host;
+    $BannerURL = $XMLConfig.config.links.banner;
+    $Banner = Get-Banner $BannerURL;
+    Write-Host $Banner;
+    $StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
+    if ($RunningLite) {
+        $StartupMessage = $StartupMessage + " Lite";
+    }
+    Write-Host $StartupMessage;
+    Write-Host "$($XMLConfig.config.messages.presstoexit)"
+    Set-Location $RootDir;
     #TODO: split BIG load to a smaller ones
     #TODO: think out condition when to do that
     if ($StartTask -and (-not $RunningLite)) {
@@ -100,11 +98,10 @@ while (-not $StopRequested) {
                         $RunnerID = $null;
                         $ExitLoopReqested = $true;
                     }
-                    if ($StopBlockJob -gt $Now)
-                    {
+                    if ($StopBlockJob -gt $Now) {
                         $ExitLoopReqested = $true;
                     }
-                    if(!$ExitLoopReqested){
+                    if (!$ExitLoopReqested) {
                         $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                         $Message = $XMLConfig.config.messages.targets + `
                             ": $($Target.Count) " + `
@@ -115,7 +112,7 @@ while (-not $StopRequested) {
                             $XMLConfig.config.messages.tillupdate + `
                             ": $BlockJobLeft " + `
                             $XMLConfig.config.messages.minutes + `
-                            $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                        $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                         Clear-Line $Message;
                         Start-Sleep -Seconds 5;
                     }
@@ -140,10 +137,10 @@ while (-not $StopRequested) {
                 $ExitLoopReqested = $true;
                 break;
             }
-            if($StopCycle -gt $Now) {
+            if ($StopCycle -gt $Now) {
                 $ExitLoopReqested = $true;
             }
-            if(!$ExitLoopReqested){
+            if (!$ExitLoopReqested) {
                 $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
                 $Message = $XMLConfig.config.messages.targets + `
                     ": $($TargetList.Count) " + `
@@ -154,7 +151,7 @@ while (-not $StopRequested) {
                     $XMLConfig.config.messages.tillupdate + `
                     ": $BlockJobLeft " + `
                     $XMLConfig.config.messages.minutes + `
-                    $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                 Clear-Line $Message;
             }
         }
@@ -173,7 +170,7 @@ while (-not $StopRequested) {
         $TargetList = Get-Targets $TargetsURI $RunningLite;
         Stop-Runners $LoadPath $PythonExe;
     }
-    if($null -eq $RunnerID){
+    if ($null -eq $RunnerID) {
         $StartTask = $true;
     }
 }
