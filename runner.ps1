@@ -49,17 +49,19 @@ $Globalargs = $XMLConfig.config.baseloadargs;
 $RunnerID = $null;
 
 while (-not $StopRequested) {
-    Clear-Host;
-    $BannerURL = $XMLConfig.config.links.banner;
-    $Banner = Get-Banner $BannerURL;
-    Write-Host $Banner;
-    $StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
-    if ($RunningLite) {
-        $StartupMessage = $StartupMessage + " Lite";
+    if ($StartTask) {
+        Clear-Host;
+        $BannerURL = $XMLConfig.config.links.banner;
+        $Banner = Get-Banner $BannerURL;
+        Write-Host $Banner;
+        $StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
+        if ($RunningLite) {
+            $StartupMessage = $StartupMessage + " Lite";
+        }
+        Write-Host $StartupMessage;
+        Write-Host "$($XMLConfig.config.messages.presstoexit)"
+        Set-Location $RootDir;
     }
-    Write-Host $StartupMessage;
-    Write-Host "$($XMLConfig.config.messages.presstoexit)"
-    Set-Location $RootDir;
     #TODO: split BIG load to a smaller ones
     #TODO: think out condition when to do that
     if ($StartTask -and (-not $RunningLite)) {
