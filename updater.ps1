@@ -14,5 +14,6 @@ $mhddos_proxy_URL = $XMLConfig.config.links.load;
 $MhddosPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
 $null = Remove-Item -Path $MhddosPath -Recurse -Force;
 Clear-Line $("$Message mhddos_proxy")
+$GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
 $GitArgs = "clone $mhddos_proxy_URL $MhddosPath";
 Start-Process -FilePath $GitExe -ArgumentList $GitArgs -Wait -WindowStyle Hidden;
