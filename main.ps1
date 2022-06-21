@@ -18,6 +18,7 @@ foreach ($Type in $Types) {
     Write-Host "Loading $Type";
     try {
         [System.Reflection.Assembly]::Load([System.Reflection.AssemblyName]::new("$Type"));
+        Add-Type -AssemblyName $Type | Out-Null;
     }
     catch {
         Out-Null;
@@ -139,9 +140,9 @@ if (-not ([System.Management.Automation.PSTypeName]"System.Net.Http").Type ) {
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
 
 $host.UI.RawUI.BufferSize.Width = 150 | Out-Null;
-$host.UI.RawUI.WindowSize.Width = 150 | Out-Null;
-$host.UI.RawUI.MaxWindowSize.Width = 150 | Out-Null;
-[Console]::bufferwidth = 150 | Out-Null;
+$host.UI.RawUI.WindowSize.Width = 149 | Out-Null;
+$host.UI.RawUI.MaxWindowSize.Width = 149 | Out-Null;
+[System.Console]::bufferwidth = 150 | Out-Null;
 
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent());
 $IsAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator);
@@ -177,9 +178,13 @@ $TitleExiting = $XMLConfig.config.titles.exiting;
 $TitleCompleted = $XMLConfig.config.titles.completed;
 $host.UI.RawUI.WindowTitle = $TitleStarted;
 Get-File $RunnerURL $("$RootDir\\runner.ps1")
+Get-File $UpdaterURL $("$RootDir\\updater.ps1")
 try {
     while ($true) {
         if ($NewStartRequired) {
+            $UpdaterProc = Start-Process -FilePath $PwshExe `
+                -ArgumentList "$RootDir\\updater.ps1" `
+                -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
             if ($LiteMode) {
                 $RunnerProc = Start-Process -FilePath $PwshExe `
                     -ArgumentList "$RootDir\\runner.ps1 -args '-lite'" `
@@ -214,6 +219,12 @@ try {
         }
         if ($NewStartRequired) {
             Stop-Tree $RunnerProc.Id;
+            $UpdaterURL = $XMLConfig.config.links.updater;
+            $TitleUpdating = $XMLConfig.config.title.updating;
+            $host.UI.RawUI.WindowTitle = $TitleUpdating
+            $UpdaterProc = Start-Process -FilePath $PwshExe `
+                -ArgumentList "$RootDir\\updater.ps1" `
+                -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
         }
         Get-File $RunnerURL $("$RootDir\\runner_new.ps1");
         $Now = [System.DateTime]::Now;

@@ -18,6 +18,7 @@
         <main>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/main.ps1</main>
         <icon>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/1984PC.ICO</icon>
         <kickstart>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/kickstart.ps1</kickstart>
+        <updater>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/updater.ps1</updater>
     </links>
     <folders>
         <install>AIOReaper</install>
@@ -67,5 +68,6 @@
         <error>💀 [Помилка]</error>
         <exiting>💀 [Виходимо]</exiting>
         <completed>💀 [Закінчено]</completed>
+        <updating>💀 [Оновлюєм]</updating>
     </titles>
 </config>
