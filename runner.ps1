@@ -84,10 +84,14 @@ while (-not $StopRequested) {
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 $Now = [System.DateTime]::Now;
-                $PythonExited = $PyProcess.HasExited;
+                if (-not (Get-Process -Id $PyProcess.Id)) {
+                    $PythonExited = $true
+                }
                 while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt $Now)) {
                     $Now = [System.DateTime]::Now;
-                    $PythonExited = $PyProcess.HasExited;
+                    if (-not (Get-Process -Id $PyProcess.Id)) {
+                        $PythonExited = $true
+                    }
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
