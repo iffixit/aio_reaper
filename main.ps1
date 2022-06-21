@@ -138,7 +138,7 @@ if (-not ([System.Management.Automation.PSTypeName]"System.Net.Http").Type ) {
 
 [xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
-try{
+try {
     $host.UI.RawUI.BufferSize.Width = 150 | Out-Null;
     $host.UI.RawUI.WindowSize.Width = 149 | Out-Null;
     $host.UI.RawUI.MaxWindowSize.Width = 149 | Out-Null;
@@ -186,7 +186,7 @@ Get-File $UpdaterURL $("$RootDir\\updater.ps1") | Out-Null
 try {
     while ($true) {
         if ($NewStartRequired) {
-            $UpdaterProc = Start-Process -FilePath $PwshExe `
+            $null = Start-Process -FilePath $PwshExe `
                 -ArgumentList "$RootDir\\updater.ps1" `
                 -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
             if ($LiteMode) {
