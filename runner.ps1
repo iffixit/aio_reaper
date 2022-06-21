@@ -156,14 +156,19 @@ while (-not $StopRequested) {
                 Clear-Line $Message;
             }
         }
-        $NewTargetList = Get-Targets $TargetsURI $RunningLite;
-        if ($TargetList.Count -eq $NewTargetList.Count) {
-            $StartTask = $false;
+        if ($ExitLoopReqested) {
+            $StartTask = $true;
         }
         else {
-            $TargetList = $NewTargetList;
-            Stop-Runners $LoadPath $PythonExe;
-            $StartTask = $true;
+            $NewTargetList = Get-Targets $TargetsURI $RunningLite;
+            if ($TargetList.Count -eq $NewTargetList.Count) {
+                $StartTask = $false;
+            }
+            else {
+                $TargetList = $NewTargetList;
+                Stop-Runners $LoadPath $PythonExe;
+                $StartTask = $true;
+            }
         }
     }
 
