@@ -89,13 +89,13 @@ while (-not $StopRequested) {
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 $Now = [System.DateTime]::Now;
                 $ExitLoopReqested = $false;
-                if (-not (Get-Process -Id $RunnerID)) {
+                if (-not $(Get-Process -Id $RunnerID)) {
                     $RunnerID = $null;
                     $ExitLoopReqested = $true;
                 }
                 while (!$ExitLoopReqested) {
                     $Now = [System.DateTime]::Now;
-                    if (-not (Get-Process -Id $RunnerID)) {
+                    if (-not $(Get-Process -Id $RunnerID)) {
                         $RunnerID = $null;
                         $ExitLoopReqested = $true;
                     }
@@ -125,7 +125,7 @@ while (-not $StopRequested) {
         }
         $StartTask = $false;
     }
-    if (!(Get-Process -Id $RunnerID)) {
+    if (-not $(Get-Process -Id $RunnerID)) {
         $RunnerID = $null;
     }
     if (!$RunningLite) {
@@ -133,7 +133,7 @@ while (-not $StopRequested) {
         $ExitLoopReqested = $false;
         while (!$ExitLoopReqested) {
             $Now = [System.DateTime]::Now;
-            if (!(Get-Process -Id $RunnerID)) {
+            if (-not $(Get-Process -Id $RunnerID)) {
                 $RunnerID = $null;
                 $ExitLoopReqested = $true;
                 break;
