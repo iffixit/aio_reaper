@@ -1,3 +1,4 @@
+#[console]::TreatControlCAsInput = $true
 $host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
 $host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
 
@@ -17,12 +18,17 @@ $PythonPath = $("$RootDir\$($XMLConfig.config.folders.python)\");
 $PythonExe = $PythonPath + "python.exe";
 $LoadPath = $("$RootDir\$($XMLConfig.config.folders.load)\");
 $LoadFileName = $LoadPath + $($XMLConfig.config.mainloadfile);
-
+$BogusInitPyPath = $LoadPath + "src\__init__.py";
+if (Test-Path $BogusInitPyPath) {
+    Remove-Item $BogusInitPyPath -Force | Out-Null;
+}
 $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 
-$RunnerVersion = "1.0.0 Prebeta / Winged ratel NIGHT DEBUG";
+
+$RunnerVersion = "1.0.0 Prebeta / Winged ratel";
+
 
 if ($args -like "*-lite*") {
     $RunningLite = $true;
@@ -30,6 +36,19 @@ if ($args -like "*-lite*") {
 else {
     $RunningLite = $false;
 }
+
+
+Clear-Host;
+$BannerURL = $XMLConfig.config.links.banner;
+$Banner = Get-Banner $BannerURL;
+Write-Host $Banner;
+$StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
+if ($RunningLite) {
+    $StartupMessage = $StartupMessage + " Lite";
+}
+Write-Host $StartupMessage;
+Write-Host "$($XMLConfig.config.messages.presstoexit)"
+Set-Location $RootDir;
 
 Stop-Runners $LoadPath $PythonExe;
 
@@ -39,32 +58,21 @@ $StopRequested = $false;
 $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
-[System.Diagnostics.Process] $PyProcess = $null;
 Set-Location $LoadPath;
+[System.Diagnostics.Process] $PyProcess = $null;
 
 while (-not $StopRequested) {
-    if ($StartTask) {
-        Clear-Host;
-        $BannerURL = $XMLConfig.config.links.banner;
-        $Banner = Get-Banner $BannerURL;
-        Write-Host $Banner;
-        $StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
-        if ($RunningLite) {
-            $StartupMessage = $StartupMessage + " Lite";
-        }
-        Write-Host $StartupMessage;
-        Write-Host "$($XMLConfig.config.messages.presstoexit)"
-    }
+    #TODO: split BIG load to a smaller ones
+    #TODO: think out condition when to do that
     if ($StartTask -and (-not $RunningLite)) {
         $TargetList -join "`r`n" | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
         $TargetString = $("-c $LoadPath\targets.txt");
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-        $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -PassThru;
+        $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
         $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-        $RunnerID = $PyProcess.Id;
         $StartTask = $false;
-        Start-Sleep -Seconds 1;
     }
+
     if ($StartTask -and $RunningLite) {
         $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
         foreach ($Target in $Targets) {
@@ -73,18 +81,13 @@ while (-not $StopRequested) {
                 $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-                $RunnerID = $PyProcess.Id;
-                Start-Sleep -Seconds 1;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 $Now = [System.DateTime]::Now;
-                $ExitLoopReqested = $false;
-                while (-not $ExitLoopReqested) {
-                    if ($StopBlockJob -gt $Now) {
-                        $ExitLoopReqested = $true;
-                    }
-                }
-                if (!$ExitLoopReqested) {
+                $PythonExited = $PyProcess.HasExited;
+                while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt $Now)) {
+                    $Now = [System.DateTime]::Now;
+                    $PythonExited = $PyProcess.HasExited;
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
@@ -95,57 +98,36 @@ while (-not $StopRequested) {
                         $XMLConfig.config.messages.tillupdate + `
                         ": $BlockJobLeft " + `
                         $XMLConfig.config.messages.minutes + `
-                        " $(Measure-Bandwith)" + `
-                        " $($XMLConfig.config.messages.network)";
+                    $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                     Clear-Line $Message;
                     Start-Sleep -Seconds 5;
                 }
+                Stop-Tree $PyProcess.Id;
+                $Message = $XMLConfig.config.messages.litedone;
+                Clear-Line $("$($Target.Count) $Message");
             }
-            Stop-Tree $PyProcess.Id;
-            $Message = $XMLConfig.config.messages.litedone;
-            Clear-Line $("$($Target.Count) $Message");
         }
-        $StartTask = $true;
+        $StartTask = $false;
     }
-    if (-not $(Get-Process -Id $RunnerID)) {
-        $RunnerID = $null;
-    }
-    if (-not $RunningLite -and ($null -ne $RunnerID)) {
+    if (!$RunningLite) {
+        $PythonExited = $PyProcess.HasExited;
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        $ExitLoopReqested = $false;
-        while (!$ExitLoopReqested) {
+        while (($StopCycle -gt $Now) -and -not $PythonExited) {
             $Now = [System.DateTime]::Now;
-            if (-not $(Get-Process -Id $RunnerID)) {
-                $RunnerID = $null;
-                $ExitLoopReqested = $true;
-                break;
-            }
-            if ($StopCycle -gt $Now) {
-                $ExitLoopReqested = $true;
-            }
-            if (!$ExitLoopReqested) {
-                $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
-                $Message = $XMLConfig.config.messages.targets + `
-                    ": $($TargetList.Count) " + `
-                    $XMLConfig.config.messages.cpu + `
-                    ": $(Get-CpuLoad)`% " + `
-                    $XMLConfig.config.messages.memory + `
-                    ": $(Get-FreeRamPercent)`% " + `
-                    $XMLConfig.config.messages.tillupdate + `
-                    ": $BlockJobLeft " + `
-                    $XMLConfig.config.messages.minutes + `
-                $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
-                Clear-Line $Message;
-            }
+            $PythonExited = $PyProcess.HasExited;
+            $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
+            $Message = $XMLConfig.config.messages.targets + `
+                ": $($TargetList.Count) " + `
+                $XMLConfig.config.messages.cpu + `
+                ": $(Get-CpuLoad)`% " + `
+                $XMLConfig.config.messages.memory + `
+                ": $(Get-FreeRamPercent)`% " + `
+                $XMLConfig.config.messages.tillupdate + `
+                ": $BlockJobLeft " + `
+                $XMLConfig.config.messages.minutes + `
+            $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+            Clear-Line $Message;
         }
-    }
-    if (-not $(Get-Process -Id $RunnerID)) {
-        $RunnerID = $null;
-    }
-    if ($null -eq $RunnerID) {
-        $StartTask = $true;
-    }
-    else {
         $NewTargetList = Get-Targets $TargetsURI $RunningLite;
         if ($TargetList.Count -eq $NewTargetList.Count) {
             $StartTask = $false;
@@ -155,5 +137,10 @@ while (-not $StopRequested) {
             Stop-Runners $LoadPath $PythonExe;
             $StartTask = $true;
         }
+    }
+
+    if ($RunningLite) {
+        $TargetList = Get-Targets $TargetsURI $RunningLite;
+        Stop-Runners $LoadPath $PythonExe;
     }
 }
