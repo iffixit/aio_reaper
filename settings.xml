@@ -51,7 +51,7 @@
         <runninglite>Скрипт не знайшов достатньо ресурсів для повномасштабної атаки. Запускаємо спрощену версію.</runninglite>
         <pressenter>Натисніть Ентер [⏎] для завершення...</pressenter>
         <runnerstart>Бігунець версії</runnerstart>
-        <endrun>Роботу закінчено. Дякую за роботу. Сподіваюсь побачити вас ще.</endrun>
+        <endrun>Роботу закінчено. Дякую за ваш вклад. Сподіваюсь побачити вас ще.</endrun>
         <presstoexit>Натисніть [Ctrl] + [C] для виходу з програми.</presstoexit>
     </messages>
     <erroraction>Continue</erroraction>
