@@ -25,7 +25,7 @@
         <git>Git</git>
         <python>Python</python>
         <posh>Powershell</posh>
-        <load>Mhddos_proxy</load>
+        <load>mhddos_proxy</load>
     </folders>
     <limits>
         <description>В цій секції в гігабайтах задаються пороги спрацювання попереджень і зупинок роботи</description>
