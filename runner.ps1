@@ -89,27 +89,36 @@ while (-not $StopRequested) {
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 $Now = [System.DateTime]::Now;
+                $ExitLoopReqested = $false;
                 if (-not (Get-Process -Id $RunnerID)) {
                     $RunnerID = $null;
+                    $ExitLoopReqested = $true;
                 }
-                while (($null -ne $RunnerID) -and ($StopBlockJob -gt $Now)) {
+                while (!$ExitLoopReqested) {
                     $Now = [System.DateTime]::Now;
                     if (-not (Get-Process -Id $RunnerID)) {
                         $RunnerID = $null;
+                        $ExitLoopReqested = $true;
                     }
-                    $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
-                    $Message = $XMLConfig.config.messages.targets + `
-                        ": $($Target.Count) " + `
-                        $XMLConfig.config.messages.cpu + `
-                        ": $(Get-CpuLoad)`% " + `
-                        $XMLConfig.config.messages.memory + `
-                        ": $(Get-FreeRamPercent)`% " + `
-                        $XMLConfig.config.messages.tillupdate + `
-                        ": $BlockJobLeft " + `
-                        $XMLConfig.config.messages.minutes + `
-                    $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
-                    Clear-Line $Message;
-                    Start-Sleep -Seconds 5;
+                    if ($StopBlockJob -gt $Now)
+                    {
+                        $ExitLoopReqested = $true;
+                    }
+                    if(!$ExitLoopReqested){
+                        $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
+                        $Message = $XMLConfig.config.messages.targets + `
+                            ": $($Target.Count) " + `
+                            $XMLConfig.config.messages.cpu + `
+                            ": $(Get-CpuLoad)`% " + `
+                            $XMLConfig.config.messages.memory + `
+                            ": $(Get-FreeRamPercent)`% " + `
+                            $XMLConfig.config.messages.tillupdate + `
+                            ": $BlockJobLeft " + `
+                            $XMLConfig.config.messages.minutes + `
+                            $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                        Clear-Line $Message;
+                        Start-Sleep -Seconds 5;
+                    }
                 }
                 Stop-Tree $PyProcess.Id;
                 $Message = $XMLConfig.config.messages.litedone;
@@ -123,24 +132,31 @@ while (-not $StopRequested) {
     }
     if (!$RunningLite) {
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        while (($StopCycle -gt $Now) -and ($null -ne $RunnerID)) {
+        $ExitLoopReqested = $false;
+        while (!$ExitLoopReqested) {
             $Now = [System.DateTime]::Now;
             if (!(Get-Process -Id $RunnerID)) {
                 $RunnerID = $null;
+                $ExitLoopReqested = $true;
                 break;
             }
-            $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
-            $Message = $XMLConfig.config.messages.targets + `
-                ": $($TargetList.Count) " + `
-                $XMLConfig.config.messages.cpu + `
-                ": $(Get-CpuLoad)`% " + `
-                $XMLConfig.config.messages.memory + `
-                ": $(Get-FreeRamPercent)`% " + `
-                $XMLConfig.config.messages.tillupdate + `
-                ": $BlockJobLeft " + `
-                $XMLConfig.config.messages.minutes + `
-            $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
-            Clear-Line $Message;
+            if($StopCycle -gt $Now) {
+                $ExitLoopReqested = $true;
+            }
+            if(!$ExitLoopReqested){
+                $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
+                $Message = $XMLConfig.config.messages.targets + `
+                    ": $($TargetList.Count) " + `
+                    $XMLConfig.config.messages.cpu + `
+                    ": $(Get-CpuLoad)`% " + `
+                    $XMLConfig.config.messages.memory + `
+                    ": $(Get-FreeRamPercent)`% " + `
+                    $XMLConfig.config.messages.tillupdate + `
+                    ": $BlockJobLeft " + `
+                    $XMLConfig.config.messages.minutes + `
+                    $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                Clear-Line $Message;
+            }
         }
         $NewTargetList = Get-Targets $TargetsURI $RunningLite;
         if ($TargetList.Count -eq $NewTargetList.Count) {
