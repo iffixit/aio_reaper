@@ -87,7 +87,7 @@ while (-not $StopRequested) {
                 if (-not (Get-Process -Id $PyProcess.Id)) {
                     $PythonExited = $true
                 }
-                while (($PythonExited -not $true) -and ($StopBlockJob -gt $Now)) {
+                while ((-not $PythonExited) -and ($StopBlockJob -gt $Now)) {
                     $Now = [System.DateTime]::Now;
                     if (-not (Get-Process -Id $PyProcess.Id)) {
                         $PythonExited = $true
@@ -118,7 +118,7 @@ while (-not $StopRequested) {
     }
     if (!$RunningLite) {
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        while (($StopCycle -gt $Now) -and ($PythonExited -not $true)) {
+        while (($StopCycle -gt $Now) -and (-not $PythonExited)) {
             $Now = [System.DateTime]::Now;
             if (-not (Get-Process -Id $PyProcess.Id)) {
                 $PythonExited = $true
