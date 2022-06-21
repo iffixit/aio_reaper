@@ -68,7 +68,7 @@ while (-not $StopRequested) {
         $TargetList -join "`r`n" | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
         $TargetString = $("-c $LoadPath\targets.txt");
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-        $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
+        $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -PassThru;
         $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
         $StartTask = $false;
     }
