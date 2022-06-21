@@ -60,6 +60,7 @@ $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
 [System.Diagnostics.Process] $PyProcess = $null;
+$RunnerID = $null;
 
 while (-not $StopRequested) {
     #TODO: split BIG load to a smaller ones
@@ -70,7 +71,9 @@ while (-not $StopRequested) {
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
         $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -ArgumentList $RunnerArgs -PassThru;
         $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+        $RunnerID = $PyProcess.Id;
         $StartTask = $false;
+        Start-Sleep -Seconds 1;
     }
 
     if ($StartTask -and $RunningLite) {
@@ -81,17 +84,18 @@ while (-not $StopRequested) {
                 $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+                $RunnerID = $PyProcess.Id;
+                Start-Sleep -Seconds 1;
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 $Now = [System.DateTime]::Now;
-                if (-not (Get-Process -Id $PyProcess.Id)) {
-                    $PythonExited = $true
+                if (-not (Get-Process -Id $RunnerID)) {
+                    $RunnerID = $null;
                 }
-                while ((-not $PythonExited) -and ($StopBlockJob -gt $Now)) {
+                while (($null -ne $RunnerID) -and ($StopBlockJob -gt $Now)) {
                     $Now = [System.DateTime]::Now;
-                    if (-not (Get-Process -Id $PyProcess.Id)) {
-                        $PythonExited = $true;
-                        break;
+                    if (-not (Get-Process -Id $RunnerID)) {
+                        $RunnerID = $null;
                     }
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     $Message = $XMLConfig.config.messages.targets + `
@@ -114,15 +118,15 @@ while (-not $StopRequested) {
         }
         $StartTask = $false;
     }
-    if (-not (Get-Process -Id $PyProcess.Id)) {
-        $PythonExited = $true
+    if (!(Get-Process -Id $RunnerID)) {
+        $RunnerID = $null;
     }
     if (!$RunningLite) {
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        while (($StopCycle -gt $Now) -and (-not $PythonExited)) {
+        while (($StopCycle -gt $Now) -and ($null -ne $RunnerID)) {
             $Now = [System.DateTime]::Now;
-            if (-not (Get-Process -Id $PyProcess.Id)) {
-                $PythonExited = $true
+            if (!(Get-Process -Id $RunnerID)) {
+                $RunnerID = $null;
                 break;
             }
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
@@ -153,7 +157,7 @@ while (-not $StopRequested) {
         $TargetList = Get-Targets $TargetsURI $RunningLite;
         Stop-Runners $LoadPath $PythonExe;
     }
-    if($PythonExited){
+    if($null -eq $RunnerID){
         $StartTask = $true;
     }
 }
