@@ -302,8 +302,8 @@ if (Test-Path "$RootDir\\python.zip") {
     Remove-Item "$RootDir\\python.zip" -Force;
 }
 
-$PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 $PoshPath = $XMLConfig.config.folders.posh;
+$PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 do {
     $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message PowerShell Core...");
@@ -315,7 +315,7 @@ do {
     }
     $Message = $XMLConfig.config.messages.unpacking;
     Clear-Line $("$Message PowerShell Core...");
-    Expand-Archive -Path "pwsh.zip" -DestinationPath "$RootDir\\$PoshPath";
+    Expand-Archive -Path "pwsh.zip" -DestinationPath "$RootDir\\$PoshPath" | Out-Null;
 } while (-not (Test-Path $PwshExe))
 
 if (Test-Path "$RootDir\\pwsh.zip") {
