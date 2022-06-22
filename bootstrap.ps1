@@ -245,67 +245,66 @@ if (Test-Path $RootDir) {
     Set-Location $RootDir;
 } # TODO Error checking here
 
-
 $GitPath = $XMLConfig.config.folders.git;
-if (!(Test-Path "$RootDir\\$GitPath")) {
-    $Message = $XMLConfig.config.messages.downloading;
-    Clear-Line $("$Message git...");
-    $Message = $XMLConfig.config.messages.unpacking
-    Get-File $GitStandalone32 "$RootDir\\gitinst.exe";
-    Clear-Line $("$Message git...");
-    Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle Hidden -Wait;
-}
 $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
+do {
+        $Message = $XMLConfig.config.messages.downloading;
+        Clear-Line $("$Message git...");
+        $Message = $XMLConfig.config.messages.unpacking
+        Get-File $GitStandalone32 "$RootDir\\gitinst.exe";
+        Clear-Line $("$Message git...");
+        Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle Hidden -Wait;
+} while (-not (Test-Path $GitExe))
 if (Test-Path "$RootDir\\gitinst.exe") {
     Remove-Item "$RootDir\\gitinst.exe" -Force;
 }
-$PyString = "[placeholder]";
-$PyPath = $XMLConfig.config.folders.python;
-if (!(Test-Path "$RootDir\$PyPath")) {
-    $Message = $XMLConfig.config.messages.downloading;
-    Clear-Line $("$Message Python...");
-    if ($IsWindows7) {
-        Get-File $PythonStandaloneWin7 "$RootDir\\python.zip";
-        $PyString = "python38";
-    }
-    elseif ($Is64bit) {
-        Get-File $PythonStandalone64 "$RootDir\\python.zip";
-        $PyString = "python310";
-    }
-    else {
-        Get-File $PythonStandalone32 "$RootDir\\python.zip";
-        $PyString = "python310";
-    }
-    $Message = $XMLConfig.config.messages.unpacking;
-    Clear-Line "$Message Python...";
-    Expand-Archive -Path "python.zip" -DestinationPath "$RootDir\\$PyPath";
-    $PythonFolder = $("$RootDir\\$PyPath")
-    $PythonExe = $PythonFolder + "\\" + "python.exe";
 
-    Set-Location $PythonFolder;
-    $Message = $XMLConfig.config.messages.pythonmodule;
-    Clear-Line "$Message pip...";
-    $Strings = "$PyString.zip`r`n" + `
-        ".`r`n" + `
-        "..\$($XMLConfig.config.folders.load)`r`n" + `
-        "`r`n" + `
-        "# Uncomment to run site.main() automatically`r`n" + `
-        "import site`r`n"
-    $Strings | Set-Content -Path "$PythonFolder\\$PyString._pth";
-    $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
-    Get-File $PipInstaller "$PythonFolder\\get-pip.py";
-    Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
-    Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -WindowStyle Hidden -Wait;
-}
+$PyPath = $XMLConfig.config.folders.python;
+$PythonFolder = $("$RootDir\\$PyPath")
+$PythonExe = $PythonFolder + "\\" + "python.exe";
+do {
+$PyString = "[placeholder]";
+        $Message = $XMLConfig.config.messages.downloading;
+        Clear-Line $("$Message Python...");
+        if ($IsWindows7) {
+            Get-File $PythonStandaloneWin7 "$RootDir\\python.zip";
+            $PyString = "python38";
+        }
+        elseif ($Is64bit) {
+            Get-File $PythonStandalone64 "$RootDir\\python.zip";
+            $PyString = "python310";
+        }
+        else {
+            Get-File $PythonStandalone32 "$RootDir\\python.zip";
+            $PyString = "python310";
+        }
+        $Message = $XMLConfig.config.messages.unpacking;
+        Clear-Line "$Message Python...";
+        Expand-Archive -Path "python.zip" -DestinationPath "$RootDir\\$PyPath";
+        Set-Location $PythonFolder;
+        $Message = $XMLConfig.config.messages.pythonmodule;
+        Clear-Line "$Message pip...";
+        $Strings = "$PyString.zip`r`n" + `
+            ".`r`n" + `
+            "..\$($XMLConfig.config.folders.load)`r`n" + `
+            "`r`n" + `
+            "# Uncomment to run site.main() automatically`r`n" + `
+            "import site`r`n"
+        $Strings | Set-Content -Path "$PythonFolder\\$PyString._pth";
+        $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
+        Get-File $PipInstaller "$PythonFolder\\get-pip.py";
+        Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
+        Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -WindowStyle Hidden -Wait;
+} while (-not (Test-Path $PythonExe))
+
 Set-Location $RootDir;
 if (Test-Path "$RootDir\\python.zip") {
     Remove-Item "$RootDir\\python.zip" -Force;
 }
-$PythonFolder = $("$RootDir\\$PyPath")
-$PythonExe = $PythonFolder + "\\" + "python.exe";
 
+$PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 $PoshPath = $XMLConfig.config.folders.posh;
-if (!(Test-Path "$RootDir\\$PoshPath")) {
+do {
     $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message PowerShell Core...");
     if ($Is64bit) {
@@ -317,7 +316,8 @@ if (!(Test-Path "$RootDir\\$PoshPath")) {
     $Message = $XMLConfig.config.messages.unpacking;
     Clear-Line $("$Message PowerShell Core...");
     Expand-Archive -Path "pwsh.zip" -DestinationPath "$RootDir\\$PoshPath";
-}
+} while (-not (Test-Path $PwshExe))
+
 if (Test-Path "$RootDir\\pwsh.zip") {
     Remove-Item "$RootDir\\pwsh.zip" -Force;
 }
@@ -335,7 +335,6 @@ Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
 Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
 
-$PwshExe = $RootDir + "\\" + $PoshPath + "\\pwsh.exe";
 Get-File $IconLink "$RootDir\\1984PC.ico";
 Get-File $KickstartURL "$RootDir\\kickstart.ps1";
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
