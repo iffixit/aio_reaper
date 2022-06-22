@@ -22,7 +22,7 @@ Clear-Line $("$Message load")
 $GitArgs = "clone $LoadURL $LoadPath";
 $GitPath = $XMLConfig.config.folders.git;
 $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
-Start-Process -FilePath $GitExe -ArgumentList $GitArgs -NoNewWindow -Wait;
+Start-Process -FilePath $GitExe -ArgumentList $GitArgs -WindowStyle Hidden -Wait;
 
 $PyPath = $XMLConfig.config.folders.python;
 $PythonFolder = $("$RootDir\\$PyPath")
@@ -30,4 +30,4 @@ $PythonExe = $PythonFolder + "\\" + "python.exe";
 Set-Location $LoadPath;
 Clear-Line $("$Message requirements.txt")
 $PyArgs = "-m pip install -r requirements.txt";
-Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -NoNewWindow -Wait;
+Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;

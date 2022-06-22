@@ -25,6 +25,8 @@ if (Test-Path $BogusInitPyPath) {
 $TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
+#[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
+#[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
 $RunnerVersion = "1.0.0 Prebeta / Winged ratel";
@@ -37,19 +39,6 @@ else {
     $RunningLite = $false;
 }
 
-
-Clear-Host;
-$BannerURL = $XMLConfig.config.links.banner;
-$Banner = Get-Banner $BannerURL;
-Write-Host $Banner;
-$StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
-if ($RunningLite) {
-    $StartupMessage = $StartupMessage + " Lite";
-}
-Write-Host $StartupMessage;
-Write-Host "$($XMLConfig.config.messages.presstoexit)"
-Set-Location $RootDir;
-
 Stop-Runners $LoadPath $PythonExe;
 
 $TargetList = @()
@@ -59,9 +48,22 @@ $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
-[System.Diagnostics.Process] $PyProcess = $null;
+
 
 while (-not $StopRequested) {
+    if ($StartTask) {
+        Clear-Host;
+        $BannerURL = $XMLConfig.config.links.banner;
+        $Banner = Get-Banner $BannerURL;
+        Write-Host $Banner;
+        $StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
+        if ($RunningLite) {
+            $StartupMessage = $StartupMessage + " Lite";
+        }
+        Write-Host $StartupMessage;
+        Write-Host "$($XMLConfig.config.messages.presstoexit)"
+        Set-Location $RootDir;
+    }
     #TODO: split BIG load to a smaller ones
     #TODO: think out condition when to do that
     if ($StartTask -and (-not $RunningLite)) {
@@ -84,10 +86,8 @@ while (-not $StopRequested) {
                 $StartedBlockJob = [System.DateTime]::Now;
                 $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
                 $Now = [System.DateTime]::Now;
-                $PythonExited = $PyProcess.HasExited;
                 while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt $Now)) {
                     $Now = [System.DateTime]::Now;
-                    $PythonExited = $PyProcess.HasExited;
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
@@ -110,11 +110,9 @@ while (-not $StopRequested) {
         $StartTask = $false;
     }
     if (!$RunningLite) {
-        $PythonExited = $PyProcess.HasExited;
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        while (($StopCycle -gt $Now) -and -not $PythonExited) {
+        while ($StopCycle -gt $Now) {
             $Now = [System.DateTime]::Now;
-            $PythonExited = $PyProcess.HasExited;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
