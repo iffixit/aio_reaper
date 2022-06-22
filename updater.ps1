@@ -33,4 +33,4 @@ do {
     Clear-Line $("$Message requirements.txt")
     $PyArgs = "-m pip install -r requirements.txt";
     Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
-} while (-not (Test-Path $("$PythonFolder\\runner.py")))
+} while (-not (Test-Path $("$LoadPath\\runner.py")))
