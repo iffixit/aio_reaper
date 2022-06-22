@@ -248,12 +248,12 @@ if (Test-Path $RootDir) {
 $GitPath = $XMLConfig.config.folders.git;
 $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
 do {
-        $Message = $XMLConfig.config.messages.downloading;
-        Clear-Line $("$Message git...");
-        $Message = $XMLConfig.config.messages.unpacking
-        Get-File $GitStandalone32 "$RootDir\\gitinst.exe";
-        Clear-Line $("$Message git...");
-        Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle Hidden -Wait;
+    $Message = $XMLConfig.config.messages.downloading;
+    Clear-Line $("$Message git...");
+    $Message = $XMLConfig.config.messages.unpacking
+    Get-File $GitStandalone32 "$RootDir\\gitinst.exe";
+    Clear-Line $("$Message git...");
+    Start-Process -FilePath "gitinst.exe" -ArgumentList "-o `"$RootDir\\$GitPath`" -y" -WindowStyle Hidden -Wait;
 } while (-not (Test-Path $GitExe))
 if (Test-Path "$RootDir\\gitinst.exe") {
     Remove-Item "$RootDir\\gitinst.exe" -Force;
@@ -263,38 +263,38 @@ $PyPath = $XMLConfig.config.folders.python;
 $PythonFolder = $("$RootDir\\$PyPath")
 $PythonExe = $PythonFolder + "\\" + "python.exe";
 do {
-$PyString = "[placeholder]";
-        $Message = $XMLConfig.config.messages.downloading;
-        Clear-Line $("$Message Python...");
-        if ($IsWindows7) {
-            Get-File $PythonStandaloneWin7 "$RootDir\\python.zip";
-            $PyString = "python38";
-        }
-        elseif ($Is64bit) {
-            Get-File $PythonStandalone64 "$RootDir\\python.zip";
-            $PyString = "python310";
-        }
-        else {
-            Get-File $PythonStandalone32 "$RootDir\\python.zip";
-            $PyString = "python310";
-        }
-        $Message = $XMLConfig.config.messages.unpacking;
-        Clear-Line "$Message Python...";
-        Expand-Archive -Path "python.zip" -DestinationPath "$RootDir\\$PyPath";
-        Set-Location $PythonFolder;
-        $Message = $XMLConfig.config.messages.pythonmodule;
-        Clear-Line "$Message pip...";
-        $Strings = "$PyString.zip`r`n" + `
-            ".`r`n" + `
-            "..\$($XMLConfig.config.folders.load)`r`n" + `
-            "`r`n" + `
-            "# Uncomment to run site.main() automatically`r`n" + `
-            "import site`r`n"
-        $Strings | Set-Content -Path "$PythonFolder\\$PyString._pth";
-        $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
-        Get-File $PipInstaller "$PythonFolder\\get-pip.py";
-        Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
-        Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -WindowStyle Hidden -Wait;
+    $PyString = "[placeholder]";
+    $Message = $XMLConfig.config.messages.downloading;
+    Clear-Line $("$Message Python...");
+    if ($IsWindows7) {
+        Get-File $PythonStandaloneWin7 "$RootDir\\python.zip";
+        $PyString = "python38";
+    }
+    elseif ($Is64bit) {
+        Get-File $PythonStandalone64 "$RootDir\\python.zip";
+        $PyString = "python310";
+    }
+    else {
+        Get-File $PythonStandalone32 "$RootDir\\python.zip";
+        $PyString = "python310";
+    }
+    $Message = $XMLConfig.config.messages.unpacking;
+    Clear-Line "$Message Python...";
+    Expand-Archive -Path "python.zip" -DestinationPath "$RootDir\\$PyPath";
+    Set-Location $PythonFolder;
+    $Message = $XMLConfig.config.messages.pythonmodule;
+    Clear-Line "$Message pip...";
+    $Strings = "$PyString.zip`r`n" + `
+        ".`r`n" + `
+        "..\$($XMLConfig.config.folders.load)`r`n" + `
+        "`r`n" + `
+        "# Uncomment to run site.main() automatically`r`n" + `
+        "import site`r`n"
+    $Strings | Set-Content -Path "$PythonFolder\\$PyString._pth";
+    $PipInstaller = "https://bootstrap.pypa.io/get-pip.py";
+    Get-File $PipInstaller "$PythonFolder\\get-pip.py";
+    Start-Process -FilePath $PythonExe -ArgumentList "$PythonFolder\\get-pip.py" -WindowStyle Hidden -Wait;
+    Start-Process -FilePath $PythonExe -ArgumentList "-m pip install --upgrade pip" -WindowStyle Hidden -Wait;
 } while (-not (Test-Path $PythonExe))
 
 Set-Location $RootDir;
