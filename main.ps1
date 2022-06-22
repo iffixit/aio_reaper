@@ -252,8 +252,12 @@ catch {
     Stop-Tree $RunnerProc.Id -Force;
 }
 finally {
+    $PythonPath = $("$RootDir\$($XMLConfig.config.folders.python)\");
+    $PythonExe = $PythonPath + "python.exe";
+    $LoadPath = $("$RootDir\$($XMLConfig.config.folders.load)\");
     $host.UI.RawUI.WindowTitle = $TitleExiting;
     Stop-Tree $RunnerProc.Id -Force;
+    Stop-Runners $LoadPath $PythonExe;
     Remove-Item -Path $("$RootDir\\runner.ps1") -Force;
     Clear-Host;
     $host.UI.RawUI.WindowTitle = $TitleCompleted;
