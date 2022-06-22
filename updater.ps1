@@ -11,23 +11,26 @@ Set-Location $RootDir;
 . $("$RootDir\\functions.ps1");
 $Message = $XMLConfig.config.messages.unpacking;
 $LoadPath = $RootDir + "\\" + $XMLConfig.config.folders.load + "\\";
-if (Test-Path $LoadPath) {
-    $null = Remove-Item -Path $LoadPath -Recurse -Force | Out-Null;
-}
-Start-Sleep -Seconds 1;
-Clear-Line $("$Message mhddos_proxy")
-$Message = $XMLConfig.config.messages.unpacking;
-$LoadURL = $XMLConfig.config.links.load;
-Clear-Line $("$Message load")
-$GitArgs = "clone $LoadURL $LoadPath";
-$GitPath = $XMLConfig.config.folders.git;
-$GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
-Start-Process -FilePath $GitExe -ArgumentList $GitArgs -WindowStyle Hidden -Wait;
 
-$PyPath = $XMLConfig.config.folders.python;
-$PythonFolder = $("$RootDir\\$PyPath")
-$PythonExe = $PythonFolder + "\\" + "python.exe";
-Set-Location $LoadPath;
-Clear-Line $("$Message requirements.txt")
-$PyArgs = "-m pip install -r requirements.txt";
-Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
+Start-Sleep -Seconds 1;
+do {
+    if (Test-Path $LoadPath) {
+        $null = Remove-Item -Path $LoadPath -Recurse -Force | Out-Null;
+    }
+    Clear-Line $("$Message mhddos_proxy")
+    $Message = $XMLConfig.config.messages.unpacking;
+    $LoadURL = $XMLConfig.config.links.load;
+    Clear-Line $("$Message load")
+    $GitArgs = "clone $LoadURL $LoadPath";
+    $GitPath = $XMLConfig.config.folders.git;
+    $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
+    Start-Process -FilePath $GitExe -ArgumentList $GitArgs -WindowStyle Hidden -Wait;
+
+    $PyPath = $XMLConfig.config.folders.python;
+    $PythonFolder = $("$RootDir\\$PyPath")
+    $PythonExe = $PythonFolder + "\\" + "python.exe";
+    Set-Location $LoadPath;
+    Clear-Line $("$Message requirements.txt")
+    $PyArgs = "-m pip install -r requirements.txt";
+    Start-Process -FilePath $PythonExe -ArgumentList $PyArgs -WindowStyle Hidden -Wait;
+} while (-not (Test-Path $("$PythonFolder\\runner.py")))
