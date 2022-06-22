@@ -13,7 +13,8 @@ $Types = @(
         "System.Xml.XmlDocument", `
         "System.Console", `
         "System.Security.Principal", `
-        "System.Environment"
+        "System.Environment", `
+        "Microsoft.Powershell.Archive"
 )
 foreach ($Type in $Types) {
     Write-Host "Loading $Type";
