@@ -54,7 +54,7 @@
         <endrun>Роботу закінчено. Дякую за ваш вклад. Сподіваюсь побачити вас ще.</endrun>
         <presstoexit>Натисніть [Ctrl] + [C] для виходу з програми.</presstoexit>
     </messages>
-    <erroraction>Continue</erroraction>
+    <erroraction>SilentlyContinue</erroraction>
     <liteblocksize>50</liteblocksize>
     <timers>
         <main>360</main>
