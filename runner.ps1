@@ -22,14 +22,13 @@ $BogusInitPyPath = $LoadPath + "src\__init__.py";
 if (Test-Path $BogusInitPyPath) {
     Remove-Item $BogusInitPyPath -Force | Out-Null;
 }
-$TargetsURI = $XMLConfig.config.links.targets;
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.0.0 Prebeta / Winged ratel";
+$RunnerVersion = "1.0.0 beta / Winged ratel";
 
 
 if ($args -like "*-lite*") {
@@ -42,7 +41,7 @@ else {
 Stop-Runners $LoadPath $PythonExe;
 
 $TargetList = @()
-$TargetList = Get-Targets $TargetsURI $RunningLite;
+$TargetList = MakeTargetlist $RunningLite;
 $StopRequested = $false;
 $StartTask = $true;
 $Targets = @()
@@ -126,7 +125,7 @@ while (-not $StopRequested) {
             $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
         }
-        $NewTargetList = Get-Targets $TargetsURI $RunningLite;
+        $NewTargetList = MakeTargetlist $RunningLite;
         if ($TargetList.Count -eq $NewTargetList.Count) {
             $StartTask = $false;
         }
@@ -138,7 +137,7 @@ while (-not $StopRequested) {
     }
 
     if ($RunningLite) {
-        $TargetList = Get-Targets $TargetsURI $RunningLite;
+        $TargetList = MakeTargetlist $RunningLite;
         Stop-Runners $LoadPath $PythonExe;
     }
 }

@@ -112,6 +112,7 @@ function Get-SlicedArray ($Array, $SliceSize) {
     return $SlicedArray;
 }
 
+#OBSOLETE!!! USE MAKETARGETLIST!
 function Get-Targets ($TargetsURI, $RunningLite) {
     $TargetList = @()
     do {
@@ -216,4 +217,79 @@ function Stop-Runners ($LoadPath, $PythonExe) {
     foreach ($result in $(Get-ProcByPath "$PythonExe"; )) {
         Stop-Tree $result.Id;
     }
+}
+
+function Get-JSON {
+    $GotData = $false;
+    do {
+        try {
+            $JsonData = Invoke-RestMethod -Uri https://raw.githubusercontent.com/db1000n-coordinators/LoadTestConfig/main/config.v0.7.json -Method Get
+        }
+        catch {
+            Out-Null;
+        }
+        if ($null -eq $JsonData.jobs) {
+            $GotData = $false;
+        }
+        else {
+            $GotData = $true;
+        }
+    } while ($GotData -eq $false)
+    return $JsonData;
+}
+
+function ConvertToTargets {
+    $JsonData = Get-JSON;
+    $jobs = $JsonData.jobs;
+    $TargetList = @()
+    foreach ($job in $jobs) {
+        if ($null -eq $job.args.request.path) {
+            Out-Null;
+        }
+        else {
+            $TargetList += $job.args.request.path;
+        }
+        if ($null -eq $job.args.client.static_host.addr) {
+            Out-Null;
+        }
+        else {
+            $TargetList += $job.args.client.static_host.addr;
+        }
+    }
+    $CleanTargets = @()
+    foreach ($Target in $TargetList) {
+        if ($Target -like "tcp://") {
+            continue;
+        }
+        if ($Target -like "*null*") {
+            continue;
+        }
+        if ($Target -like "http*") {
+            $CleanTargets += $Target;
+        }
+        if ($Target -like "tcp://*") {
+            $CleanTargets += $Target;
+        }
+    }
+    return $CleanTargets;
+}
+function MakeTargetlist([bool] $RunningLite) {
+    Get-File https://raw.githubusercontent.com/alexnest-ua/targets/main/special/archive/all.txt ".\part1.txt"
+    $Targets = [System.IO.File]::ReadAllLines(".\part1.txt");
+    $Targets += ConvertToTargets;
+    $Targets = $Targets -join " ";
+    $Targets = $Targets -replace '`n', ' ';
+    $Targets = $Targets -replace '`r', ' ';
+    $Targets = $Targets -replace '`t', ' ';
+    $Targets = $Targets -replace ',', ' ';
+    $Targets = $Targets -replace '  ', ' ';
+    $Targets = $Targets.Replace("tcp)", "tcp");
+    $Targets = $Targets -split " ";
+    if (-not $RunningLite) {
+        $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object;
+    }
+    else {
+        $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object { Get-Random };
+    }
+    return $TargetsCleaned
 }
