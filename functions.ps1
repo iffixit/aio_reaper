@@ -274,8 +274,10 @@ function ConvertToTargets {
     return $CleanTargets;
 }
 function MakeTargetlist([bool] $RunningLite) {
-    Get-File https://raw.githubusercontent.com/alexnest-ua/targets/main/special/archive/all.txt ".\part1.txt"
-    $Targets = [System.IO.File]::ReadAllLines(".\part1.txt");
+    $TempFilePath = "$PSScriptRoot\part1.txt"
+    Get-File https://raw.githubusercontent.com/alexnest-ua/targets/main/special/archive/all.txt "$TempFilePath"
+    $Targets = [System.IO.File]::ReadAllLines("$TempFilePath");
+    Remove-Item -Force -Path $TempFilePath | Out-Null
     $Targets += ConvertToTargets;
     $Targets = $Targets -join " ";
     $Targets = $Targets -replace '`n', ' ';
