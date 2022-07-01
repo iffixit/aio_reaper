@@ -11,7 +11,6 @@
         <posh32>https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/PowerShell-7.2.4-win-x86.zip</posh32>
         <posh64>https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/PowerShell-7.2.4-win-x64.zip</posh64>
         <load>https://github.com/porthole-ascend-cinnamon/mhddos_proxy.git</load>
-        <targets>https://raw.githubusercontent.com/Aruiem234/auto_mhddos/main/runner_targets</targets>
         <banner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/banner</banner>
         <funclib>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/functions.ps1</funclib>
         <runner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/runner.ps1</runner>
@@ -53,6 +52,7 @@
         <runnerstart>Бігунець версії</runnerstart>
         <endrun>Роботу закінчено. Дякую за ваш вклад. Сподіваюсь побачити вас ще.</endrun>
         <presstoexit>Натисніть [Ctrl] + [C] для виходу з програми.</presstoexit>
+        <everythingfine>Якщо ви бачите це - все працює правильно, система оновлена і все добре.</everythingfine>
     </messages>
     <erroraction>SilentlyContinue</erroraction>
     <liteblocksize>50</liteblocksize>

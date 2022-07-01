@@ -18,18 +18,19 @@ $PythonPath = $("$RootDir\$($XMLConfig.config.folders.python)\");
 $PythonExe = $PythonPath + "python.exe";
 $LoadPath = $("$RootDir\$($XMLConfig.config.folders.load)\");
 $LoadFileName = $LoadPath + $($XMLConfig.config.mainloadfile);
+# Seems to be needed on certain configurations.
 $BogusInitPyPath = $LoadPath + "src\__init__.py";
 if (Test-Path $BogusInitPyPath) {
     Remove-Item $BogusInitPyPath -Force | Out-Null;
 }
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
+# DO NOT DO THAT and do not propose that!
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.0.0 beta / Winged ratel";
-
+$RunnerVersion = "1.0.1 beta / Trident rhinoceros";
 
 if ($args -like "*-lite*") {
     $RunningLite = $true;
@@ -50,18 +51,19 @@ Set-Location $LoadPath;
 
 
 while (-not $StopRequested) {
+    Clear-Host;
+    $BannerURL = $XMLConfig.config.links.banner;
+    $Banner = Get-Banner $BannerURL;
+    Write-Host $Banner;
+    $StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
+    if ($RunningLite) {
+        $StartupMessage = $StartupMessage + " Lite";
+    }
+    Write-Host $StartupMessage;
+    Write-Host "$($XMLConfig.config.messages.presstoexit)"
+    Set-Location $RootDir;
     if ($StartTask) {
-        Clear-Host;
-        $BannerURL = $XMLConfig.config.links.banner;
-        $Banner = Get-Banner $BannerURL;
-        Write-Host $Banner;
-        $StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
-        if ($RunningLite) {
-            $StartupMessage = $StartupMessage + " Lite";
-        }
-        Write-Host $StartupMessage;
-        Write-Host "$($XMLConfig.config.messages.presstoexit)"
-        Set-Location $RootDir;
+        Write-Host "$($XMLConfig.config.messages.everythingfine)"
     }
     #TODO: split BIG load to a smaller ones
     #TODO: think out condition when to do that
@@ -110,9 +112,14 @@ while (-not $StopRequested) {
     }
     if (!$RunningLite) {
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        while ($StopCycle -gt $Now) {
+        $StopNow = $false;
+        while ($StopCycle -gt $Now and $StopNow -eq $false ) {
             $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
+            if ($BlockJobLeft -lt 0){
+                # The very appearance of this code block is a proof of mysterious nature of .NET way to interpret the time concept
+                $StopNow = $true;
+            }
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
                 $XMLConfig.config.messages.cpu + `

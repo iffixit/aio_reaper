@@ -112,40 +112,6 @@ function Get-SlicedArray ($Array, $SliceSize) {
     return $SlicedArray;
 }
 
-#OBSOLETE!!! USE MAKETARGETLIST!
-function Get-Targets ($TargetsURI, $RunningLite) {
-    $TargetList = @()
-    do {
-        $DirtyTargets = (Get-URLContent $TargetsURI | Select-String -AllMatches -Pattern '(?m)^[^#\s].*$').Matches;
-        $DirtyTargets = $DirtyTargets -join ' ';
-        $DirtyTargets = $DirtyTargets -replace '`n', ' ';
-        $DirtyTargets = $DirtyTargets -replace '`r', ' ';
-        $DirtyTargets = $DirtyTargets -replace '`t', ' ';
-        $DirtyTargets = $DirtyTargets -replace ',', ' ';
-        $DirtyTargets = $DirtyTargets -replace '  ', ' ';
-        $DirtyTargets = $DirtyTargets.Replace("tcp):", "tcp");
-        $Targets = @()
-        foreach ($Target in $DirtyTargets) {
-            if ($Target -like "*null*") {
-                continue;
-            }
-            elseif ($Target -like "tcp://") {
-                continue;
-            }
-            else {
-                $Targets += $Target
-            }
-        }
-        if ($RunningLite) {
-            $TargetList = $Targets -split " " | Select-Object -Unique | Sort-Object { Get-Random };
-        }
-        else {
-            $TargetList = $Targets -split " " | Select-Object -Unique | Sort-Object;
-        }
-    } while ($TargetList.Length -eq 0)
-    return $TargetList;
-}
-
 function Get-ProcByCmdline ($Cmdline) {
     $Ret = Get-CimInstance win32_process | `
         Where-Object { $_.CommandLine -like "*$Cmdline*" } | `
@@ -273,6 +239,7 @@ function ConvertToTargets {
     }
     return $CleanTargets;
 }
+
 function MakeTargetlist([bool] $RunningLite) {
     $TempFilePath = "$PSScriptRoot\part1.txt"
     Get-File https://raw.githubusercontent.com/alexnest-ua/targets/main/special/archive/all.txt "$TempFilePath"
