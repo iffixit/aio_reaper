@@ -113,7 +113,7 @@ while (-not $StopRequested) {
     if (!$RunningLite) {
         $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
         $StopNow = $false;
-        while ($StopCycle -gt $Now and $StopNow -eq $false ) {
+        while ($StopCycle -gt $Now -and ($StopNow -eq $false)) {
             $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
             if ($BlockJobLeft -lt 0){
