@@ -8,8 +8,8 @@
         <py32>https://www.python.org/ftp/python/3.10.4/python-3.10.4-embed-win32.zip</py32>
         <py64>https://www.python.org/ftp/python/3.10.4/python-3.10.4-embed-amd64.zip</py64>
         <pywin7>https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-win32.zip</pywin7>
-        <posh32>https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/PowerShell-7.2.4-win-x86.zip</posh32>
-        <posh64>https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/PowerShell-7.2.4-win-x64.zip</posh64>
+        <posh32>https://github.com/PowerShell/PowerShell/releases/download/v7.2.5/PowerShell-7.2.5-win-x86.zip</posh32>
+        <posh64>https://github.com/PowerShell/PowerShell/releases/download/v7.2.5/PowerShell-7.2.5-win-x64.zip</posh64>
         <load>https://github.com/porthole-ascend-cinnamon/mhddos_proxy.git</load>
         <banner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/banner</banner>
         <funclib>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/functions.ps1</funclib>
