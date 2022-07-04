@@ -186,6 +186,7 @@ Get-File $UpdaterURL $("$RootDir\\updater.ps1") | Out-Null
 try {
     while ($true) {
         if ($NewStartRequired) {
+            $LastStart = [System.DateTime]::Now;
             $null = Start-Process -FilePath $PwshExe `
                 -ArgumentList "$RootDir\\updater.ps1" `
                 -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
@@ -242,6 +243,10 @@ try {
             Stop-Tree $RunnerProc.Id;
             Remove-Item -Path $("$RootDir\\runner.ps1") -Force;
             Rename-Item -Path $("$RootDir\\runner_new.ps1") -NewName $("$RootDir\\runner.ps1");
+        }
+        $Now = [System.DateTime]::Now;
+        if ($Now -gt $($LastStart.AddMinutes(480))) {
+            $NewStartRequired = $True;
         }
     }
 }
