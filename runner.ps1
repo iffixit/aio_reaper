@@ -62,11 +62,8 @@ while (-not $StopRequested) {
     Write-Host $StartupMessage;
     Write-Host "$($XMLConfig.config.messages.presstoexit)"
     Set-Location $RootDir;
-    if ($StartTask) {
-        Write-Host "$($XMLConfig.config.messages.everythingfine)"
-    }
-    #TODO: split BIG load to a smaller ones
-    #TODO: think out condition when to do that
+    Write-Host "$($XMLConfig.config.messages.everythingfine)"
+
     if ($StartTask -and (-not $RunningLite)) {
         $TargetList -join "`r`n" | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
         $TargetString = $("-c $LoadPath\targets.txt");
@@ -116,7 +113,7 @@ while (-not $StopRequested) {
         while ($StopCycle -gt $Now -and ($StopNow -eq $false)) {
             $Now = [System.DateTime]::Now;
             $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
-            if ($BlockJobLeft -lt 0){
+            if ($BlockJobLeft -le 0) {
                 # The very appearance of this code block is a proof of mysterious nature of .NET way to interpret the time concept
                 $StopNow = $true;
             }
