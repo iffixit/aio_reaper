@@ -119,7 +119,7 @@ while (-not $StopRequested) {
                 $StopNow = $true;
             }
             $Message = $XMLConfig.config.messages.targets + `
-                        ": $($Target.Count) " + `
+                        ": $($TargetList.Count) " + `
                         $XMLConfig.config.messages.targetsupdated + `
                         ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
                         $XMLConfig.config.messages.tillupdate + `
