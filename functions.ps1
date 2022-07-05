@@ -3,7 +3,7 @@
 function Clear-Line ([String] $Message) {
     [int] $Width = $Host.UI.RawUI.WindowSize.Width;
     $Line = " " * $($Width - 1);
-    $NowStr = ([System.DateTime]::Now).ToString("HH:MM:ss");
+    $NowStr = Get-Date -format "HH:mm:ss";
     Write-Host "$Line`r" -NoNewline;
     Write-Host "$NowStr $Message`r" -NoNewline;
 }
