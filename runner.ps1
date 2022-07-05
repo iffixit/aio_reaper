@@ -42,7 +42,9 @@ else {
 Stop-Runners $LoadPath $PythonExe;
 
 $TargetList = @()
-$TargetList = MakeTargetlist $RunningLite;
+do {
+    $TargetList = MakeTargetlist $RunningLite;
+} while ($TargetList.Count -le 0)
 $TargetsUpdated = [System.DateTime]::Now;
 $StopRequested = $false;
 $StartTask = $true;
