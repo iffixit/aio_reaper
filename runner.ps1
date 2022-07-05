@@ -43,6 +43,7 @@ Stop-Runners $LoadPath $PythonExe;
 
 $TargetList = @()
 $TargetList = MakeTargetlist $RunningLite;
+$TargetsUpdated = [System.DateTime]::Now;
 $StopRequested = $false;
 $StartTask = $true;
 $Targets = @()
@@ -89,10 +90,8 @@ while (-not $StopRequested) {
                     $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
-                        $XMLConfig.config.messages.cpu + `
-                        ": $(Get-CpuLoad)`% " + `
-                        $XMLConfig.config.messages.memory + `
-                        ": $(Get-FreeRamPercent)`% " + `
+                        $XMLConfig.config.messages.targetsupdated + `
+                        ": $($TargetsUpdated.ToString("HH:MM"))" + `
                         $XMLConfig.config.messages.tillupdate + `
                         ": $BlockJobLeft " + `
                         $XMLConfig.config.messages.minutes + `
@@ -119,10 +118,8 @@ while (-not $StopRequested) {
             }
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
-                $XMLConfig.config.messages.cpu + `
-                ": $(Get-CpuLoad)`% " + `
-                $XMLConfig.config.messages.memory + `
-                ": $(Get-FreeRamPercent)`% " + `
+                $XMLConfig.config.messages.targetsupdated + `
+                ": $($TargetsUpdated.ToString("HH:MM"))" + `
                 $XMLConfig.config.messages.tillupdate + `
                 ": $BlockJobLeft " + `
                 $XMLConfig.config.messages.minutes + `
@@ -135,6 +132,7 @@ while (-not $StopRequested) {
         }
         else {
             $TargetList = $NewTargetList;
+            $TargetsUpdated = [System.DateTime]::Now;
             Stop-Runners $LoadPath $PythonExe;
             $StartTask = $true;
         }
@@ -142,6 +140,7 @@ while (-not $StopRequested) {
 
     if ($RunningLite) {
         $TargetList = MakeTargetlist $RunningLite;
+        $TargetsUpdated = [System.DateTime]::Now;
         Stop-Runners $LoadPath $PythonExe;
     }
 }

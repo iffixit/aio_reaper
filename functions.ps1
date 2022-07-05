@@ -3,8 +3,9 @@
 function Clear-Line ([String] $Message) {
     [int] $Width = $Host.UI.RawUI.WindowSize.Width;
     $Line = " " * $($Width - 1);
+    $NowStr = ([System.DateTime]::Now).ToString("HH:MM:ss");
     Write-Host "$Line`r" -NoNewline;
-    Write-Host "$([System.DateTime]::Now) $Message`r" -NoNewline;
+    Write-Host "$NowStr $Message`r" -NoNewline;
 }
 
 function Get-URLContent ($URL) {
