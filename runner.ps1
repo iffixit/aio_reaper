@@ -91,7 +91,7 @@ while (-not $StopRequested) {
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
                         $XMLConfig.config.messages.targetsupdated + `
-                        ": $($TargetsUpdated.ToString("HH:MM"))" + " " +`
+                        ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
                         $XMLConfig.config.messages.tillupdate + `
                         ": $BlockJobLeft " + `
                         $XMLConfig.config.messages.minutes + `
@@ -117,13 +117,13 @@ while (-not $StopRequested) {
                 $StopNow = $true;
             }
             $Message = $XMLConfig.config.messages.targets + `
-                ": $($TargetList.Count) " + `
-                $XMLConfig.config.messages.targetsupdated + `
-                ": $($TargetsUpdated.ToString("HH:MM"))" + `
-                $XMLConfig.config.messages.tillupdate + `
-                ": $BlockJobLeft " + `
-                $XMLConfig.config.messages.minutes + `
-            $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                        ": $($Target.Count) " + `
+                        $XMLConfig.config.messages.targetsupdated + `
+                        ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
+                        $XMLConfig.config.messages.tillupdate + `
+                        ": $BlockJobLeft " + `
+                        $XMLConfig.config.messages.minutes + `
+                    $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
         }
         $NewTargetList = MakeTargetlist $RunningLite;
