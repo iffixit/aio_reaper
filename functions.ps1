@@ -222,6 +222,18 @@ function ConvertToTargets {
         else {
             $TargetList += $job.args.client.static_host.addr;
         }
+        if ($null -eq $job.args.request.path) {
+            Out-Null
+        }
+        else {
+            $TargetList += $job.args.request.path
+        }
+        if ($null -eq $job.args.connection.args.address) {
+            Out-Null
+        }
+        else {
+            $TargetList += $job.args.connection.args.address
+        }
     }
     $CleanTargets = @()
     foreach ($Target in $TargetList) {
@@ -231,12 +243,7 @@ function ConvertToTargets {
         if ($Target -like "*null*") {
             continue;
         }
-        if ($Target -like "http*") {
-            $CleanTargets += $Target;
-        }
-        if ($Target -like "tcp://*") {
-            $CleanTargets += $Target;
-        }
+        $CleanTargets += $Target
     }
     return $CleanTargets;
 }

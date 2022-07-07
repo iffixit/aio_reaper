@@ -1,6 +1,6 @@
 #Requires -Version 5
 
-#Seems that Powershell does not guarantee avaliability of the required asseblies.
+#Seems that Powershell does not guarantee avaliability of the required assemblies.
 $Types = @(
     "System.Management.Automation.PSObject", `
         "System.DateTime", `
@@ -140,10 +140,10 @@ if ($Winver.Major -lt 10) {
         $IsWindows7 = $true;
     }
 }
-if (-not ([System.Management.Automation.PSTypeName]'ConsoleHelper').Type) {
-    Add-Type -TypeDefinition $Code -Language CSharp;
-}
 if ($IsWindows7) {
+    if (-not ([System.Management.Automation.PSTypeName]'ConsoleHelper').Type) {
+        Add-Type -TypeDefinition $Code -Language CSharp;
+    }
     [ConsoleHelper]::SetCurrentFont("Consolas", 16);
 }
 #END OF WINDOWS 7 WORKAROUND
@@ -212,7 +212,7 @@ if ($FreeSpace -lt $Lowdisk) {
     Write-Host $Message;
     [Console]::Beep();
     #TODO: Add article launch about risks of using low system drive space.
-    #TODO: Add article launch about how to free up space.
+    #TODO: Add article launch about how to free up space correctly.
 }
 [Int]$DiskLimit = $XMLConfig.config.limits.disk
 if ($FreeSpace -lt $DiskLimit) {
@@ -226,6 +226,7 @@ if ($FreeSpace -lt $DiskLimit) {
 $currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent());
 $IsAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator);
 if ($IsAdmin) {
+    #Running such tools from root is WRONG.
     [Console]::Beep();
     $Message = $XMLConfig.config.messages.runningadmin;
     Write-Host $Message;

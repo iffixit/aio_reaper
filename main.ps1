@@ -1,4 +1,4 @@
-#Seems that Powershell does not guarantee avaliability of the required asseblies.
+#Seems that Powershell does not guarantee avaliability of the required assemblies.
 $Types = @(
     "System.Management.Automation.PSObject", `
         "System.DateTime", `
@@ -122,10 +122,11 @@ if ($Winver.Major -lt 10) {
         $IsWindows7 = $true;
     }
 }
-if (-not ([System.Management.Automation.PSTypeName]'ConsoleHelper').Type) {
-    Add-Type -TypeDefinition $Code -Language CSharp;
-}
+
 if ($IsWindows7) {
+    if (-not ([System.Management.Automation.PSTypeName]'ConsoleHelper').Type) {
+        Add-Type -TypeDefinition $Code -Language CSharp;
+    }
     [ConsoleHelper]::SetCurrentFont("Consolas", 16) | Out-Null;
 }
 #END OF WINDOWS 7 WORKAROUND
@@ -139,9 +140,9 @@ if (-not ([System.Management.Automation.PSTypeName]"System.Net.Http").Type ) {
 [xml]$XMLConfig = Get-Content -Path (".\\settings.xml");
 [string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
 try {
+    $host.UI.RawUI.MaxWindowSize.Width = 149 | Out-Null;
     $host.UI.RawUI.BufferSize.Width = 150 | Out-Null;
     $host.UI.RawUI.WindowSize.Width = 149 | Out-Null;
-    $host.UI.RawUI.MaxWindowSize.Width = 149 | Out-Null;
     [System.Console]::bufferwidth = 150 | Out-Null;
 }
 catch {
@@ -150,6 +151,8 @@ catch {
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent());
 $IsAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator);
 if ($IsAdmin) {
+    #Do not use administrator accounts!
+    #At least use UAC!
     [Console]::Beep();
     $Message = $XMLConfig.config.messages.runningadmin;
     Write-Host $Message;
