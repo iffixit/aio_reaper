@@ -114,7 +114,7 @@ Set-Location $LoadPath;
 
 while (-not $StopRequested) {
     Remove-Variable $XMLConfig;
-    [xml]$XMLConfig = Get-Content -Path ("settings.xml");
+    [xml]$XMLConfig = Get-Content -Path ("$RootDir\\settings.xml");
     Clear-Host;
     $BannerURL = $XMLConfig.config.links.banner;
     $Banner = Get-Banner $BannerURL;
