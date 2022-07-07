@@ -27,16 +27,7 @@ function Get-URLContent ($URL) {
 }
 
 function Get-Banner ([String] $BannerURL) {
-    $Response = "";
-    while ($Response -eq "") {
-        try {
-            $Response = $(Invoke-WebRequest -Headers @{"Cache-Control" = "no-cache" } -UseBasicParsing -Uri $BannerURL).Content;
-        }
-        catch {
-            $Response = "";
-        }
-    }
-    return $Response;
+    return (New-Object IO.StreamReader([Net.HttpWebRequest]::Create($BannerURL).GetResponse().GetResponseStream())).ReadToEnd();
 }
 
 function Get-File ($URL, [String] $FileName) {
