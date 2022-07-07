@@ -71,10 +71,7 @@ $RootDir = $SystemDrive + "\" + $InstallFolder;
 Set-Location $RootDir;
 . $("$RootDir\\functions.ps1");
 
-
-
 #[console]::TreatControlCAsInput = $true
-
 
 $PythonPath = $("$RootDir\$($XMLConfig.config.folders.python)\");
 $PythonExe = $PythonPath + "python.exe";
@@ -177,7 +174,6 @@ while (-not $StopRequested) {
                 $StartTask = $true;
                 break;
             }
-            $Now = [System.DateTime]::Now;
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
                 $XMLConfig.config.messages.targetsupdated + `
