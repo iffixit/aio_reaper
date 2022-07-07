@@ -59,7 +59,7 @@ function CreateTargetList([bool] $RunningLite) {
 $host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
 $host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
 
-[xml]$XMLConfig = Get-Content -Path ("settings.xml");
+[xml]$XMLConfig = Get-Content -Path ("$RootDir\\settings.xml");
 $ActionPreference = $XMLConfig.config.erroraction;
 $ErrorActionPreference = $ActionPreference;
 $ProgressPreference = $ActionPreference;
@@ -113,7 +113,7 @@ Set-Location $LoadPath;
 
 
 while (-not $StopRequested) {
-
+    Remove-Variable $XMLConfig;
     [xml]$XMLConfig = Get-Content -Path ("settings.xml");
     Clear-Host;
     $BannerURL = $XMLConfig.config.links.banner;
