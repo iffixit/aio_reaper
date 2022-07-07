@@ -1,24 +1,9 @@
-$host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
-$host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
-
-[xml]$XMLConfig = Get-Content -Path ("settings.xml");
-$ActionPreference = $XMLConfig.config.erroraction;
-$ErrorActionPreference = $ActionPreference;
-$ProgressPreference = $ActionPreference;
-$WarningPreference = $ActionPreference;
-[string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
-$SystemDrive = $SystemDrive.Substring(0, 2);
-$InstallFolder = $XMLConfig.config.folders.install;
-$RootDir = $SystemDrive + "\" + $InstallFolder;
-Set-Location $RootDir;
-. $("$RootDir\\functions.ps1");
-
 function CreateTargetList([bool] $RunningLite) {
     # Adding targets from simple lists.
     [xml]$XMLConfig = Get-Content -Path ("$PSScriptRoot\\settings.xml");
     $Targets = @();
     $TargetLists = $XMLConfig.config.targets.targetlist.entry;
-    foreach ($TargetList in $TargetLists){
+    foreach ($TargetList in $TargetLists) {
         $TempFilePath = $PSScriptRoot + "\\temp.txt";
         Get-File $TargetList $TempFilePath;
         $Targets += [System.IO.File]::ReadAllLines("$TempFilePath");
@@ -30,7 +15,7 @@ function CreateTargetList([bool] $RunningLite) {
     do {
         #Read the docs before asking questions. Name is intentional.
         $JsonData = Invoke-RestMethod -Uri $ItArmyJSON -Method Get;
-        if ($null -eq $JsonData.jobs){
+        if ($null -eq $JsonData.jobs) {
             $GotJSON = $false;
         }
         else {
@@ -38,13 +23,13 @@ function CreateTargetList([bool] $RunningLite) {
         }
     } while ($GotJSON = $false)
     $Jobs = $JsonData.jobs;
-    foreach ($Job in $Jobs){
+    foreach ($Job in $Jobs) {
         $Paths = $XMLConfig.config.targets.json.itarmy.path.entry;
         foreach ($Path in $Paths) {
             $SafePath = $Path -replace '(`)*\$', '$1$1`$$';
             # Generally iex should be avoided. THIS is a rare exception.
             $Val = Invoke-Expression "`$Job.$SafePath"
-            if ($null -eq $Val){
+            if ($null -eq $Val) {
                 Out-Null;
             }
             else {
@@ -69,9 +54,24 @@ function CreateTargetList([bool] $RunningLite) {
         $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object { Get-Random };
     }
     return $TargetsCleaned
-
-
 }
+
+$host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
+$host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
+
+[xml]$XMLConfig = Get-Content -Path ("settings.xml");
+$ActionPreference = $XMLConfig.config.erroraction;
+$ErrorActionPreference = $ActionPreference;
+$ProgressPreference = $ActionPreference;
+$WarningPreference = $ActionPreference;
+[string] $SystemDrive = $(Get-CimInstance Win32_OperatingSystem | Select-Object SystemDirectory).SystemDirectory;
+$SystemDrive = $SystemDrive.Substring(0, 2);
+$InstallFolder = $XMLConfig.config.folders.install;
+$RootDir = $SystemDrive + "\" + $InstallFolder;
+Set-Location $RootDir;
+. $("$RootDir\\functions.ps1");
+
+
 
 #[console]::TreatControlCAsInput = $true
 
@@ -174,19 +174,19 @@ while (-not $StopRequested) {
         $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
         $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
         while ($TillEnd -gt 0) {
-            if ($PyProcess.HasExited -eq $true){
+            if ($PyProcess.HasExited -eq $true) {
                 $StartTask = $true;
                 break;
             }
             $Now = [System.DateTime]::Now;
             $Message = $XMLConfig.config.messages.targets + `
-                        ": $($TargetList.Count) " + `
-                        $XMLConfig.config.messages.targetsupdated + `
-                        ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
-                        $XMLConfig.config.messages.tillupdate + `
-                        ": $($TillEnd.TotalMinutes) " + `
-                        $XMLConfig.config.messages.minutes + `
-                    $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                ": $($TargetList.Count) " + `
+                $XMLConfig.config.messages.targetsupdated + `
+                ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
+                $XMLConfig.config.messages.tillupdate + `
+                ": $($TillEnd.TotalMinutes) " + `
+                $XMLConfig.config.messages.minutes + `
+            $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
         }
         $NewTargetList = CreateTargetList $RunningLite;
