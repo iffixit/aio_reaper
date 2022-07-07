@@ -151,7 +151,6 @@ while (-not $StopRequested) {
                 $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
                 $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
                 while (($PyProcess.HasExited -eq $false) -and ($TillEnd -gt 0)) {
-                    $Now = [System.DateTime]::Now;
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
                         $XMLConfig.config.messages.targetsupdated + `
