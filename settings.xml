@@ -18,7 +18,23 @@
         <icon>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/1984PC.ICO</icon>
         <kickstart>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/kickstart.ps1</kickstart>
         <updater>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/updater.ps1</updater>
+        <settings>https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/settings.xml</settings>
     </links>
+    <targets>
+        <targetlist>
+            <entry>https://raw.githubusercontent.com/alexnest-ua/targets/main/special/archive/all.txt</entry>
+        </targetlist>
+        <json>
+            <itarmy>
+                <link>https://raw.githubusercontent.com/db1000n-coordinators/LoadTestConfig/main/config.v0.7.json</link>
+                <path>
+                    <entry>args.request.path</entry>
+                    <entry>args.client.static_host.addr</entry>
+                    <entry>args.connection.args.address</entry>
+                </path>
+            </itarmy>
+        </json>
+    </targets>
     <folders>
         <install>AIOReaper</install>
         <git>Git</git>
