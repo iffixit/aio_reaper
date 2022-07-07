@@ -59,7 +59,7 @@ function CreateTargetList([bool] $RunningLite) {
 $host.UI.RawUI.BackgroundColor = [ConsoleColor]::Black
 $host.UI.RawUI.ForegroundColor = [ConsoleColor]::Green
 
-[xml]$XMLConfig = Get-Content -Path ("$RootDir\\settings.xml");
+[xml]$XMLConfig = Get-Content -Path ("$PSScriptRoot\\settings.xml");
 $ActionPreference = $XMLConfig.config.erroraction;
 $ErrorActionPreference = $ActionPreference;
 $ProgressPreference = $ActionPreference;
