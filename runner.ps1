@@ -155,7 +155,7 @@ while (-not $StopRequested) {
                         $XMLConfig.config.messages.minutes;
                     Clear-Line $Message;
                     Start-Sleep -Seconds 5;
-                    $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
+                    $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
                 }
                 Stop-Tree $PyProcess.Id;
             }
@@ -164,7 +164,7 @@ while (-not $StopRequested) {
     }
     if (!$RunningLite) {
         $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-        $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
+        $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
         while ($TillEnd -gt 0) {
             if ($PyProcess.HasExited -eq $true) {
                 $StartTask = $true;
@@ -178,7 +178,8 @@ while (-not $StopRequested) {
                 ": $([int] $TillEnd.Minutes) " + `
                 $XMLConfig.config.messages.minutes;
             Clear-Line $Message;
-            $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
+            $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
+            Start-Sleep -Seconds 1;
         }
         $Message = $XMLConfig.config.messages.gettingtargets;
         Clear-Line $Message;
