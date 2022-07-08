@@ -158,8 +158,6 @@ while (-not $StopRequested) {
                     $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
                 }
                 Stop-Tree $PyProcess.Id;
-                $Message = $XMLConfig.config.messages.litedone;
-                Clear-Line $("$($Target.Count) $Message");
             }
         }
         $StartTask = $false;
