@@ -216,6 +216,7 @@ try {
             break;
         }
         Start-Sleep -Seconds 1;
+        $Now = [System.DateTime]::Now;
         $TimeLeft = New-Timespan $Now $End
     }
     $host.UI.RawUI.WindowTitle = $TitleRestart;
