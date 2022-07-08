@@ -176,7 +176,6 @@ if ($FreeMem -lt $RamLimit) {
 }
 $RunnerURL = $XMLConfig.config.links.runner;
 $UpdaterURL = $XMLConfig.config.links.updater;
-$NewStartRequired = $true;
 $TitleStarted = $XMLConfig.config.titles.started;
 $TitleOK = $XMLConfig.config.titles.ok;
 $TitleRestart = $XMLConfig.config.titles.restart;
@@ -190,7 +189,6 @@ try {
     $null = Start-Process -FilePath $PwshExe `
         -ArgumentList "$RootDir\\updater.ps1" `
         -NoNewWindow -PassThru -WorkingDirectory $RootDir -Wait;
-    $LastStart = [System.DateTime]::Now;
     if ($LiteMode) {
         $RunnerProc = Start-Process -FilePath $PwshExe `
             -ArgumentList "$RootDir\\runner.ps1 -args '-lite'" `
