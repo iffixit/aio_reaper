@@ -12,7 +12,8 @@ $Types = @(
         "System.Console", `
         "System.Security.Principal", `
         "System.Environment", `
-        "System.Diagnostics"
+        "System.Diagnostics", `
+        "Microsoft.PowerShell.Utility"
 )
 foreach ($Type in $Types) {
     Write-Host "Loading $Type";
