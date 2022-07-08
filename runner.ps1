@@ -152,8 +152,7 @@ while (-not $StopRequested) {
                         ": $(Get-HHMM $TargetsUpdated)" + " " + `
                         $XMLConfig.config.messages.tillupdate + `
                         ": $([int] $TillEnd.Minutes) " + `
-                        $XMLConfig.config.messages.minutes + `
-                    $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                        $XMLConfig.config.messages.minutes;
                     Clear-Line $Message;
                     Start-Sleep -Seconds 5;
                     $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
@@ -179,8 +178,7 @@ while (-not $StopRequested) {
                 ": $(Get-HHMM $TargetsUpdated)" + " " + `
                 $XMLConfig.config.messages.tillupdate + `
                 ": $([int] $TillEnd.Minutes) " + `
-                $XMLConfig.config.messages.minutes + `
-            $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
+                $XMLConfig.config.messages.minutes;
             Clear-Line $Message;
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
         }
