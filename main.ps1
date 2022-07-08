@@ -222,7 +222,7 @@ try {
     $host.UI.RawUI.WindowTitle = $TitleRestart;
     Stop-Tree $RunnerProc.Id;
     Start-Process $PwshExe -WorkingDirectory $RootDir `
-        -ArgumentList "-NoLogo -NoProfile - Command $RootDir\\kickstart.ps1"
+        -ArgumentList "-NoLogo -NoProfile -Command $RootDir\\kickstart.ps1"
     exit $true;
 }
 catch {
