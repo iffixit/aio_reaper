@@ -89,7 +89,7 @@ $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.4 beta / Cossack hog";
+$RunnerVersion = "1.4.1 beta / Cossack hog";
 
 if ($args -like "*-lite*") {
     $RunningLite = $true;
@@ -176,7 +176,7 @@ while (-not $StopRequested) {
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
                 $XMLConfig.config.messages.targetsupdated + `
-                ": $(Get-HHMM $TargetsUpdated))" + " " + `
+                ": $(Get-HHMM $TargetsUpdated)" + " " + `
                 $XMLConfig.config.messages.tillupdate + `
                 ": $([int] $TillEnd.Minutes) " + `
                 $XMLConfig.config.messages.minutes + `
