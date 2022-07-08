@@ -244,6 +244,5 @@ finally {
     $host.UI.RawUI.WindowTitle = $TitleCompleted;
     $Message = $XMLConfig.config.messages.endrun;
     Write-Host "$Message";
-    $Message = $XMLConfig.config.messages.pressenter;
-    Read-Host "$Message"
+    Start-Sleep -Seconds 10;
 }
