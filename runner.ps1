@@ -151,7 +151,7 @@ while (-not $StopRequested) {
                         $XMLConfig.config.messages.targetsupdated + `
                         ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
                         $XMLConfig.config.messages.tillupdate + `
-                        ": $([int] $TillEnd.TotalMinutes) " + `
+                        ": $([int] $TillEnd.Minutes) " + `
                         $XMLConfig.config.messages.minutes + `
                     $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                     Clear-Line $Message;
@@ -177,7 +177,7 @@ while (-not $StopRequested) {
                 $XMLConfig.config.messages.targetsupdated + `
                 ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
                 $XMLConfig.config.messages.tillupdate + `
-                ": $([int] $TillEnd.TotalMinutes) " + `
+                ": $([int] $TillEnd.Minutes) " + `
                 $XMLConfig.config.messages.minutes + `
             $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
