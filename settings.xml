@@ -70,6 +70,7 @@
         <presstoexit>Натисніть [Ctrl] + [C] для виходу з програми.</presstoexit>
         <everythingfine>Якщо ви бачите це - все працює правильно, система оновлена і все добре.</everythingfine>
         <targetsupdated>Цілі було отримано</targetsupdated>
+        <gettingtargets>Отримую список цілей, зачекайте. Атака на фоні іде, не хвилюйтесь.</gettingtargets>
     </messages>
     <erroraction>SilentlyContinue</erroraction>
     <liteblocksize>50</liteblocksize>

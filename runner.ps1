@@ -14,7 +14,7 @@ function CreateTargetList([bool] $RunningLite) {
     $GotJSON = $false
     do {
         #Read the docs before asking questions. Name is intentional.
-        $JsonData = Invoke-RestMethod -Uri $ItArmyJSON -Method Get;
+        $JsonData = Invoke-RestMethod -Uri $ItArmyJSON -Method Get -TimeoutSec 5;
         if ($null -eq $JsonData.jobs) {
             Out-Null;
         }
@@ -182,6 +182,8 @@ while (-not $StopRequested) {
             Clear-Line $Message;
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
         }
+        $Message = $XMLConfig.config.messages.gettingtargets;
+        Clear-Line $Message;
         $NewTargetList = CreateTargetList $RunningLite;
         if ($TargetList.Count -eq $NewTargetList.Count) {
             $StartTask = $false;
@@ -195,6 +197,8 @@ while (-not $StopRequested) {
     }
 
     if ($RunningLite) {
+        $Message = $XMLConfig.config.messages.gettingtargets;
+        Clear-Line $Message;
         $TargetList = CreateTargetList $RunningLite;
         $TargetsUpdated = [System.DateTime]::Now;
         Stop-Runners $LoadPath $PythonExe;
