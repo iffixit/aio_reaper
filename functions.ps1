@@ -176,3 +176,8 @@ function Stop-Runners ($LoadPath, $PythonExe) {
         Stop-Tree $result.Id;
     }
 }
+
+function Get-HHMM ([System.DateTime] $Time) {
+    $ret = "$($Time.Hour):$($Time.Minute)"
+    return $ret;
+}

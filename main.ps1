@@ -207,7 +207,7 @@ try {
     }
     $Now = [System.DateTime]::Now;
     $End = [System.DateTime]::Now.AddMinutes($RestartTime);
-    $TimeLeft = New-Timespan $Now 
+    $TimeLeft = New-Timespan $Now $End
     while ($TimeLeft -gt 0) {
         $host.UI.RawUI.WindowTitle = $TitleOK;
         if ($RunnerProc.HasExited) {
@@ -218,6 +218,7 @@ try {
             break;
         }
         Start-Sleep -Seconds 1;
+        $TimeLeft = New-Timespan $Now $End
     }
     $host.UI.RawUI.WindowTitle = $TitleRestart;
     Stop-Tree $RunnerProc.Id;

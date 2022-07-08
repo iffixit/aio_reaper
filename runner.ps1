@@ -16,7 +16,7 @@ function CreateTargetList([bool] $RunningLite) {
         #Read the docs before asking questions. Name is intentional.
         $JsonData = Invoke-RestMethod -Uri $ItArmyJSON -Method Get;
         if ($null -eq $JsonData.jobs) {
-            $GotJSON = $false;
+            Out-Null;
         }
         else {
             $GotJSON = $true;
@@ -149,13 +149,14 @@ while (-not $StopRequested) {
                     $Message = $XMLConfig.config.messages.targets + `
                         ": $($Target.Count) " + `
                         $XMLConfig.config.messages.targetsupdated + `
-                        ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
+                        ": $(Get-HHMM $TargetsUpdated)" + " " + `
                         $XMLConfig.config.messages.tillupdate + `
                         ": $([int] $TillEnd.Minutes) " + `
                         $XMLConfig.config.messages.minutes + `
                     $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
                     Clear-Line $Message;
                     Start-Sleep -Seconds 5;
+                    $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
                 }
                 Stop-Tree $PyProcess.Id;
                 $Message = $XMLConfig.config.messages.litedone;
@@ -175,12 +176,13 @@ while (-not $StopRequested) {
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
                 $XMLConfig.config.messages.targetsupdated + `
-                ": $($TargetsUpdated.ToString("HH:MM"))" + " " + `
+                ": $(Get-HHMM $TargetsUpdated))" + " " + `
                 $XMLConfig.config.messages.tillupdate + `
                 ": $([int] $TillEnd.Minutes) " + `
                 $XMLConfig.config.messages.minutes + `
             $(" $(Measure-Bandwith) $($XMLConfig.config.messages.network)");
             Clear-Line $Message;
+            $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
         }
         $NewTargetList = CreateTargetList $RunningLite;
         if ($TargetList.Count -eq $NewTargetList.Count) {
