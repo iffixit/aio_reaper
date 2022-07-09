@@ -161,6 +161,14 @@ while (-not $StopRequested) {
         $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
         $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
         while ($TillEnd -gt 0) {
+            if ([Console]::KeyAvailable) {
+                $key = [Console]::ReadKey($true)
+                {
+                    if ($key.key -eq "r") {
+                        $EndJob = [System.DateTime]::Now;
+                    }
+                }
+            }
             if ($PyProcess.HasExited -eq $true) {
                 $StartTask = $true;
                 break;
