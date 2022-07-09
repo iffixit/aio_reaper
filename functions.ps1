@@ -168,14 +168,8 @@ function Measure-Bandwith {
     return "$value `%"
 }
 
-function Stop-Runners ($LoadPath, $PythonExe) {
-    Get-Process "python.exe" ^ | Where-Object { $_.Path -eq $Pythonexe } ^ | Stop-Process -Force
-    foreach ($result in $(Get-ProcByCmdline "$LoadPath"; )) {
-        Stop-Tree $result.Id;
-    }
-    foreach ($result in $(Get-ProcByPath "$PythonExe"; )) {
-        Stop-Tree $result.Id;
-    }
+function Stop-Runners ($PyPath) {
+    Get-Process | Where-Object "Path" -like "$PyPath*" | Stop-Process -Force;
 }
 
 function Get-HHMM ([System.DateTime] $Time) {

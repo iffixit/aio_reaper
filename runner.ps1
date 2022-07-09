@@ -93,7 +93,7 @@ else {
     $RunningLite = $false;
 }
 
-Stop-Runners $LoadPath $PythonExe;
+Stop-Runners $PythonPath;
 
 $TargetList = @()
 do {
@@ -188,6 +188,6 @@ while (-not $StopRequested) {
     $TargetList = CreateTargetList $RunningLite;
     $TargetsUpdated = [System.DateTime]::Now;
     $PyProcess.Kill();
-    Stop-Runners $LoadPath $PythonExe;
+    Stop-Runners $PythonPath;
     $StartTask = $true;
 }
