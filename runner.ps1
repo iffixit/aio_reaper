@@ -186,6 +186,7 @@ while (-not $StopRequested) {
     Clear-Line $Message;
     $TargetList = CreateTargetList $RunningLite;
     $TargetsUpdated = [System.DateTime]::Now;
+    $PyProcess.Kill();
     Stop-Runners $LoadPath $PythonExe;
     $StartTask = $true;
 }
