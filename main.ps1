@@ -175,6 +175,9 @@ $LiteMode = $false
 if ($FreeMem -lt $RamLimit) {
     $LiteMode = $true;
 }
+if (Test-Path -Path "$Rootdir''debug") {
+    Set-PSDebug -Trace 1;
+}
 $RunnerURL = $XMLConfig.config.links.runner;
 $UpdaterURL = $XMLConfig.config.links.updater;
 $TitleStarted = $XMLConfig.config.titles.started;
