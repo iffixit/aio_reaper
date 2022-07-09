@@ -169,7 +169,7 @@ function Measure-Bandwith {
 }
 
 function Stop-Runners ($LoadPath, $PythonExe) {
-    Get-Process "python.exe" ^ | Where-Object { $_.Path -like "$Pythonexe" } ^ | Stop-Process
+    Get-Process "python.exe" ^ | Where-Object { $_.Path -like "$Pythonexe" } ^ | Stop-Process -Force
     foreach ($result in $(Get-ProcByCmdline "$LoadPath"; )) {
         Stop-Tree $result.Id;
     }
