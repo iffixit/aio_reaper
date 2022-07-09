@@ -11,24 +11,16 @@ function CreateTargetList([bool] $RunningLite) {
     }
     # Adding targets from IT ARMY
     $ItArmyJSON = $XMLConfig.config.targets.json.itarmy.link;
-    $GotJSON = $false
-    do {
-        #Read the docs before asking questions. Name is intentional.
-        $JsonData = Invoke-RestMethod -Uri $ItArmyJSON -Method Get -TimeoutSec 5;
-        if ($null -eq $JsonData.jobs) {
-            Out-Null;
-        }
-        else {
-            $GotJSON = $true;
-        }
-    } while ($GotJSON = $false)
+    Get-File $ItArmyJSON $TempFilePath;
+    $JsonData = Get-Content -Path $TempFilePath | ConvertFrom-Json;
+    Remove-Item -Force -Path $TempFilePath | Out-Null;
     $Jobs = $JsonData.jobs;
     foreach ($Job in $Jobs) {
         $Paths = $XMLConfig.config.targets.json.itarmy.path.entry;
         foreach ($Path in $Paths) {
             $SafePath = $Path -replace '(`)*\$', '$1$1`$$';
             # Generally iex should be avoided. THIS is a rare exception.
-            $Val = Invoke-Expression "`$Job.$SafePath";
+            $Val = Invoke-Expression "`$Job.$SafePath"
             if ($null -eq $Val) {
                 Out-Null;
             }
