@@ -28,7 +28,7 @@ function CreateTargetList([bool] $RunningLite) {
         foreach ($Path in $Paths) {
             $SafePath = $Path -replace '(`)*\$', '$1$1`$$';
             # Generally iex should be avoided. THIS is a rare exception.
-            $Val = Invoke-Expression "`$Job.$SafePath"
+            $Val = Invoke-Expression "`$Job.$SafePath";
             if ($null -eq $Val) {
                 Out-Null;
             }
@@ -89,7 +89,7 @@ $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.4.1 beta / Cossack hog";
+$RunnerVersion = "1.4.2 beta / Cossack hog";
 
 if ($args -like "*-lite*") {
     $RunningLite = $true;
@@ -181,25 +181,11 @@ while (-not $StopRequested) {
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
             Start-Sleep -Seconds 1;
         }
-        $Message = $XMLConfig.config.messages.gettingtargets;
-        Clear-Line $Message;
-        $NewTargetList = CreateTargetList $RunningLite;
-        if ($TargetList.Count -eq $NewTargetList.Count) {
-            $StartTask = $false;
-        }
-        else {
-            $TargetList = $NewTargetList;
-            $TargetsUpdated = [System.DateTime]::Now;
-            Stop-Runners $LoadPath $PythonExe;
-            $StartTask = $true;
-        }
     }
-
-    if ($RunningLite) {
-        $Message = $XMLConfig.config.messages.gettingtargets;
-        Clear-Line $Message;
-        $TargetList = CreateTargetList $RunningLite;
-        $TargetsUpdated = [System.DateTime]::Now;
-        Stop-Runners $LoadPath $PythonExe;
-    }
+    $Message = $XMLConfig.config.messages.gettingtargets;
+    Clear-Line $Message;
+    $TargetList = CreateTargetList $RunningLite;
+    $TargetsUpdated = [System.DateTime]::Now;
+    Stop-Runners $LoadPath $PythonExe;
+    $StartTask = $true;
 }
