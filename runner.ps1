@@ -1,8 +1,8 @@
 function CreateTargetList([bool] $RunningLite) {
     # Adding targets from simple lists.
-    [xml]$XMLConfig = Get-Content -Path ("$PSScriptRoot\\settings.xml");
+    [xml]$XMLConfigLocal = Get-Content -Path ("$PSScriptRoot\\settings.xml");
     $Targets = @();
-    $TargetLists = $XMLConfig.config.targets.targetlist.entry;
+    $TargetLists = $XMLConfigLocal.config.targets.targetlist.entry;
     foreach ($TargetList in $TargetLists) {
         $TempFilePath = $PSScriptRoot + "\\temp.txt";
         Get-File $TargetList $TempFilePath;
@@ -10,13 +10,13 @@ function CreateTargetList([bool] $RunningLite) {
         Remove-Item -Force -Path $TempFilePath | Out-Null;
     }
     # Adding targets from IT ARMY
-    $ItArmyJSON = $XMLConfig.config.targets.json.itarmy.link;
+    $ItArmyJSON = $XMLConfigLocal.config.targets.json.itarmy.link;
     Get-File $ItArmyJSON $TempFilePath;
     $JsonData = Get-Content -Path $TempFilePath | ConvertFrom-Json;
     Remove-Item -Force -Path $TempFilePath | Out-Null;
     $Jobs = $JsonData.jobs;
     foreach ($Job in $Jobs) {
-        $Paths = $XMLConfig.config.targets.json.itarmy.path.entry;
+        $Paths = $XMLConfigLocal.config.targets.json.itarmy.path.entry;
         foreach ($Path in $Paths) {
             $SafePath = $Path -replace '(`)*\$', '$1$1`$$';
             # Generally iex should be avoided. THIS is a rare exception.
@@ -39,6 +39,7 @@ function CreateTargetList([bool] $RunningLite) {
     $Targets = $Targets -replace '  ', ' ';
     $Targets = $Targets.Replace("tcp)", "tcp");
     $Targets = $Targets -split " ";
+    Remove-Variable $XMLConfigLocal;
     if (-not $RunningLite) {
         $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object;
     }
@@ -62,7 +63,9 @@ $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\" + $InstallFolder;
 Set-Location $RootDir;
 . $("$RootDir\\functions.ps1");
-
+if (Test-Path -Path "$Rootdir\\debug") {
+    Set-PSDebug -Trace 1;
+}
 #[console]::TreatControlCAsInput = $true
 
 $PythonPath = $("$RootDir\$($XMLConfig.config.folders.python)\");
