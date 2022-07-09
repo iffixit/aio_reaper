@@ -163,10 +163,8 @@ while (-not $StopRequested) {
         while ($TillEnd -gt 0) {
             if ([Console]::KeyAvailable) {
                 $key = [Console]::ReadKey($true)
-                {
-                    if ($key.key -eq "r") {
-                        $EndJob = [System.DateTime]::Now;
-                    }
+                switch ($key.key) {
+                    F12 { $EndJob = [System.DateTime]::Now; }
                 }
             }
             if ($PyProcess.HasExited -eq $true) {
