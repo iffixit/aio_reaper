@@ -99,9 +99,9 @@ sudo apt-get update -q -y > /dev/null 2>&1
 clear
 for packet in $packets
 do
-    printf "Встановлення %s..." "$packet"
+    printf "Встановлення %10s..." "$packet"
     sudo apt-get install -q -y "$packet" > /dev/null 2>&1
-    printf "\t\t [OK]\n"
+    printf "\t [OK]\n"
 done
 python3 -m venv ~/multidd/venv
 # shellcheck disable=1090 # Шелчек не потрібний в заводських скриптах python
