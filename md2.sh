@@ -29,14 +29,14 @@ function get_targets () {
     for path in "${itarmy_paths[@]}"
     do
         local line
-        line=$(jq -f ~/multidd/targets/db1000n.json -r "$path" | sed '/null/d')
+        line=$(jq -f "$HOME/multidd/targets/db1000n.json" -r "$path" | sed '/null/d')
         if [[ $path == ".jobs[].args.connection.args.address" ]]
         then
              sed -i -e 's/^/tcp:\/\//g' "$line" > ~/multidd/targets/source$i.txt
         else
             $line > ~/multidd/targets/source$i.txt
         fi
-        i=$(i+1)
+        i=$((i+1))
     done
     rm -f ~/multidd/targets/db1000n.json
     # remove all empty lines (spaces, tabs, new lines)
@@ -49,10 +49,12 @@ function get_targets () {
             echo "$line" >> ~/multidd/targets/all_targets.txt
         fi
     done
-    local total_targets=sed -n '$=' ~/multidd/targets/all_targets.txt
+    local total_targets
+    total_targets=$(wc -l ~/multidd/targets/all_targets.txt)
     echo -e "Всього цілей: $total_targets"
     sort < ~/multidd/targets/all_targets.txt | uniq | sort -R > ~/multidd/targets/uniq_targets.txt
-    local uniq_targets=sed -n '$=' ~/multidd/targets/uniq_targets.txt
+    local uniq_targets
+    uniq_targets=$(wc -l ~/multidd/targets/uniq_targets.txt)
     echo -e "Унікальних цілей: $uniq_targets"
 }
 export get_targets
