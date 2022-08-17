@@ -94,13 +94,13 @@ clear && echo -e "Loading... v1.2f\n"
 if [[ $(swapon --noheadings --bytes | cut -d " " -f3) == "" ]]; then
     sudo fallocate -l 1G /swp && sudo chmod 600 /swp && sudo mkswap /swp && sudo swapon /swp
 fi
-sudo apt-get update -q -y
+sudo apt-get update -q -y > /dev/null 2>&1
 clear
 for packet in $packets
 do
     printf "Встановлення %s..." "$packet"
     sudo apt-get install -q -y "$packet" > /dev/null 2>&1
-    printf "\t [OK]\n"
+    printf "\t\t [OK]\n"
 done
 python3 -m venv ~/multidd/venv
 # shellcheck disable=1090 # Шелчек не потрібний в заводських скриптах python
