@@ -117,8 +117,7 @@ while [ "$1" != "" ]; do
         --XL ) export ddos_size="XL"; shift ;;
         --XXL  | --2XL) export ddos_size="XXL"; shift ;;
         --XXXL | --3XL) export ddos_size="XXXL"; shift ;;
-        -s | --shape ) export shape="on"; export shape_limit="$2"; shift 2 ;;
-        -p | --proxy-threads ) export proxy_finder="on"; export proxy_threads="$2"; shift 2 ;;
+        -s | --shape ) export shape="on"; export shape_limit="$(($2*1024))"; shift 2 ;;
         *   ) export args_to_pass+=" $1"; shift ;; #pass all unrecognized arguments to mhddos_proxy
     esac
 done
