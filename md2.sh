@@ -28,11 +28,10 @@ function get_targets () {
     local i=1
     for path in "${itarmy_paths[@]}"
     do
-        local line
-        line=$(jq -f "$HOME/multidd/targets/db1000n.json" -r "$path" | sed '/null/d')
+        jq -f ~/multidd/targets/db1000n.json -r "$path" | sed '/null/d' > ~/multidd/targets/source$i.txt
         if [[ $path == ".jobs[].args.connection.args.address" ]]
         then
-             sed -i -e 's/^/tcp:\/\//g' "$line" > ~/multidd/targets/source$i.txt
+             sed -i '/^[[:space:]]*$/d' ~/multidd/targets/source$i.txt
         else
             $line > ~/multidd/targets/source$i.txt
         fi
@@ -50,11 +49,11 @@ function get_targets () {
         fi
     done
     local total_targets
-    total_targets=$(wc -l ~/multidd/targets/all_targets.txt)
+    total_targets=$(wc -l < ~/multidd/targets/all_targets.txt)
     echo -e "Всього цілей: $total_targets"
     sort < ~/multidd/targets/all_targets.txt | uniq | sort -R > ~/multidd/targets/uniq_targets.txt
     local uniq_targets
-    uniq_targets=$(wc -l ~/multidd/targets/uniq_targets.txt)
+    uniq_targets=$(wc -l < ~/multidd/targets/uniq_targets.txt)
     echo -e "Унікальних цілей: $uniq_targets"
 }
 export get_targets
@@ -99,11 +98,12 @@ sudo apt-get update -q -y
 clear
 for packet in $packets
 do
-    clear
-    sudo apt-get install -q -y "$packet"
+    printf "Встановлення %s..." "$packet"
+    sudo apt-get install -q -y "$packet" > /dev/null 2>&1
+    printf "\t [OK]\n"
 done
 python3 -m venv ~/multidd/venv
-# shellcheck disable=1090 # Шелчек не потрібний в заводських пітон скриптах
+# shellcheck disable=1090 # Шелчек не потрібний в заводських скриптах python
 source ~/multidd/venv/bin/activate
 mkdir -p ~/multidd/targets/
 cd ~/multidd || return
@@ -123,7 +123,9 @@ while [ "$1" != "" ]; do
     esac
 done
 if [[ $shape == "on" ]]; then
-    git clone https://github.com/magnific0/wondershaper.git
+    printf "Розпаковка wondershaper..."
+    git clone https://github.com/magnific0/wondershaper.git > /dev/null 2>&1
+    printf "\t [OK]\n"
     WS=$HOME'/multidd/wondershaper/wondershaper'
     export WS
     sudo "$WS" -a "$IFACE" -u "$shape_limit" -d "$shape_limit"
