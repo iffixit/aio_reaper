@@ -194,7 +194,7 @@ while true; do
     fi
     sleep 60m
     pkill -f start.py; pkill -f runner.py;
-    prepare_targets_and_banner
+    get_targets
     rm -rf ~/multidd/mhddos_proxy/
 done
 EOF
