@@ -96,7 +96,6 @@ if [[ $(swapon --noheadings --bytes | cut -d " " -f3) == "" ]]; then
     sudo fallocate -l 1G /swp && sudo chmod 600 /swp && sudo mkswap /swp && sudo swapon /swp
 fi
 sudo apt-get update -q -y > /dev/null 2>&1
-clear
 for packet in $packets
 do
     printf "Встановлення %10s..." "$packet"
