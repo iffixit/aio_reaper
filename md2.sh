@@ -28,7 +28,7 @@ function get_targets () {
     local i=1
     for path in "${itarmy_paths[@]}"
     do
-        jq -f ~/multidd/targets/db1000n.json -r "$path" | sed '/null/d' > ~/multidd/targets/source$i.txt
+        jq -r "$path" < ~/multidd/targets/db1000n.json  | sed '/null/d' > ~/multidd/targets/source$i.txt
         if [[ $path == ".jobs[].args.connection.args.address" ]]
         then
              sed -i '/^[[:space:]]*$/d' ~/multidd/targets/source$i.txt
@@ -55,6 +55,7 @@ function get_targets () {
     local uniq_targets
     uniq_targets=$(wc -l < ~/multidd/targets/uniq_targets.txt)
     echo -e "Унікальних цілей: $uniq_targets"
+    sleep 30
 }
 export get_targets
 #########################################
