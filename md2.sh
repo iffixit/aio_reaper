@@ -94,8 +94,10 @@ if [[ $(swapon --noheadings --bytes | cut -d " " -f3) == "" ]]; then
     sudo fallocate -l 1G /swp && sudo chmod 600 /swp && sudo mkswap /swp && sudo swapon /swp
 fi
 sudo apt-get update -q -y
+clear
 for packet in $packets
 do
+    clear
     sudo apt-get install -q -y "$packet"
 done
 python3 -m venv ~/multidd/venv
@@ -194,5 +196,6 @@ while true; do
 done
 EOF
 trap cleanup INT
+get_targets
 launch
 cleanup
