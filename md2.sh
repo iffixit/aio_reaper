@@ -84,6 +84,10 @@ function cleanup() {
         IFACE=$(ip -o -4 route show to default | awk '{print $5}')
         sudo "$WS" -c -a "$IFACE"
     fi
+    if [[ $cloudflare == "on" ]]
+    then
+        warp-cli disconnect
+    fi
     tmux kill-session -t multidd > /dev/null 2>&1
     rm -rf ~/multidd/
 }
@@ -138,8 +142,8 @@ then
     if ! command -v warp-cli > /dev/null 2>&1
     then
         printf "Підготовка cloudflare..."
-        curl https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+        curl https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg > /dev/null 2>&1
+        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list > /dev/null 2>&1
         printf "\t [OK]\n"
         printf "Підготовка пакетів..."
         sudo apt update > /dev/null 2>&1
