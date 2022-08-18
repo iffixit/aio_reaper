@@ -135,19 +135,22 @@ if [[ $shape == "on" ]]; then
 fi
 if [[ $cloudflare == "on" ]]
 then
-    printf "Підготовка cloudflare..."
-    curl https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
-    printf "\t [OK]\n"
-    printf "Підготовка пакетів..."
-    sudo apt update > /dev/null 2>&1
-    printf "\t [OK]\n"
-    printf "Завантаження cloudflare..."
-    sudo apt install cloudflare-warp > /dev/null 2>&1
-    printf "\t [OK]\n"
-    printf "Реєстрація у cloudflare..."
-    yes | warp-cli register > /dev/null 2>&1
-    printf "\t [OK]\n"
+    if ! command -v warp-cli > /dev/null 2>&1
+    then
+        printf "Підготовка cloudflare..."
+        curl https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+        printf "\t [OK]\n"
+        printf "Підготовка пакетів..."
+        sudo apt update > /dev/null 2>&1
+        printf "\t [OK]\n"
+        printf "Завантаження cloudflare..."
+        sudo apt install cloudflare-warp > /dev/null 2>&1
+        printf "\t [OK]\n"
+        printf "Реєстрація у cloudflare..."
+        yes | warp-cli register > /dev/null 2>&1
+        printf "\t [OK]\n"
+    fi
 
 fi
 if [[ $db1000n == "on" ]]
