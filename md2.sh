@@ -160,7 +160,7 @@ then
     printf "\t [OK]\n"
     printf "Розпаковка db1000n..."
     mkdir ~/multidd/db1000n > /dev/null 2>&1
-    tar -xf ~/multidd/db1000n.tar.gz -C ~/multidd/db1000n > /dev/null 2>&1
+    tar -xf ~/multidd/db1000n.tar.gz -C ~/multidd/db1000n #> /dev/null 2>&1
     chmod +X ~/multidd/db1000n/db1000n
     printf "\t [OK]\n"
 fi
