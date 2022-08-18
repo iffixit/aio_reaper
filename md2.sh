@@ -159,7 +159,7 @@ then
     curl -s -X "https://github.com/Arriven/db1000n/releases/latest/download/db1000n_linux_amd64.tar.gz" -o ~/multidd/db1000n.tar.gz  #> /dev/null 2>&1
     printf "\t [OK]\n"
     printf "Розпаковка db1000n..."
-    mkdir ~/multidd/db1000n > /dev/null 2>&1
+    #mkdir ~/multidd/db1000n > /dev/null 2>&1
     tar -xf ~/multidd/db1000n.tar.gz -C ~/multidd/db1000n #> /dev/null 2>&1
     chmod +X ~/multidd/db1000n/db1000n
     printf "\t [OK]\n"
