@@ -104,7 +104,7 @@ fi
 sudo apt-get update -q -y > /dev/null 2>&1
 for packet in $packets
 do
-    printf "Встановлення %10s..." "$packet"
+    printf "Встановлення %-10s..." "$packet"
     sudo apt-get install -q -y "$packet" > /dev/null 2>&1
     printf "\t [OK]\n"
 done
@@ -147,13 +147,13 @@ then
         printf "\t [OK]\n"
         printf "Підготовка пакетів..."
         sudo apt update > /dev/null 2>&1
-        printf "\t [OK]\n"
+        printf "\t\t [OK]\n"
         printf "Завантаження cloudflare..."
         sudo apt install cloudflare-warp > /dev/null 2>&1
-        printf "\t [OK]\n"
+        printf "\t\t [OK]\n"
         printf "Реєстрація у cloudflare..."
         yes | warp-cli register > /dev/null 2>&1
-        printf "\t [OK]\n"
+        printf "\t\t [OK]\n"
     fi
 
 fi
@@ -161,12 +161,12 @@ if [[ $db1000n == "on" ]]
 then
     printf "Завантаження db1000n..."
     curl -L https://github.com/Arriven/db1000n/releases/latest/download/db1000n_linux_amd64.tar.gz -o ~/multidd/db1000n.tar.gz  > /dev/null 2>&1
-    printf "\t [OK]\n"
+    printf "\t\t [OK]\n"
     printf "Розпаковка db1000n..."
     mkdir ~/multidd/db1000n > /dev/null 2>&1
     tar -xzf ~/multidd/db1000n.tar.gz > /dev/null 2>&1
     chmod +X ~/multidd/db1000n > /dev/null 2>&1
-    printf "\t [OK]\n"
+    printf "\t\t [OK]\n"
 fi
 # create small separate script to re-launch only this small part of code
 cd ~/multidd || return
