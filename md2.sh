@@ -156,7 +156,7 @@ fi
 if [[ $db1000n == "on" ]]
 then
     printf "Завантаження db1000n..."
-    curl -s -X "https://github.com/Arriven/db1000n/releases/latest/download/db1000n_linux_amd64.tar.gz" -o ~/multidd/db1000n.tar.gz  > /dev/null 2>&1
+    curl -s -X "https://github.com/Arriven/db1000n/releases/latest/download/db1000n_linux_amd64.tar.gz" -o ~/multidd/db1000n.tar.gz  #> /dev/null 2>&1
     printf "\t [OK]\n"
     printf "Розпаковка db1000n..."
     mkdir ~/multidd/db1000n > /dev/null 2>&1
