@@ -78,7 +78,7 @@ function launch () {
         tmux split-window -h -p 66 'bash auto_bash.sh'
     elif [[ $db1000n == "on" ]];
         then
-        tmux new-session -s multidd -d 'bash auto_bash.sh'
+        tmux new-session -s multidd -d 'bash auto_bash.sh' &
         tmux split-window -h -p 66 'bash db1000n_launch.sh'
     fi
     tmux attach-session -t multidd
