@@ -254,6 +254,7 @@ while true; do
     if [[ $cloudflare == "on" ]]
     then
         warp-cli disconnect
+        pkill -f warp-cli
     fi
 done
 EOF
