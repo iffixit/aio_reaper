@@ -68,19 +68,28 @@ export get_targets
 function launch () {
     # tmux mouse support
     grep -qxF 'set -g mouse on' ~/.tmux.conf || echo 'set -g mouse on' >> ~/.tmux.conf
+
+    declare -a commands
+    commands+=("bash auto_bash.sh")
     tmux source-file ~/.tmux.conf > /dev/null 2>&1
+
     if [[ $gotop == "on" ]]; then
         if [ ! -f "/usr/local/bin/gotop" ]; then
             curl -L https://github.com/cjbassi/gotop/releases/download/3.0.0/gotop_3.0.0_linux_amd64.deb -o gotop.deb
             sudo dpkg -i gotop.deb
+            commands+=('gotop -sc solarized')
         fi
-        tmux new-session -s multidd -d 'gotop -sc solarized'
-        tmux split-window -h -p 66 'bash auto_bash.sh'
-    elif [[ $db1000n == "on" ]];
-        then
-        tmux new-session -s multidd -d 'bash auto_bash.sh' &
-        tmux split-window -h -p 66 'bash db1000n_launch.sh'
     fi
+    if [[ $db1000n == "on" ]];
+        then
+        commands+=('bash db1000n_launch.sh')
+    fi
+    tmux new-session -s multidd
+    for item in "${commands[@]}"
+    do
+        tmux split-window -v "$item"
+    done
+    tmux select-layout even-vertical
     tmux attach-session -t multidd
 }
 #########################################
