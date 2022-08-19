@@ -114,9 +114,11 @@ do
     sudo apt-get install -q -y "$packet" > /dev/null 2>&1
     printf "\t [OK]\n"
 done
+printf "Створення python venv..."
 python3 -m venv ~/multidd/venv
 # shellcheck disable=1090 # Шелчек не потрібний в заводських скриптах python
 source ~/multidd/venv/bin/activate
+printf "\t [OK]\n"
 mkdir -p ~/multidd/targets/
 cd ~/multidd || return
 while [ "$1" != "" ]; do
