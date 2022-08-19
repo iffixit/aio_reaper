@@ -110,7 +110,7 @@ fi
 sudo apt-get update -q -y > /dev/null 2>&1
 for packet in $packets
 do
-    printf "Встановлення %-10s" "$packet"
+    printf "Встановлення %-15s" "$packet"
     sudo apt-get install -q -y "$packet" > /dev/null 2>&1
     printf "\t [OK]\n"
 done
