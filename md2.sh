@@ -76,10 +76,6 @@ function launch () {
         fi
         tmux new-session -s multidd -d 'gotop -sc solarized'
         tmux split-window -h -p 66 'bash auto_bash.sh'
-    elif [[ $db1000n == "on" ]];
-        then
-        tmux new-session -s multidd -d 'bash auto_bash.sh'
-        tmux split-window -h -p 66 'db1000n'
     fi
     tmux attach-session -t multidd
 }
