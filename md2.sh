@@ -93,6 +93,7 @@ function cleanup() {
     if [[ $cloudflare == "on" ]]
     then
         warp-cli disconnect
+        pkill -f warp-cli
     fi
     tmux kill-session -t multidd > /dev/null 2>&1
     rm -rf ~/multidd/
