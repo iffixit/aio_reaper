@@ -147,14 +147,14 @@ then
     if ! command -v warp-cli > /dev/null 2>&1
     then
         printf "Підготовка cloudflare..."
-        curl https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg > /dev/null 2>&1
+        curl https://pkg.cloudflareclient.com/pubkey.gpg > /dev/null 2>&1 | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg > /dev/null 2>&1
         echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list > /dev/null 2>&1
         printf "\t [OK]\n"
         printf "Підготовка пакетів..."
         sudo apt update > /dev/null 2>&1
         printf "\t\t [OK]\n"
         printf "Завантаження cloudflare..."
-        sudo apt install cloudflare-warp > /dev/null 2>&1
+        sudo apt install -y -q cloudflare-warp > /dev/null 2>&1
         printf "\t\t [OK]\n"
         printf "Реєстрація у cloudflare..."
         yes | warp-cli register > /dev/null 2>&1
