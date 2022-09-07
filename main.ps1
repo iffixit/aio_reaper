@@ -182,6 +182,26 @@ if (Test-Path -Path "$Rootdir\\lite")
 {
     $LiteMode = $true;
 }
+$SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
+$SpeedTest = & "$SpeedTestPath\\speedtest.exe" --format=json --accept-license --accept-gdpr;
+$SpeedTest | Out-File "$Rootdir\\speedtest.result" -Force;
+$Results = Get-Content -Path "$Rootdir\\speedtest.result" | ConvertFrom-Json;
+[PSCustomObject]$SpeedTestResults = @{
+    downloadspeed = [math]::Round($Results.download.bandwidth / 1000000 * 8, 2)
+    uploadspeed   = [math]::Round($Results.upload.bandwidth / 1000000 * 8, 2)
+    packetloss    = [math]::Round($Results.packetLoss)
+    isp           = $Results.isp
+    ExternalIP    = $Results.interface.externalIp
+    InternalIP    = $Results.interface.internalIp
+    UsedServer    = $Results.server.host
+    URL           = $Results.result.url
+    Jitter        = [math]::Round($Results.ping.jitter)
+    Latency       = [math]::Round($Results.ping.latency)
+}
+if ($SpeedTestResults.uploadspeed -lt 10){
+    $LiteMode = $true;
+}
+
 $RunnerURL = $XMLConfig.config.links.runner;
 $UpdaterURL = $XMLConfig.config.links.updater;
 $TitleStarted = $XMLConfig.config.titles.started;

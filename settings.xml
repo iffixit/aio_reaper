@@ -11,6 +11,7 @@
         <posh32>https://github.com/PowerShell/PowerShell/releases/download/v7.2.5/PowerShell-7.2.5-win-x86.zip</posh32>
         <posh64>https://github.com/PowerShell/PowerShell/releases/download/v7.2.5/PowerShell-7.2.5-win-x64.zip</posh64>
         <load>https://github.com/LordWarWar/mhddos_proxy.git</load>
+        <speedtest>https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip</speedtest>
         <banner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/banner</banner>
         <funclib>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/functions.ps1</funclib>
         <runner>https://raw.githubusercontent.com/ahovdryk/aio_reaper/master/runner.ps1</runner>
@@ -41,6 +42,7 @@
         <python>Python</python>
         <posh>Powershell</posh>
         <load>mhddos_proxy</load>
+        <speedtest>SpeedTest</speedtest>
     </folders>
     <limits>
         <description>В цій секції в гігабайтах задаються пороги спрацювання попереджень і зупинок роботи</description>
@@ -71,7 +73,13 @@
         <everythingfine>Якщо ви бачите це - схоже все працює правильно. F12 перезапустить атаку, якщо щось пішло не так</everythingfine>
         <targetsupdated>Цілі було отримано</targetsupdated>
         <gettingtargets>Отримую список цілей, зачекайте.</gettingtargets>
+        <runningspeedtest>Виконується оцінка мережі, зачекайте, це займе трохи часу.</runningspeedtest>
+        <isp>Ваш провайдер:</isp>
+        <ulspeed>Швидкість відвантаження:</ulspeed>
+        <dlspeed>Швидкість завантаження:</dlspeed>
+        <externalip>Зовнішня IP-адреса:</externalip>
     </messages>
+    <badproviders></badproviders>
     <erroraction>SilentlyContinue</erroraction>
     <liteblocksize>2000</liteblocksize>
     <timers>

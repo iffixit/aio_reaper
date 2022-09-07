@@ -87,7 +87,7 @@ $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.4.2 stable / Trident barrage";
+$RunnerVersion = "1.4.3 beta / Swinedog stampede";
 
 if ($args -like "*-lite*") {
     $RunningLite = $true;
@@ -108,6 +108,23 @@ $StartTask = $true;
 $Targets = @()
 $Globalargs = $XMLConfig.config.baseloadargs;
 Set-Location $LoadPath;
+$Results = Get-Content -Path "$Rootdir\\speedtest.result" | ConvertFrom-Json;
+[PSCustomObject]$SpeedTestResults = @{
+    downloadspeed = [math]::Round($Results.download.bandwidth / 1000000 * 8, 2)
+    uploadspeed   = [math]::Round($Results.upload.bandwidth / 1000000 * 8, 2)
+    packetloss    = [math]::Round($Results.packetLoss)
+    isp           = $Results.isp
+    ExternalIP    = $Results.interface.externalIp
+    InternalIP    = $Results.interface.internalIp
+    UsedServer    = $Results.server.host
+    URL           = $Results.result.url
+    Jitter        = [math]::Round($Results.ping.jitter)
+    Latency       = [math]::Round($Results.ping.latency)
+}
+$ISP = "$($XMLConfig.config.messages.isp) $($SpeedTestResults.isp)";
+$Ul = "$($XMLConfig.config.messages.ulspeed) $($SpeedTestResults.uploadspeed)";
+$DL = "$($XMLConfig.config.messages.dlspeed) $($SpeedTestResults.downloadspeed)";
+$MyIP = "$($XMLConfig.config.messages.externalip) $($SpeedTestResults.ExternalIP)";
 
 
 while (-not $StopRequested) {
@@ -122,6 +139,7 @@ while (-not $StopRequested) {
         Write-Host $RunningLiteMessage;
     }
     Write-Host $StartupMessage;
+    Write-Host "$ISP`n$MyIP`n$UL`n$DL`n";
     Write-Host "$($XMLConfig.config.messages.presstoexit)"
     Set-Location $RootDir;
     Write-Host "$($XMLConfig.config.messages.everythingfine)"

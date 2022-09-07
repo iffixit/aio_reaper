@@ -324,6 +324,16 @@ if (Test-Path "$RootDir\\pwsh.zip") {
     Remove-Item "$RootDir\\pwsh.zip" -Force;
 }
 
+$Message = $XMLConfig.config.messages.downloading;
+Clear-Line $("$Message speedtest")
+$SpeedTestURL = $XMLConfig.config.links.speedtest;
+Get-File $SpeedTestURL "$Rootdir\\speedtest.zip"
+$SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
+Expand-Archive -Path "speedtest.zip" -DestinationPath "$SpeedTestPath" | Out-Null;
+if (Test-Path "$RootDir\\speedtest.zip") {
+    Remove-Item "$RootDir\\speedtest.zip" -Force;
+}
+
 Set-Location $RootDir;
 $Message = $XMLConfig.config.messages.unpacking;
 $LoadURL = $XMLConfig.config.links.load;

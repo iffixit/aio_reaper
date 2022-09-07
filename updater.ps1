@@ -20,7 +20,7 @@ do {
     Clear-Line $("$Message mhddos_proxy")
     $Message = $XMLConfig.config.messages.unpacking;
     $LoadURL = $XMLConfig.config.links.load;
-    Clear-Line $("$Message load")
+    Clear-Line $("$Message mhddos_proxy")
     $GitArgs = "clone $LoadURL $LoadPath";
     $GitPath = $XMLConfig.config.folders.git;
     $GitExe = $("$RootDir\\$GitPath\\bin\\git.exe");
