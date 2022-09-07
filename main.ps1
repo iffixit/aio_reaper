@@ -183,6 +183,18 @@ if (Test-Path -Path "$Rootdir\\lite")
     $LiteMode = $true;
 }
 $SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
+if(-not Test-Path -Path $SpeedTestPath)
+{
+    $Message = $XMLConfig.config.messages.downloading;
+    Clear-Line $("$Message speedtest")
+    $SpeedTestURL = $XMLConfig.config.links.speedtest;
+    Get-File $SpeedTestURL "$Rootdir\\speedtest.zip"
+    Expand-Archive -Path "speedtest.zip" -DestinationPath "$SpeedTestPath" | Out-Null;
+}
+if (Test-Path "$RootDir\\speedtest.zip") {
+    Remove-Item "$RootDir\\speedtest.zip" -Force;
+}
+$SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
 $SpeedTest = & "$SpeedTestPath\\speedtest.exe" --format=json --accept-license --accept-gdpr;
 $SpeedTest | Out-File "$Rootdir\\speedtest.result" -Force;
 $Results = Get-Content -Path "$Rootdir\\speedtest.result" | ConvertFrom-Json;
