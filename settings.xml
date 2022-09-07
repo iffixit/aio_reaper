@@ -73,7 +73,7 @@
         <gettingtargets>Отримую список цілей, зачекайте.</gettingtargets>
     </messages>
     <erroraction>SilentlyContinue</erroraction>
-    <liteblocksize>50</liteblocksize>
+    <liteblocksize>2000</liteblocksize>
     <timers>
         <main>360</main>
         <minutesperblock>60</minutesperblock>
