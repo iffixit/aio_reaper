@@ -156,7 +156,7 @@ while (-not $StopRequested) {
     if ($StartTask -and $RunningLite) {
         if ($TargetList.Count -gt 0) {
             $TargetString = $TargetList -join ' ';
-            $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
+            $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
             $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle $WindowStyle -ArgumentList $RunnerArgs -PassThru;
             $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
             $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
