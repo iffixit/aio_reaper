@@ -44,14 +44,13 @@ if (Test-Path "$RootDir\\functions.ps1") {
 Get-File $MainScriptUrl "$RootDir\\main.ps1";
 Get-File $SettingsLink "$RootDir\\settings.xml";
 Get-File $FunctionsURL "$RootDir\\functions.ps1";
-
-if(-not Test-Path -Path "$Rootdir\\SpeedTest\\speedtest.exe")
+$SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
+if(-not Test-Path -Path $SpeedTestPath)
 {
     $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message speedtest")
     $SpeedTestURL = $XMLConfig.config.links.speedtest;
     Get-File $SpeedTestURL "$Rootdir\\speedtest.zip"
-    $SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
     Expand-Archive -Path "speedtest.zip" -DestinationPath "$SpeedTestPath" | Out-Null;
 }
 if (Test-Path "$RootDir\\speedtest.zip") {
