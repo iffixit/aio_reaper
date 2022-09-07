@@ -196,7 +196,7 @@ if (Test-Path "$RootDir\\speedtest.zip") {
 }
 $SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
 $SpeedTest = & "$SpeedTestPath\\speedtest.exe" --format=json --accept-license --accept-gdpr;
-$SpeedTest | Out-File "$Rootdir\\speedtest.result" -Force;
+$null = $SpeedTest | Out-File "$Rootdir\\speedtest.result" -Force;
 $Results = Get-Content -Path "$Rootdir\\speedtest.result" | ConvertFrom-Json;
 [PSCustomObject]$SpeedTestResults = @{
     downloadspeed = [math]::Round($Results.download.bandwidth / 1000000 * 8, 2)
