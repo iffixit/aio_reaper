@@ -143,7 +143,7 @@ while (-not $StopRequested) {
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
             while (($PyProcess.HasExited -eq $false) -and ($TillEnd -gt 0)) {
                 $Message = $XMLConfig.config.messages.targets + `
-                    ": $($Target.Count) " + `
+                    ": $($TargetList.Count) " + `
                     $XMLConfig.config.messages.targetsupdated + `
                     ": $(Get-HHMM $TargetsUpdated)" + " " + `
                     $XMLConfig.config.messages.tillupdate + `
