@@ -44,7 +44,7 @@ function CreateTargetList([bool] $RunningLite) {
         $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object;
     }
     else {
-        $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object { Get-Random };
+        $TargetsCleaned = $Targets | Select-Object -Unique;
     }
     return $TargetsCleaned
 }
@@ -84,7 +84,7 @@ $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 #[System.Environment]::SetEnvironmentVariable('PYTHONHOME', $PythonPath, [System.EnvironmentVariableTarget]::Process);
 
 
-$RunnerVersion = "1.4.2 beta / Cossack hog";
+$RunnerVersion = "1.4.2 stable / Trident barrage";
 
 if ($args -like "*-lite*") {
     $RunningLite = $true;
@@ -132,28 +132,33 @@ while (-not $StopRequested) {
 
     if ($StartTask -and $RunningLite) {
         $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
-        foreach ($Target in $Targets) {
-            if ($Target.Count -gt 0) {
-                $TargetString = $Target -join ' ';
-                $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
-                $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
-                $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
-                $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
-                $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
-                while (($PyProcess.HasExited -eq $false) -and ($TillEnd -gt 0)) {
-                    $Message = $XMLConfig.config.messages.targets + `
-                        ": $($Target.Count) " + `
-                        $XMLConfig.config.messages.targetsupdated + `
-                        ": $(Get-HHMM $TargetsUpdated)" + " " + `
-                        $XMLConfig.config.messages.tillupdate + `
-                        ": $([int] $TillEnd.Minutes) " + `
-                        $XMLConfig.config.messages.minutes;
-                    Clear-Line $Message;
-                    Start-Sleep -Seconds 5;
-                    $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
-                }
-                Stop-Tree $PyProcess.Id;
+        $Target = $Targets[0]
+        if ($Target.Count -gt 0) {
+            $TargetString = $Target -join ' ';
+            $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
+            $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
+            $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
+            $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
+            $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
+            while (($PyProcess.HasExited -eq $false) -and ($TillEnd -gt 0)) {
+                $Message = $XMLConfig.config.messages.targets + `
+                    ": $($Target.Count) " + `
+                    $XMLConfig.config.messages.targetsupdated + `
+                    ": $(Get-HHMM $TargetsUpdated)" + " " + `
+                    $XMLConfig.config.messages.tillupdate + `
+                    ": $($TillEnd.Minutes) " + `
+                    $XMLConfig.config.messages.minutes;
+                    if ([Console]::KeyAvailable) {
+                        $key = [Console]::ReadKey($true)
+                        switch ($key.key) {
+                            F12 { $EndJob = [System.DateTime]::Now; }
+                        }
+                    }
+                Clear-Line $Message;
+                Start-Sleep -Seconds 5;
+                $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
             }
+            Stop-Tree $PyProcess.Id;
         }
         $StartTask = $false;
     }
@@ -176,7 +181,7 @@ while (-not $StopRequested) {
                 $XMLConfig.config.messages.targetsupdated + `
                 ": $(Get-HHMM $TargetsUpdated)" + " " + `
                 $XMLConfig.config.messages.tillupdate + `
-                ": $([int] $TillEnd.Minutes) " + `
+                ": $($TillEnd.Minutes) " + `
                 $XMLConfig.config.messages.minutes;
             Clear-Line $Message;
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
