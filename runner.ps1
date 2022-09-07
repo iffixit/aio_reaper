@@ -2,6 +2,7 @@ function CreateTargetList([bool] $RunningLite) {
     # Adding targets from simple lists.
     [xml]$XMLConfigLocal = Get-Content -Path ("$PSScriptRoot\\settings.xml");
     $Targets = @();
+    $ITArmyTargets = @();
     $TargetLists = $XMLConfigLocal.config.targets.targetlist.entry;
     foreach ($TargetList in $TargetLists) {
         $TempFilePath = $PSScriptRoot + "\\temp.txt";
@@ -25,11 +26,11 @@ function CreateTargetList([bool] $RunningLite) {
                 Out-Null;
             }
             else {
-                $Targets += "tcp://$Val";
+                $ITArmyTargets += "tcp://$Val";
             }
         }
     }
-
+    $Targets += $ITArmyTargets;
     # Cleanup
     $Targets = $Targets -join " ";
     $Targets = $Targets -replace '`n', ' ';
@@ -44,7 +45,7 @@ function CreateTargetList([bool] $RunningLite) {
         $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object;
     }
     else {
-        $TargetsCleaned = $Targets | Select-Object -Unique;
+        $TargetsCleaned = $ITArmyTargets;
     }
     return $TargetsCleaned
 }
@@ -115,6 +116,8 @@ while (-not $StopRequested) {
     $StartupMessage = "$($XMLConfig.config.messages.runnerstart) $RunnerVersion";
     if ($RunningLite) {
         $StartupMessage = $StartupMessage + " Lite";
+        $RunningLiteMessage = $XMLConfig.config.messages.runninglite;
+        Write-Host $RunningLiteMessage;
     }
     Write-Host $StartupMessage;
     Write-Host "$($XMLConfig.config.messages.presstoexit)"
@@ -131,10 +134,8 @@ while (-not $StopRequested) {
     }
 
     if ($StartTask -and $RunningLite) {
-        $Targets = Get-SlicedArray $TargetList $LiteBlockSize;
-        $Target = $Targets[0]
-        if ($Target.Count -gt 0) {
-            $TargetString = $Target -join ' ';
+        if ($TargetList.Count -gt 0) {
+            $TargetString = $TargetList -join ' ';
             $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
             $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
             $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
