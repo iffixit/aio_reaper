@@ -64,8 +64,10 @@ $InstallFolder = $XMLConfig.config.folders.install;
 $RootDir = $SystemDrive + "\" + $InstallFolder;
 Set-Location $RootDir;
 . $("$RootDir\\functions.ps1");
+$WindowStyle = "Hidden"
 if (Test-Path -Path "$Rootdir\\debug") {
     Set-PSDebug -Trace 1;
+    $WindowStyle = "Normal"
 }
 #[console]::TreatControlCAsInput = $true
 
@@ -128,7 +130,7 @@ while (-not $StopRequested) {
         $TargetList -join "`r`n" | Out-File -Encoding UTF8 -FilePath "$LoadPath\targets.txt" -Force | Out-Null;
         $TargetString = $("-c $LoadPath\targets.txt");
         $RunnerArgs = $("$LoadFileName $Globalargs $TargetString");
-        $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
+        $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle $WindowStyle -ArgumentList $RunnerArgs -PassThru;
         $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
         $StartTask = $false;
     }
@@ -137,7 +139,7 @@ while (-not $StopRequested) {
         if ($TargetList.Count -gt 0) {
             $TargetString = $TargetList -join ' ';
             $RunnerArgs = $("$LoadFileName $Globalargs -t $LiteBlockSize $TargetString");
-            $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle Hidden -ArgumentList $RunnerArgs -PassThru;
+            $PyProcess = Start-Process -FilePath $PythonExe -WorkingDirectory $LoadPath -WindowStyle $WindowStyle -ArgumentList $RunnerArgs -PassThru;
             $PyProcess.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle;
             $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
