@@ -191,13 +191,20 @@ if(-not (Test-Path -Path $SpeedTestPath))
     Get-File $SpeedTestURL "$Rootdir\\speedtest.zip"
     Expand-Archive -Path "speedtest.zip" -DestinationPath "$SpeedTestPath" | Out-Null;
 }
-if (Test-Path "$RootDir\\speedtest.zip") {
+if (Test-Path "$RootDir\\speedtest.zip") 
+{
     Remove-Item "$RootDir\\speedtest.zip" -Force;
 }
+if (Test-Path "$RootDir\\speedtest.result")
+{
+    Remove-Item "$RootDir\\speedtest.result" -Force;
+}
+$Message = $XMLConfig.config.messages.runningspeedtest;
+Clear-Line $Message;
 $SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
 $SpeedTest = & "$SpeedTestPath\\speedtest.exe" --format=json --accept-license --accept-gdpr;
-$null = $SpeedTest | Out-File "$Rootdir\\speedtest.result" -Force;
-$Results = Get-Content -Path "$Rootdir\\speedtest.result" | ConvertFrom-Json;
+$null = $SpeedTest | Out-File "$RootDir\\speedtest.result" -Force;
+$Results = Get-Content -Path "$RootDir\\speedtest.result" | ConvertFrom-Json;
 [PSCustomObject]$SpeedTestResults = @{
     downloadspeed = [math]::Round($Results.download.bandwidth / 1000000 * 8, 2)
     uploadspeed   = [math]::Round($Results.upload.bandwidth / 1000000 * 8, 2)
@@ -213,7 +220,11 @@ $Results = Get-Content -Path "$Rootdir\\speedtest.result" | ConvertFrom-Json;
 if ($SpeedTestResults.uploadspeed -lt 10){
     $LiteMode = $true;
 }
-
+$KickstartURL = $XMLConfig.config.links.kickstart;
+Get-File $KickstartURL $("$RootDir\\kick.ps1") | Out-Null;
+Remove-Item "$RootDir\\kickstart.ps1" -Force | Out-Null;
+Rename-Item -Path "$RootDir\\kick.ps1" -NewName "$RootDir\\kick.ps1"
+Clear-Line " ";
 $RunnerURL = $XMLConfig.config.links.runner;
 $UpdaterURL = $XMLConfig.config.links.updater;
 $TitleStarted = $XMLConfig.config.titles.started;
