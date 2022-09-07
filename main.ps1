@@ -183,7 +183,7 @@ if (Test-Path -Path "$Rootdir\\lite")
     $LiteMode = $true;
 }
 $SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
-if(-not Test-Path -Path $SpeedTestPath)
+if(-not (Test-Path -Path $SpeedTestPath))
 {
     $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message speedtest")
