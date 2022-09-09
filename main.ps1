@@ -178,25 +178,21 @@ if ($FreeMem -lt $RamLimit) {
 if (Test-Path -Path "$Rootdir\\debug") {
     Set-PSDebug -Trace 1;
 }
-if (Test-Path -Path "$Rootdir\\lite")
-{
+if (Test-Path -Path "$Rootdir\\lite") {
     $LiteMode = $true;
 }
 $SpeedTestPath = $("$RootDir\$($XMLConfig.config.folders.speedtest)\");
-if(-not (Test-Path -Path $SpeedTestPath))
-{
+if (-not (Test-Path -Path $SpeedTestPath)) {
     $Message = $XMLConfig.config.messages.downloading;
     Clear-Line $("$Message speedtest")
     $SpeedTestURL = $XMLConfig.config.links.speedtest;
     Get-File $SpeedTestURL "$Rootdir\\speedtest.zip"
     Expand-Archive -Path "speedtest.zip" -DestinationPath "$SpeedTestPath" | Out-Null;
 }
-if (Test-Path "$RootDir\\speedtest.zip") 
-{
+if (Test-Path "$RootDir\\speedtest.zip") {
     Remove-Item "$RootDir\\speedtest.zip" -Force;
 }
-if (Test-Path "$RootDir\\speedtest.result")
-{
+if (Test-Path "$RootDir\\speedtest.result") {
     Remove-Item "$RootDir\\speedtest.result" -Force;
 }
 $Message = $XMLConfig.config.messages.runningspeedtest;
@@ -217,13 +213,13 @@ $Results = Get-Content -Path "$RootDir\\speedtest.result" | ConvertFrom-Json;
     Jitter        = [math]::Round($Results.ping.jitter)
     Latency       = [math]::Round($Results.ping.latency)
 }
-if ($SpeedTestResults.uploadspeed -lt 10){
+if ($SpeedTestResults.uploadspeed -lt 10) {
     $LiteMode = $true;
 }
 $KickstartURL = $XMLConfig.config.links.kickstart;
 Get-File $KickstartURL $("$RootDir\\kick.ps1") | Out-Null;
 Remove-Item "$RootDir\\kickstart.ps1" -Force | Out-Null;
-Rename-Item -Path "$RootDir\\kick.ps1" -NewName "$RootDir\\kick.ps1"
+Rename-Item -Path "$RootDir\\kick.ps1" -NewName "$RootDir\\kickstart.ps1"
 Clear-Line " ";
 $RunnerURL = $XMLConfig.config.links.runner;
 $UpdaterURL = $XMLConfig.config.links.updater;
