@@ -219,7 +219,7 @@ if ($SpeedTestResults.uploadspeed -lt 10) {
 $KickstartURL = $XMLConfig.config.links.kickstart;
 Get-File $KickstartURL $("$RootDir\\kick.ps1") | Out-Null;
 Remove-Item "$RootDir\\kickstart.ps1" -Force | Out-Null;
-Rename-Item -Path "$RootDir\\kick.ps1" -NewName "$RootDir\\kickstart.ps1"
+Rename-Item -Path "$RootDir\\kick.ps1" -NewName "$RootDir\\kickstart.ps1";
 Clear-Line " ";
 $RunnerURL = $XMLConfig.config.links.runner;
 $UpdaterURL = $XMLConfig.config.links.updater;
