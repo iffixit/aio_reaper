@@ -167,7 +167,7 @@ while (-not $StopRequested) {
                     ": $($TargetList.Count) " + `
                     $XMLConfig.config.messages.tillupdate + `
                     ": $($TillEnd.Minutes) " + `
-                    $XMLConfig.config.messages.minutes + `
+                    $XMLConfig.config.messages.minutes + " " + `
                     $XMLConfig.config.messages.randtargets + `
                     $(" $RandomTarget");
                     if ([Console]::KeyAvailable) {
@@ -203,7 +203,7 @@ while (-not $StopRequested) {
                 ": $($TargetList.Count) " + `
                 $XMLConfig.config.messages.tillupdate + `
                 ": $($TillEnd.Minutes) " + `
-                $XMLConfig.config.messages.minutes + `
+                $XMLConfig.config.messages.minutes + " " + `
                 $XMLConfig.config.messages.randtargets + `
                 $(" $RandomTarget");
             Clear-Line $Message;
