@@ -162,13 +162,13 @@ while (-not $StopRequested) {
             $EndJob = [System.DateTime]::Now.AddMinutes($MinutesPerBlock);
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
             while (($PyProcess.HasExited -eq $false) -and ($TillEnd -gt 0)) {
+                $RandomTarget = Get-Random $TargetList
                 $Message = $XMLConfig.config.messages.targets + `
                     ": $($TargetList.Count) " + `
-                    $XMLConfig.config.messages.targetsupdated + `
-                    ": $(Get-HHMM $TargetsUpdated)" + " " + `
                     $XMLConfig.config.messages.tillupdate + `
                     ": $($TillEnd.Minutes) " + `
-                    $XMLConfig.config.messages.minutes;
+                    $XMLConfig.config.messages.randtargets + `
+                    $RandomTarget;
                     if ([Console]::KeyAvailable) {
                         $key = [Console]::ReadKey($true)
                         switch ($key.key) {
@@ -197,13 +197,14 @@ while (-not $StopRequested) {
                 $StartTask = $true;
                 break;
             }
+            $RandomTarget = Get-Random $TargetList;
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
-                $XMLConfig.config.messages.targetsupdated + `
-                ": $(Get-HHMM $TargetsUpdated)" + " " + `
                 $XMLConfig.config.messages.tillupdate + `
                 ": $($TillEnd.Minutes) " + `
-                $XMLConfig.config.messages.minutes;
+                $XMLConfig.config.messages.minutes + `
+                $XMLConfig.config.messages.randtargets + `
+                $RandomTarget;
             Clear-Line $Message;
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
             Start-Sleep -Seconds 1;

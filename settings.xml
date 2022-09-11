@@ -64,7 +64,7 @@
         <targets>Цілей</targets>
         <minutes>хвилин</minutes>
         <network>мережі зайнято.</network>
-        <tillupdate>До оновлення</tillupdate>
+        <tillupdate>До оновлення цілей</tillupdate>
         <runninglite>Скрипт визначив, що краще обмежитись цілями ІТ-армії. Запускаємо спрощену версію.</runninglite>
         <pressenter>Натисніть Ентер [⏎] для завершення...</pressenter>
         <runnerstart>Бігунець версії</runnerstart>
@@ -78,6 +78,7 @@
         <ulspeed>Швидкість відвантаження:</ulspeed>
         <dlspeed>Швидкість завантаження:</dlspeed>
         <externalip>Зовнішня IP-адреса:</externalip>
+        <randtargets>Серед атакованого:</randtargets>
     </messages>
     <badproviders></badproviders>
     <erroraction>SilentlyContinue</erroraction>
