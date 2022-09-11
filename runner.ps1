@@ -167,8 +167,9 @@ while (-not $StopRequested) {
                     ": $($TargetList.Count) " + `
                     $XMLConfig.config.messages.tillupdate + `
                     ": $($TillEnd.Minutes) " + `
+                    $XMLConfig.config.messages.minutes + `
                     $XMLConfig.config.messages.randtargets + `
-                    $RandomTarget;
+                    $(" $RandomTarget");
                     if ([Console]::KeyAvailable) {
                         $key = [Console]::ReadKey($true)
                         switch ($key.key) {
@@ -204,7 +205,7 @@ while (-not $StopRequested) {
                 ": $($TillEnd.Minutes) " + `
                 $XMLConfig.config.messages.minutes + `
                 $XMLConfig.config.messages.randtargets + `
-                $RandomTarget;
+                $(" $RandomTarget");
             Clear-Line $Message;
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
             Start-Sleep -Seconds 1;
