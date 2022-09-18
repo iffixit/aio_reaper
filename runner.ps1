@@ -80,7 +80,7 @@ $BogusInitPyPath = $LoadPath + "src\__init__.py";
 if (Test-Path $BogusInitPyPath) {
     Remove-Item $BogusInitPyPath -Force | Out-Null;
 }
-$LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
+#$LiteBlockSize = [Int] $XMLConfig.config.liteblocksize;
 $MinutesPerBlock = $XMLConfig.config.timers.minutesperblock;
 # DO NOT DO THAT and do not propose that! Anyway this shall not work.
 #[Sytem.Environment]::SetEnvironmentVariable('PYTHONPATH', $("$PythonPath; $LoadPath"), [System.EnvironmentVariableTarget]::Process);
@@ -102,7 +102,7 @@ $TargetList = @()
 do {
     $TargetList = CreateTargetList $RunningLite;
 } while ($TargetList.Count -le 0)
-$TargetsUpdated = [System.DateTime]::Now;
+#$TargetsUpdated = [System.DateTime]::Now;
 $StopRequested = $false;
 $StartTask = $true;
 $Targets = @()
@@ -163,19 +163,20 @@ while (-not $StopRequested) {
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob
             while (($PyProcess.HasExited -eq $false) -and ($TillEnd -gt 0)) {
                 $RandomTarget = Get-Random $TargetList
+                $RandomTarget = $RandomTarget[0..40] -join ""
                 $Message = $XMLConfig.config.messages.targets + `
                     ": $($TargetList.Count) " + `
                     $XMLConfig.config.messages.tillupdate + `
                     ": $($TillEnd.Minutes) " + `
                     $XMLConfig.config.messages.minutes + " " + `
                     $XMLConfig.config.messages.randtargets + `
-                    $(" $RandomTarget");
-                    if ([Console]::KeyAvailable) {
-                        $key = [Console]::ReadKey($true)
-                        switch ($key.key) {
-                            F12 { $EndJob = [System.DateTime]::Now; }
-                        }
+                $(" $RandomTarget");
+                if ([Console]::KeyAvailable) {
+                    $key = [Console]::ReadKey($true)
+                    switch ($key.key) {
+                        F12 { $EndJob = [System.DateTime]::Now; }
                     }
+                }
                 Clear-Line $Message;
                 Start-Sleep -Seconds 5;
                 $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
@@ -199,13 +200,14 @@ while (-not $StopRequested) {
                 break;
             }
             $RandomTarget = Get-Random $TargetList;
+            $RandomTarget = $RandomTarget[0..40] -join ""
             $Message = $XMLConfig.config.messages.targets + `
                 ": $($TargetList.Count) " + `
                 $XMLConfig.config.messages.tillupdate + `
                 ": $($TillEnd.Minutes) " + `
                 $XMLConfig.config.messages.minutes + " " + `
                 $XMLConfig.config.messages.randtargets + `
-                $(" $RandomTarget");
+            $(" $RandomTarget");
             Clear-Line $Message;
             $TillEnd = New-Timespan $([System.DateTime]::Now) $EndJob;
             Start-Sleep -Seconds 1;
