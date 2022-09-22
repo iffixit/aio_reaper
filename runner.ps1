@@ -50,7 +50,9 @@ function CreateTargetList([bool] $RunningLite) {
                 {
                     $ITArmyTargets += "tcp://$Val";
                 }
-                else $ITArmyTargets += $Val;
+                else {
+                    $ITArmyTargets += $Val;
+                }
             }
         }
     }
