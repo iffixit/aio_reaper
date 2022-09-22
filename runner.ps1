@@ -126,7 +126,6 @@ $TargetList = @()
 do {
     $TargetList = CreateTargetList $RunningLite;
 } while ($TargetList.Count -le 0)
-#$TargetsUpdated = [System.DateTime]::Now;
 $StopRequested = $false;
 $StartTask = $true;
 $Targets = @()
@@ -240,7 +239,6 @@ while (-not $StopRequested) {
     $Message = $XMLConfig.config.messages.gettingtargets;
     Clear-Line $Message;
     $TargetList = CreateTargetList $RunningLite;
-    #$TargetsUpdated = [System.DateTime]::Now;
     $PyProcess.Kill();
     Stop-Runners $PythonPath;
     $StartTask = $true;
