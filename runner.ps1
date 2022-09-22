@@ -23,7 +23,7 @@ function CreateTargetList([bool] $RunningLite) {
         Remove-Item -Force -Path $TempFilePath | Out-Null;
     }
     foreach ($Target in $ExtraDirtyList){
-        if ($IsIP $Target){
+        if (IsIpAddress $Target){
             $Targets += "tcp://$Target";
         }
         else {
