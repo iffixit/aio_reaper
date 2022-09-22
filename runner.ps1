@@ -1,14 +1,34 @@
+function IsIpAddress ([string] $Target){
+    $IsIP = $True
+    try {
+        [System.Net.IPAddress] $Target;
+    }
+    catch {
+        $IsIP = $false;
+    }
+    return $IsIP;
+}
+
 function CreateTargetList([bool] $RunningLite) {
     # Adding targets from simple lists.
     [xml]$XMLConfigLocal = Get-Content -Path ("$PSScriptRoot\\settings.xml");
+    $ExtraDirtyList = @();
     $Targets = @();
     $ITArmyTargets = @();
     $TargetLists = $XMLConfigLocal.config.targets.targetlist.entry;
     foreach ($TargetList in $TargetLists) {
         $TempFilePath = $PSScriptRoot + "\\temp.txt";
         Get-File $TargetList $TempFilePath;
-        $Targets += [System.IO.File]::ReadAllLines("$TempFilePath");
+        $ExtraDirtyList += [System.IO.File]::ReadAllLines("$TempFilePath");
         Remove-Item -Force -Path $TempFilePath | Out-Null;
+    }
+    foreach ($Target in $ExtraDirtyList){
+        if ($IsIP $Target){
+            $Targets += "tcp://$Target";
+        }
+        else {
+            $Targets += $Target;
+        }
     }
     # Adding targets from IT ARMY
     $ItArmyJSON = $XMLConfigLocal.config.targets.json.itarmy.link;
@@ -26,7 +46,11 @@ function CreateTargetList([bool] $RunningLite) {
                 Out-Null;
             }
             else {
-                $ITArmyTargets += "tcp://$Val";
+                if ($(IsIpAddress $Val))
+                {
+                    $ITArmyTargets += "tcp://$Val";
+                }
+                else $ITArmyTargets += $Val;
             }
         }
     }
@@ -216,7 +240,7 @@ while (-not $StopRequested) {
     $Message = $XMLConfig.config.messages.gettingtargets;
     Clear-Line $Message;
     $TargetList = CreateTargetList $RunningLite;
-    $TargetsUpdated = [System.DateTime]::Now;
+    #$TargetsUpdated = [System.DateTime]::Now;
     $PyProcess.Kill();
     Stop-Runners $PythonPath;
     $StartTask = $true;
