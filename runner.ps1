@@ -1,5 +1,20 @@
-function IsIpAddress ([string] $Target){
+function IsIpAddress ([string] $Target) {
+    if ($null -eq $Target) {
+        return $false;
+    }
     $IsIP = $True
+    $Prefix = $Target.Substring(0, 4)
+    if ($Prefix -eq "http") {
+        return $false;
+    }
+    $Prefix = $Target.Substring(0, 3)
+    if ($Prefix -eq "tcp") {
+        return $false;
+    }
+    $Parts = $Target.Split("://");
+    $Target = $Parts[-1];
+    $Parts = $Target.Split(":");
+    $Target = $Parts[0];
     try {
         [System.Net.IPAddress] $Target;
     }
@@ -7,6 +22,19 @@ function IsIpAddress ([string] $Target){
         $IsIP = $false;
     }
     return $IsIP;
+}
+
+function TargetHasPrefix ([string] $Target) {
+    if ($null -eq $Target) {
+        return $false;
+    }
+    $Parts = $Target.Split("://");
+    if ($Parts.Count -eq 1) {
+        return $false;
+    }
+    else {
+        return $true;
+    }
 }
 
 function CreateTargetList([bool] $RunningLite) {
@@ -22,8 +50,8 @@ function CreateTargetList([bool] $RunningLite) {
         $ExtraDirtyList += [System.IO.File]::ReadAllLines("$TempFilePath");
         Remove-Item -Force -Path $TempFilePath | Out-Null;
     }
-    foreach ($Target in $ExtraDirtyList){
-        if (IsIpAddress $Target){
+    foreach ($Target in $ExtraDirtyList) {
+        if (-not(TargetHasPrefix $Target)) {
             $Targets += "tcp://$Target";
         }
         else {
@@ -46,8 +74,7 @@ function CreateTargetList([bool] $RunningLite) {
                 Out-Null;
             }
             else {
-                if ($(IsIpAddress $Val))
-                {
+                if ($(IsIpAddress $Val)) {
                     $ITArmyTargets += "tcp://$Val";
                 }
                 else {
@@ -67,6 +94,17 @@ function CreateTargetList([bool] $RunningLite) {
     $Targets = $Targets.Replace("tcp)", "tcp");
     $Targets = $Targets -split " ";
     Remove-Variable $XMLConfigLocal;
+    foreach ($Target in $Targets) {
+        $Prefix = $Target.Substring(0, 4)
+        if ($Prefix -eq "http") {
+            continue;
+        }
+        $Prefix = $Target.Substring(0, 3)
+        if ($Prefix -eq "tcp") {
+            continue;
+        }
+        
+    }
     if (-not $RunningLite) {
         $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object;
     }

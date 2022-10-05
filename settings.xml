@@ -75,8 +75,8 @@
         <gettingtargets>Отримую список цілей, зачекайте.</gettingtargets>
         <runningspeedtest>Виконується оцінка мережі, зачекайте, це займе трохи часу.</runningspeedtest>
         <isp>Ваш провайдер:</isp>
-        <ulspeed>Швидкість відвантаження:</ulspeed>
-        <dlspeed>Швидкість завантаження:</dlspeed>
+        <ulspeed>Визначена ширина каналу відвантаження:</ulspeed>
+        <dlspeed>Визначена ширина каналу завантаження:</dlspeed>
         <externalip>Зовнішня IP-адреса:</externalip>
         <randtargets>Серед атакованого:</randtargets>
     </messages>
