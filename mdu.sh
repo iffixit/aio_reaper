@@ -813,7 +813,8 @@ fi
 runner="$script_path/mhddos_proxy/runner.py"
 if [[ $opt_cloudflare == "on" ]]
 then
-    warp-cli connect > /dev/null 2>&1
+    warp-cli connect
+    sleep 15s
 fi
 
 # Restart and update mhddos_proxy and targets every N minutes
