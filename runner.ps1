@@ -74,11 +74,11 @@ function CreateTargetList([bool] $RunningLite) {
                 Out-Null;
             }
             else {
-                if ($(IsIpAddress $Val)) {
-                    $ITArmyTargets += "tcp://$Val";
+                if ($(TargetHasPrefix $Val)) {
+                    $ITArmyTargets += $Val;
                 }
                 else {
-                    $ITArmyTargets += $Val;
+                    $ITArmyTargets += "tcp://$Val";
                 }
             }
         }
@@ -95,15 +95,7 @@ function CreateTargetList([bool] $RunningLite) {
     $Targets = $Targets -split " ";
     Remove-Variable $XMLConfigLocal;
     foreach ($Target in $Targets) {
-        $Prefix = $Target.Substring(0, 4)
-        if ($Prefix -eq "http") {
-            continue;
-        }
-        $Prefix = $Target.Substring(0, 3)
-        if ($Prefix -eq "tcp") {
-            continue;
-        }
-        
+
     }
     if (-not $RunningLite) {
         $TargetsCleaned = $Targets | Select-Object -Unique | Sort-Object;
