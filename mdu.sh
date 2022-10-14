@@ -611,12 +611,13 @@ function get_targets () {
         mkdir -p "$script_path/targets/"
     fi
     cd "$script_path"
-    local num=1
+
     local targets_got=0
     #####
     json=$(curl -s --retry 10 -L --url "$link_itarmy_json") > /dev/null 2>&1
     while [[ $targets_got == 0 ]]
     do
+        local num=1
         for path in "${json_itarmy_paths[@]}"
         do
             touch "$script_path/targets/list$num.txt"
