@@ -469,6 +469,24 @@ then
         tar -xzf "$script_path/bin/db1000n.tar.gz" -C "$script_path/bin/"
         rm -f "$script_path/bin/db1000n.tar.gz"
         chmod +x "$script_path/bin/db1000n"
+    else
+        if [[ -f "$script_path/bin/db1000n.old" ]]
+        then
+            rm -f "$script_path/bin/db1000n.old"
+        fi
+        mv "$script_path/bin/db1000n" "$script_path/bin/db1000n.old"
+        if [[ "$os_bits" == "32" ]]
+        then
+            download_link=$link_db1000n_x32
+        fi
+        if [[ "$os_bits" == "64" ]]
+        then
+            download_link=$link_db1000n_x64
+        fi
+        curl -s -L --retry 10  --output "$script_path/bin/db1000n.tar.gz" --url $download_link
+        tar -xzf "$script_path/bin/db1000n.tar.gz" -C "$script_path/bin/"
+        rm -f "$script_path/bin/db1000n.tar.gz"
+        chmod +x "$script_path/bin/db1000n"
     fi
     export script_db1000n="$script_path/bin/db1000n"
 fi
