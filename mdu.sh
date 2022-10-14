@@ -858,15 +858,15 @@ while true; do
     fi
     if [[ "$opt_type" == "normal" ]]
     then
-        python3 "$runner" -c "$script_path/targets/itarmy.list" &
+        python3 "$runner" -c "$script_path/targets/itarmy.list" $args_to_pass &
     elif [[ "$opt_type" == "full" ]]
     then
-        python3 "$runner" -c "$script_path/targets/uniq_targets.txt" &
+        python3 "$runner" -c "$script_path/targets/uniq_targets.txt" $args_to_pass &
     elif [[ "$opt_type" == "enormous" ]]
     then
-        python3 "$runner" -c "$script_path/targets/uniq_targets.txt" &
+        python3 "$runner" -c "$script_path/targets/uniq_targets.txt" $args_to_pass &
         sleep 30
-        python3 "$runner" -c "$script_path/targets/uniq_targets.txt" &
+        python3 "$runner" -c "$script_path/targets/uniq_targets.txt" $args_to_pass &
     fi
     minute=0
     still_alive=0
