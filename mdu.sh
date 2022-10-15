@@ -323,9 +323,8 @@ EOF
         python3 -m pip install virtualenv
     fi
     export py_venv="python3 -m virtualenv"
-else
-    export py_venv="python3 -m venv"
     $py_venv "$script_path/venv" || printf "%s\n%s\n" "$str_venv_failed" "$str_fatal" && exit
+
 fi
 
 ###############################################################################
