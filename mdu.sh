@@ -81,7 +81,7 @@ export str_ok="OK"
 export str_done="Виконано"
 export str_downloading="Завантажую"
 export str_probing="Перевіряю наявність"
-export str_version="2.0.4 alpha"
+export str_version="2.0.5 alpha"
 export str_motto="Лупайте сю скалу!"
 export str_name="Каменяр"
 export str_found="знайдено."
@@ -893,6 +893,7 @@ while true; do
     cd "$script_path/mhddos_proxy" || return
     # shellcheck disable=1091
     source "$script_path/venv/bin/activate"
+    python3 -m pip install --upgrade pip
     python3 -m pip install -r "$script_path/mhddos_proxy/requirements.txt"
     if [[ $opt_db1000n == "on" ]]
     then
