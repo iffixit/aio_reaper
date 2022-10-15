@@ -9,6 +9,8 @@ export opt_shaper="off"
 export opt_cloudflare="off"
 export opt_debug="off"
 export opt_db1000n="off"
+export opt_recreate="off"
+export opt_uninstall="off"
 export args_to_pass=""
 while [[ $# -gt 0 ]]
 do
@@ -21,6 +23,8 @@ do
         -c | --cloudflare ) export opt_cloudflare="on"; shift ;;
         -d | --db1000n ) export opt_db1000n="on"; shift ;;
         -w | --debug ) export opt_debug="on"; shift ;;
+        -r | --recreate ) export opt_recreate="on"; shift ;;
+        -u | --uninstall ) export opt_uninstall="on"; shift ;;
         *   ) export args_to_pass+=" $1"; shift ;; #pass all unrecognized arguments to mhddos_proxy
     esac
 done
@@ -35,6 +39,15 @@ fi
 ###############################################################################
 export script_path="$HOME/multiddos_ii"
 
+if [[ $opt_recreate == "on" ]]
+then
+    rm -rf "$script_path"
+fi
+if [[ $opt_uninstall == "on" ]]
+then
+    rm -rf "$script_path"
+    exit 0
+fi
 
 ###############################################################################
 # Put links here
@@ -68,7 +81,7 @@ export str_ok="OK"
 export str_done="Виконано"
 export str_downloading="Завантажую"
 export str_probing="Перевіряю наявність"
-export str_version="2.0.1 alpha"
+export str_version="2.0.3 alpha"
 export str_motto="Лупайте сю скалу!"
 export str_name="Каменяр"
 export str_found="знайдено."
