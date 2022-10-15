@@ -184,7 +184,7 @@ if [[ ! -f "$plat_tool" ]]
 fi
 local plat_output
 cd "$shtools_path"
-plat_output=$(bash "$plat_tool" -v -F "%[at] %[sp] %[st]")
+plat_output=$(bash "$plat_tool" -v -F "%[at] %{sp} %[st]")
 cd "$script_path"
 local rest=$plat_output
 os_arch="${rest%% *}"; rest="${rest#* }"
