@@ -68,7 +68,7 @@ export str_ok="OK"
 export str_done="Виконано"
 export str_downloading="Завантажую"
 export str_probing="Перевіряю наявність"
-export str_version="2.0 pre-alpha"
+export str_version="2.0.1 alpha"
 export str_motto="Лупайте сю скалу!"
 export str_name="Каменяр"
 export str_found="знайдено."
@@ -522,7 +522,7 @@ then
     printf "%s cloudflare-warp... " "$str_probing"
     if [[ ("$cf_installed" == "false") && ("$os_bits" == 64) ]]
     then
-        if [[ "$os_dist" == "CentOS" ]]
+        if [[ "$os_dist" == "CentOS" || $os_dist == "centos" ]]
         then
             if [[ "$os_version_major" == "8" ]]
             then
