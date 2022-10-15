@@ -92,6 +92,7 @@ export str_shape="Запускаю шейпер."
 export str_no_tmux="tmux не знайдено в вашій системі. Запуск gotop недоцільний. Вимкнено."
 export str_start_cleanup="Починаємо очистку після роботи..."
 export str_cleaning="Зупиняю роботу"
+export str_venv_failed="Не вдалося створити віртуальне оточення Пітону."
 str_tmux_x32=$(cat <<-END
 Нажаль tmux ніхто не збирає для 32-бітних систем в якості самодостатньої програми.
 Для використання всіх функцій скрипту вам доведеться встановити його самостійно.
@@ -291,6 +292,7 @@ fi
 ###############################################################################
 # Checking if we have venv
 # We gonna use virtualenv instead of venv if local python does not have venv
+printf "%s...\n" "$str_venv_creating"
 venv_output=$(
 python3 - << EOF
 try:
@@ -300,6 +302,11 @@ except Exception:
     print("venv failed!")
 EOF
 )
+if [[ $venv_output == "venv installed!" ]]
+then
+    export py_venv="python3 -m venv"
+    $py_venv "$script_path/venv" || venv_output="venv failed!"
+fi
 if [[ "$venv_output" == "venv failed!" ]]
 then
     have_venv=$(
@@ -318,6 +325,7 @@ EOF
     export py_venv="python3 -m virtualenv"
 else
     export py_venv="python3 -m venv"
+    $py_venv "$script_path/venv" || printf "%s\n%s\n" "$str_venv_failed" "$str_fatal" && exit
 fi
 
 ###############################################################################
@@ -579,7 +587,7 @@ if [[ ! -f "$script_path/venv/bin/activate" ]]
 then
     # We create one
     printf "%s\t" "$str_venv_creating"
-    $py_venv "$script_path/venv" > /dev/null 2>&1
+    $py_venv "$script_path/venv"
     printf "%s\n" "$str_ok"
 fi
 
