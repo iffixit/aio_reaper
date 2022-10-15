@@ -289,8 +289,20 @@ else
 
 fi
 ###############################################################################
-# We gonna use virtualenv instead of venv
-have_venv=$(
+# Checking if we have venv
+# We gonna use virtualenv instead of venv if local python does not have venv
+venv_output=$(
+python3 - << EOF
+try:
+    import venv;
+    print("venv installed!")
+except Exception:
+    print("venv failed!")
+EOF
+)
+if [[ "$venv_output" == "venv failed!" ]]
+then
+    have_venv=$(
 python3 - <<EOF
 try:
     import virtualenv;
@@ -299,10 +311,15 @@ except Exception:
     print("virtualenv failed!")
 EOF
 )
-if [[ $have_venv == "virtualenv failed!" ]]
-then
-    python3 -m pip install virtualenv
+    if [[ $have_venv == "virtualenv failed!" ]]
+    then
+        python3 -m pip install virtualenv
+    fi
+    export py_venv="python3 -m virtualenv"
+else
+    export py_venv="python3 -m venv"
 fi
+
 ###############################################################################
 # Checking if jq installed and grabbing a local copy if not
 printf "%s jq " "$str_probing"
@@ -562,7 +579,7 @@ if [[ ! -f "$script_path/venv/bin/activate" ]]
 then
     # We create one
     printf "%s\t" "$str_venv_creating"
-    python3 -m virtualenv "$script_path/venv" > /dev/null 2>&1
+    $py_venv "$script_path/venv" > /dev/null 2>&1
     printf "%s\n" "$str_ok"
 fi
 
