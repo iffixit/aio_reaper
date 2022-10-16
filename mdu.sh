@@ -960,7 +960,7 @@ function skip_dependencies()
         local temp
         temp=${line%==*}
         temp=${temp%>=*}
-        echo "$temp" >> "$script_path/mhddos_proxy/requirements.txt"
+        echo "$temp" >> "$script_path/mhddos_proxy/new_req.txt"
     done
 
 }
