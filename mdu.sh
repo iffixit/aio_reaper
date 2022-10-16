@@ -2,7 +2,9 @@
 set -e
 set -u
 set -o pipefail
-
+###############################################################################
+export str_version="2.0.7a alpha"
+###############################################################################
 export opt_gotop="off"
 export opt_type="normal"
 export opt_shaper="off"
@@ -83,7 +85,6 @@ export str_ok="OK"
 export str_done="Виконано"
 export str_downloading="Завантажую"
 export str_probing="Перевіряю наявність"
-export str_version="2.0.7 alpha"
 export str_motto="Лупайте сю скалу!"
 export str_name="Каменяр"
 export str_found="знайдено."
@@ -947,6 +948,10 @@ while true; do
 done
 EOF
 }
+function has_substring() {
+   [[ "$1" != "${2/$1/}" ]]
+}
+export -f has_substring
 function skip_dependencies()
 {
     local requirements
@@ -957,9 +962,14 @@ function skip_dependencies()
     fi
     for line in $requirements
     do
-        local temp
-        temp=${line%%==*}
-        temp=${temp%%>=*}
+        local temp=""
+        if has_substring "$line" ">="
+        then
+            temp=${line%%>=*}
+        elif has_substring "$line" "=="
+        then
+            temp=${line%%==*}
+        fi
         echo "$temp" >> "$script_path/mhddos_proxy/new_req.txt"
     done
 
