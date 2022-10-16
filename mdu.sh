@@ -83,7 +83,7 @@ export str_ok="OK"
 export str_done="Виконано"
 export str_downloading="Завантажую"
 export str_probing="Перевіряю наявність"
-export str_version="2.0.6 alpha"
+export str_version="2.0.6+ alpha"
 export str_motto="Лупайте сю скалу!"
 export str_name="Каменяр"
 export str_found="знайдено."
@@ -960,7 +960,7 @@ function skip_dependencies()
         local temp
         temp=${line%==*}
         temp=${temp%>=*}
-        temp >> "$script_path/mhddos_proxy/requirements.txt"
+        echo "$temp" >> "$script_path/mhddos_proxy/requirements.txt"
     done
 
 }
