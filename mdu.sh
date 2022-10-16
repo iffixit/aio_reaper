@@ -12,6 +12,7 @@ export opt_db1000n="off"
 export opt_recreate="off"
 export opt_uninstall="off"
 export args_to_pass=""
+export opt_skip_dependencies="off"
 while [[ $# -gt 0 ]]
 do
     case $1 in
@@ -25,6 +26,7 @@ do
         -w | --debug ) export opt_debug="on"; shift ;;
         -r | --recreate ) export opt_recreate="on"; shift ;;
         -u | --uninstall ) export opt_uninstall="on"; shift ;;
+        --skip-dependency-version ) export opt_skip_dependencies="on"; shift ;;
         *   ) export args_to_pass+=" $1"; shift ;; #pass all unrecognized arguments to mhddos_proxy
     esac
 done
@@ -464,11 +466,17 @@ fi
 ###############################################################################
 # Trying to create a swap uf low on memory
 if [[ $(swapon --noheadings --bytes | cut -d " " -f3) == "" ]]; then
+    export swap_failed="false"
     printf "%s\n%s.\n" "$str_swap_required" "$str_need_root"
-    sudo fallocate -l 1G /swp \
-        && sudo chmod 600 /swp \
-        && sudo mkswap /swp \
-        && sudo swapon /swp
+    sudo fallocate -l 1G /swp || swap_failed="true"
+    sudo chmod 600 /swp || swap_failed="true"
+    sudo mkswap /swp || swap_failed="true"
+    sudo swapon /swp || swap_failed="true"
+    if [[ $swap_failed == "true" ]]
+    then
+        # TODO: String here
+        echo "Swap creation failed"
+    fi
 fi
 
 ###############################################################################
@@ -894,7 +902,13 @@ while true; do
     # shellcheck disable=1091
     source "$script_path/venv/bin/activate"
     python3 -m pip install --upgrade pip
-    python3 -m pip install -r "$script_path/mhddos_proxy/requirements.txt"
+    if [[ $opt_skip_dependencies == "on" ]]
+    then
+        skip_dependencies
+        python3 -m pip install -r "$script_path/mhddos_proxy/new_req.txt"
+    else
+        python3 -m pip install -r "$script_path/mhddos_proxy/requirements.txt"
+    fi
     if [[ $opt_db1000n == "on" ]]
     then
         $script_db1000n &
@@ -932,6 +946,23 @@ while true; do
     deactivate
 done
 EOF
+}
+function skip_dependencies()
+{
+    local requirements
+    requirements=$(wc -l < "$script_path/mhddos_proxy/requirements.txt")
+    if [[ -f "$script_path/mhddos_proxy/new_req.txt" ]]
+    then
+        rm -f "$script_path/mhddos_proxy/requirements.txt"
+    fi
+    for line in $requirements
+    do
+        local temp
+        temp=${line%==*}
+        temp=${temp%>=*}
+        temp >> "$script_path/mhddos_proxy/requirements.txt"
+    done
+
 }
 ###############################################################################
 trap cleanup INT
