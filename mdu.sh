@@ -3,7 +3,7 @@ set -e
 set -u
 set -o pipefail
 ###############################################################################
-export str_version="2.0.7a alpha"
+export str_version="2.0.7b alpha"
 ###############################################################################
 export opt_gotop="off"
 export opt_type="normal"
@@ -948,10 +948,6 @@ while true; do
 done
 EOF
 }
-function has_substring() {
-   [[ "$1" != "${2/$1/}" ]]
-}
-export -f has_substring
 function skip_dependencies()
 {
     local requirements
@@ -963,10 +959,10 @@ function skip_dependencies()
     for line in $requirements
     do
         local temp=""
-        if has_substring "$line" ">="
+        if [[ $line == *">="* ]]
         then
             temp=${line%%>=*}
-        elif has_substring "$line" "=="
+        elif [[ $line == *"=="* ]]
         then
             temp=${line%%==*}
         fi
